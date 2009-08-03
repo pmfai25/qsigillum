@@ -5,11 +5,11 @@
 QSigillum development is supposed to be executed using several technologies and conventions.
 
 = General information =
-  * C++ and Qt 4.5 are used for development.
+  * C++ and [http://www.qtsoftware.com/products/ Qt 4.5] are used for development.
   * No exception handling!
   * SVN is used as central VCS. Nice tutorial is [http://svnbook.red-bean.com/  here].
   * SVN is used with username and password. You can see your password in your *Profile* (link in the top right of this page).
-  * It is recommended to use QtCreator for development. To get started with SVN usage in QtCreator, read this: http://www.qtcentre.org/forum/f-qt-software-16/t-solved-using-a-subversion-client-with-qtcreator-19375.html
+  * It is recommended to use [http://www.qtsoftware.com/products/developer-tools QtCreator] for development. To get started with SVN usage in QtCreator, read this: http://www.qtcentre.org/forum/f-qt-software-16/t-solved-using-a-subversion-client-with-qtcreator-19375.html
 
 = Coding convention =
   * Qt coding style is used as base style (with some modifications): http://qt.gitorious.org/qt/pages/QtCodingStyle
