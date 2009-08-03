@@ -17,26 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef USERFORM_H
-#define USERFORM_H
+#ifndef SEGMENTATOR_H
+#define SEGMENTATOR_H
 
-#include <QtGui/QMainWindow>
+#include <QObject>
 
-namespace Ui {
-    class UserForm;
-}
-
-class UserForm : public QMainWindow {
-    Q_OBJECT
+class Segmentator : public QObject
+{
 public:
-    UserForm(QWidget *parent = 0);
-    ~UserForm();
-
-protected:
-    void changeEvent(QEvent *e);
-
-private:
-    Ui::UserForm *m_ui;
+    Segmentator();
 };
 
-#endif // USERFORM_H
+#endif // SEGMENTATOR_H

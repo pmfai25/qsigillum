@@ -17,26 +17,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef USERFORM_H
-#define USERFORM_H
+#include "editorform.h"
+#include "ui_editorform.h"
 
-#include <QtGui/QMainWindow>
-
-namespace Ui {
-    class UserForm;
+EditorForm::EditorForm(QWidget *parent) :
+    QMainWindow(parent),
+    m_ui(new Ui::EditorForm)
+{
+    m_ui->setupUi(this);
 }
 
-class UserForm : public QMainWindow {
-    Q_OBJECT
-public:
-    UserForm(QWidget *parent = 0);
-    ~UserForm();
+EditorForm::~EditorForm()
+{
+    delete m_ui;
+}
 
-protected:
-    void changeEvent(QEvent *e);
-
-private:
-    Ui::UserForm *m_ui;
-};
-
-#endif // USERFORM_H
+void EditorForm::changeEvent(QEvent *e)
+{
+    QMainWindow::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        m_ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
