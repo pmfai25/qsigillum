@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docname="logo.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/konst/coding/projects/logo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="114.25"
+     inkscape:cy="-31.638382"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="744"
+     inkscape:window-x="-5"
+     inkscape:window-y="-3" />
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4757">
+      <stop
+         style="stop-color:#fefefe;stop-opacity:1;"
+         offset="0"
+         id="stop4759" />
+      <stop
+         style="stop-color:#fefefe;stop-opacity:0;"
+         offset="1"
+         id="stop4761" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4611">
+      <stop
+         style="stop-color:#fff5f2;stop-opacity:1;"
+         offset="0"
+         id="stop4613" />
+      <stop
+         style="stop-color:#f5f0ee;stop-opacity:1;"
+         offset="1"
+         id="stop4615" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4757"
+       id="linearGradient4763"
+       x1="3.9921875"
+       y1="43.06271"
+       x2="30.6875"
+       y2="43.06271"
+       gradientUnits="userSpaceOnUse" />
+    <clipPath
+       id="clipPath">
+      <path
+         id="path5735"
+         d="M 30.78125,1.78125 C 28.699294,1.766441 25.893003,2.8074487 25.96875,5.15625 C 25.666086,6.5297036 25.728597,7.7704153 25.625,9.15625 C 24.654063,6.3441908 21.240399,3.9654813 18.25,5.375 C 15.738692,6.495445 15.177397,9.8502903 16.46875,12.1875 C 16.585526,12.655638 17.993178,14.515628 16.875,13.625 C 14.84011,11.891094 11.183151,11.127719 9.28125,13.3125 C 7.5392844,15.326074 7.8230961,18.750992 9.96875,20.28125 C 10.342716,20.945918 11.694556,21.423089 11.8125,21.9375 C 10.221102,21.198634 8.3691488,21.55327 6.65625,21.8125 C 4.1227766,22.308395 3.6370607,25.478301 4.1875,27.625 C 4.861182,30.036915 7.6596213,30.34017 9.6875,31.15625 C 9.9831165,31.521754 8.7002576,31.137134 8.34375,31.46875 C 6.2063549,32.199125 4.4258703,33.782277 2.25,34.4375 C 4.7068566,35.233108 3.7419483,38.79771 5.625,40.09375 C 7.4868542,41.169225 9.9661619,40.567504 11.71875,40.625 C 9.6420028,41.694044 7.7386986,43.952993 8.187268,46.576385 C 8.4441737,49.532149 11.887207,51.346277 14.5,49.96875 C 15.683912,49.730299 16.462299,48.385722 17.59375,48.28125 C 15.397195,50.598117 15.145919,55.045751 18.0625,56.78125 C 20.12918,58.11866 23.195891,57.009456 24.515816,54.999745 C 25.141934,54.451466 25.152325,53.419976 25.84375,52.9375 C 25.489905,55.310959 25.641087,58.353591 27.715718,59.90495 C 30.105163,61.027109 33.849056,60.375939 34.40625,57.46875 C 34.964199,56.401383 34.997859,54.749524 35.3125,53.875 C 35.536962,56.452222 38.086213,58.146544 39,60.4375 C 39.384578,60.897963 40.348784,59.217399 41.338093,59.21415 C 43.00789,58.70816 45.056796,57.889363 45,55.84375 C 45.341505,54.299633 44.234186,52.573842 44.4375,51.0625 C 45.780378,52.990074 48.19304,54.676893 50.730136,54.078973 C 53.632454,53.551136 54.858486,49.757768 53.4375,47.28125 C 53.058312,46.241125 51.860548,45.307431 51.40625,44.59375 C 52.637511,44.899341 53.822568,45.722315 55.202924,45.671862 C 57.03024,45.928439 59.41293,45.014656 59.71745,42.909282 C 60.074715,41.967686 60.550349,41.105495 61.46875,40.65625 C 59.638706,38.918074 57.396711,36.76724 55.40625,35.78125 C 57.792239,36.165594 60.94534,35.411734 62,33.03125 C 62.874747,30.802368 62.024196,27.603779 59.463185,26.89973 C 58.160592,26.479079 56.493998,26.719933 55.34375,26.3125 C 57.809307,25.607506 60.333895,23.470456 60.21875,20.65625 C 60.09358,17.530671 56.384156,15.554523 53.65625,16.90625 C 53.026146,16.792454 50.934556,18.029919 52.15625,16.84375 C 53.249858,15.112094 54.505668,13.225088 54.625,11.125 C 52.90297,9.9997505 51.394257,7.2267742 48.96875,7.96875 C 47.077141,8.3469619 45.933504,10.063785 44.375,11.03125 C 45.493673,8.4557604 45.442563,4.524702 42.59375,3.25 C 40.196385,2.1747435 37.129346,3.3359629 36.21875,5.75 C 35.739231,6.4394782 35.735799,8.0046739 35.09375,8.25 C 35.071313,5.9540705 34.27997,2.9167309 31.90625,1.9375 C 31.532131,1.8681959 31.091014,1.6979455 30.78125,1.78125 z M 32.46875,27.875 C 35.355996,27.473965 37.408615,31.897993 35.03125,33.625 C 33.036962,36.091905 28.267028,33.446682 29.5625,30.34375 C 29.982423,29.114799 31.178458,27.937302 32.46875,27.875 z"
+         style="fill:#ea3030;fill-opacity:1;stroke:#000000;opacity:0.79545455" />
+    </clipPath>
+    <filter
+       y="-0.5"
+       x="-0.5"
+       width="2.0"
+       height="2.0"
+       id="filter">
+      <feGaussianBlur
+         id="feGaussianBlur5771"
+         stdDeviation="5.0" />
+    </filter>
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g5824"
+       clip-path="url(#clipPath)">
+      <g
+         id="g5826">
+        <path
+           id="path5828"
+           d="M25.96875 5.15625C25.666086 6.5297036 25.728597 7.7704153 25.625 9.15625M18.25 5.375C15.738692 6.495445 15.177397 9.8502903 16.46875 12.1875M16.46875 12.1875C16.585526 12.655638 17.993178 14.515628 16.875 13.625M9.28125 13.3125C7.5392844 15.326074 7.8230961 18.750992 9.96875 20.28125M9.96875 20.28125C10.342716 20.945918 11.694556 21.423089 11.8125 21.9375M6.65625 21.8125C4.1227766 22.308395 3.6370607 25.478301 4.1875 27.625M4.1875 27.625C4.861182 30.036915 7.6596213 30.34017 9.6875 31.15625M2.25 34.4375C4.7068566 35.233108 3.7419483 38.79771 5.625 40.09375M5.625 40.09375C7.4868542 41.169225 9.9661619 40.567504 11.71875 40.625M11.71875 40.625C9.6420028 41.694044 7.7386986 43.952993 8.187268 46.576385M8.187268 46.576385C8.4441737 49.532149 11.887207 51.346277 14.5 49.96875M14.5 49.96875C15.683912 49.730299 16.462299 48.385722 17.59375 48.28125M17.59375 48.28125C15.397195 50.598117 15.145919 55.045751 18.0625 56.78125M18.0625 56.78125C20.12918 58.11866 23.195891 57.009456 24.515816 54.999745M25.84375 52.9375C25.489905 55.310959 25.641087 58.353591 27.715718 59.90495M27.715718 59.90495C30.105163 61.027109 33.849056 60.375939 34.40625 57.46875M35.3125 53.875C35.536962 56.452222 38.086213 58.146544 39.0 60.4375M39.0 60.4375C39.384578 60.897963 40.348784 59.217399 41.338093 59.21415M41.338093 59.21415C43.00789 58.70816 45.056796 57.889363 45.0 55.84375M44.4375 51.0625C45.780378 52.990074 48.19304 54.676893 50.730136 54.078973M51.40625 44.59375C52.637511 44.899341 53.822568 45.722315 55.202924 45.671862M55.202924 45.671862C57.03024 45.928439 59.41293 45.014656 59.71745 42.909282M55.40625 35.78125C57.792239 36.165594 60.94534 35.411734 62.0 33.03125M36.21875 5.75C35.739231 6.4394782 35.735799 8.0046739 35.09375 8.25M32.46875 27.875C35.355996 27.473965 37.408615 31.897993 35.03125 33.625M29.5625 30.34375C29.982423 29.114799 31.178458 27.937302 32.46875 27.875"
+           style="fill:none;stroke:#ffffff;stroke-opacity:1;stroke-width:10;filter:url(#filter);" />
+        <path
+           id="path5830"
+           d="M30.78125 1.78125C28.699294 1.766441 25.893003 2.8074487 25.96875 5.15625M25.625 9.15625C24.654063 6.3441908 21.240399 3.9654813 18.25 5.375M16.875 13.625C14.84011 11.891094 11.183151 11.127719 9.28125 13.3125M11.8125 21.9375C10.221102 21.198634 8.3691488 21.55327 6.65625 21.8125M9.6875 31.15625C9.9831165 31.521754 8.7002576 31.137134 8.34375 31.46875M8.34375 31.46875C6.2063549 32.199125 4.4258703 33.782277 2.25 34.4375M24.515816 54.999745C25.141934 54.451466 25.152325 53.419976 25.84375 52.9375M34.40625 57.46875C34.964199 56.401383 34.997859 54.749524 35.3125 53.875M45.0 55.84375C45.341505 54.299633 44.234186 52.573842 44.4375 51.0625M50.730136 54.078973C53.632454 53.551136 54.858486 49.757768 53.4375 47.28125M53.4375 47.28125C53.058312 46.241125 51.860548 45.307431 51.40625 44.59375M59.71745 42.909282C60.074715 41.967686 60.550349 41.105495 61.46875 40.65625M61.46875 40.65625C59.638706 38.918074 57.396711 36.76724 55.40625 35.78125M62.0 33.03125C62.874747 30.802368 62.024196 27.603779 59.463185 26.89973M59.463185 26.89973C58.160592 26.479079 56.493998 26.719933 55.34375 26.3125M55.34375 26.3125C57.809307 25.607506 60.333895 23.470456 60.21875 20.65625M60.21875 20.65625C60.09358 17.530671 56.384156 15.554523 53.65625 16.90625M53.65625 16.90625C53.026146 16.792454 50.934556 18.029919 52.15625 16.84375M52.15625 16.84375C53.249858 15.112094 54.505668 13.225088 54.625 11.125M54.625 11.125C52.90297 9.9997505 51.394257 7.2267742 48.96875 7.96875M48.96875 7.96875C47.077141 8.3469619 45.933504 10.063785 44.375 11.03125M44.375 11.03125C45.493673 8.4557604 45.442563 4.524702 42.59375 3.25M42.59375 3.25C40.196385 2.1747435 37.129346 3.3359629 36.21875 5.75M35.09375 8.25C35.071313 5.9540705 34.27997 2.9167309 31.90625 1.9375M31.90625 1.9375C31.532131 1.8681959 31.091014 1.6979455 30.78125 1.78125M35.03125 33.625C33.036962 36.091905 28.267028 33.446682 29.5625 30.34375"
+           style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:10;filter:url(#filter);" />
+      </g>
+    </g>
+    <path
+       id="path5822"
+       d="M 30.78125,1.78125 C 28.699294,1.766441 25.893003,2.8074487 25.96875,5.15625 C 25.666086,6.5297036 25.728597,7.7704153 25.625,9.15625 C 24.654063,6.3441908 21.240399,3.9654813 18.25,5.375 C 15.738692,6.495445 15.177397,9.8502903 16.46875,12.1875 C 16.585526,12.655638 17.993178,14.515628 16.875,13.625 C 14.84011,11.891094 11.183151,11.127719 9.28125,13.3125 C 7.5392844,15.326074 7.8230961,18.750992 9.96875,20.28125 C 10.342716,20.945918 11.694556,21.423089 11.8125,21.9375 C 10.221102,21.198634 8.3691488,21.55327 6.65625,21.8125 C 4.1227766,22.308395 3.6370607,25.478301 4.1875,27.625 C 4.861182,30.036915 7.6596213,30.34017 9.6875,31.15625 C 9.9831165,31.521754 8.7002576,31.137134 8.34375,31.46875 C 6.2063549,32.199125 4.4258703,33.782277 2.25,34.4375 C 4.7068566,35.233108 3.7419483,38.79771 5.625,40.09375 C 7.4868542,41.169225 9.9661619,40.567504 11.71875,40.625 C 9.6420028,41.694044 7.7386986,43.952993 8.187268,46.576385 C 8.4441737,49.532149 11.887207,51.346277 14.5,49.96875 C 15.683912,49.730299 16.462299,48.385722 17.59375,48.28125 C 15.397195,50.598117 15.145919,55.045751 18.0625,56.78125 C 20.12918,58.11866 23.195891,57.009456 24.515816,54.999745 C 25.141934,54.451466 25.152325,53.419976 25.84375,52.9375 C 25.489905,55.310959 25.641087,58.353591 27.715718,59.90495 C 30.105163,61.027109 33.849056,60.375939 34.40625,57.46875 C 34.964199,56.401383 34.997859,54.749524 35.3125,53.875 C 35.536962,56.452222 38.086213,58.146544 39,60.4375 C 39.384578,60.897963 40.348784,59.217399 41.338093,59.21415 C 43.00789,58.70816 45.056796,57.889363 45,55.84375 C 45.341505,54.299633 44.234186,52.573842 44.4375,51.0625 C 45.780378,52.990074 48.19304,54.676893 50.730136,54.078973 C 53.632454,53.551136 54.858486,49.757768 53.4375,47.28125 C 53.058312,46.241125 51.860548,45.307431 51.40625,44.59375 C 52.637511,44.899341 53.822568,45.722315 55.202924,45.671862 C 57.03024,45.928439 59.41293,45.014656 59.71745,42.909282 C 60.074715,41.967686 60.550349,41.105495 61.46875,40.65625 C 59.638706,38.918074 57.396711,36.76724 55.40625,35.78125 C 57.792239,36.165594 60.94534,35.411734 62,33.03125 C 62.874747,30.802368 62.024196,27.603779 59.463185,26.89973 C 58.160592,26.479079 56.493998,26.719933 55.34375,26.3125 C 57.809307,25.607506 60.333895,23.470456 60.21875,20.65625 C 60.09358,17.530671 56.384156,15.554523 53.65625,16.90625 C 53.026146,16.792454 50.934556,18.029919 52.15625,16.84375 C 53.249858,15.112094 54.505668,13.225088 54.625,11.125 C 52.90297,9.9997505 51.394257,7.2267742 48.96875,7.96875 C 47.077141,8.3469619 45.933504,10.063785 44.375,11.03125 C 45.493673,8.4557604 45.442563,4.524702 42.59375,3.25 C 40.196385,2.1747435 37.129346,3.3359629 36.21875,5.75 C 35.739231,6.4394782 35.735799,8.0046739 35.09375,8.25 C 35.071313,5.9540705 34.27997,2.9167309 31.90625,1.9375 C 31.532131,1.8681959 31.091014,1.6979455 30.78125,1.78125 z M 32.46875,27.875 C 35.355996,27.473965 37.408615,31.897993 35.03125,33.625 C 33.036962,36.091905 28.267028,33.446682 29.5625,30.34375 C 29.982423,29.114799 31.178458,27.937302 32.46875,27.875 z"
+       style="opacity:0.79545456;fill:#ea3030;fill-opacity:1;stroke:#000000" />
+    <path
+       id="path5663"
+       d="M 31.46875,4.125 L 28.53125,4.4375 L 27.875,7.78125 L 27.90625,8.15625 L 28.5,10.90625 L 24.4375,12.21875 L 23.3125,9.65625 L 23.125,9.34375 L 20.59375,7 L 18.03125,8.46875 L 18.8125,11.8125 L 18.96875,12.15625 L 20.65625,14.40625 L 17.46875,17.28125 L 15.375,15.375 L 15.09375,15.15625 L 11.84375,14.0625 L 10.09375,16.46875 L 12.15625,19.1875 L 12.4375,19.40625 L 14.90625,20.8125 L 13.15625,24.71875 L 10.5,23.84375 L 10.125,23.75 L 6.71875,24.0625 L 6.09375,26.96875 L 9.09375,28.65625 L 9.4375,28.71875 L 12.25,29 L 12.25,33.25 L 9.4375,33.5625 L 9.09375,33.625 L 6.09375,35.3125 L 6.71875,38.1875 L 10.125,38.5 L 10.5,38.4375 L 13.15625,37.5625 L 14.90625,41.4375 L 12.4375,42.84375 L 12.15625,43.0625 L 10.09375,45.8125 L 11.84375,48.21875 L 15.09375,47.125 L 15.375,46.90625 L 17.46875,45 L 20.65625,47.84375 L 18.96875,50.125 L 18.8125,50.4375 L 18.03125,53.78125 L 20.59375,55.28125 L 23.125,52.9375 L 23.3125,52.625 L 24.4375,50.0625 L 28.5,51.375 L 27.90625,54.125 L 27.875,54.5 L 28.53125,57.84375 L 31.46875,58.15625 L 32.84375,55 L 32.875,54.65625 L 32.875,51.84375 L 37.09375,51.375 L 37.6875,54.15625 L 37.8125,54.5 L 39.78125,57.28125 L 42.59375,56.375 L 42.53125,52.9375 L 42.4375,52.59375 L 41.28125,50.03125 L 44.96875,47.90625 L 46.625,50.1875 L 46.875,50.4375 L 49.8125,52.21875 L 52,50.21875 L 50.5625,47.125 L 50.34375,46.84375 L 48.21875,44.96875 L 50.71875,41.5 L 53.1875,42.9375 L 53.5,43.0625 L 56.90625,43.46875 L 58.125,40.78125 L 55.53125,38.5 L 55.21875,38.375 L 52.53125,37.5 L 53.40625,33.34375 L 56.21875,33.625 L 56.5625,33.625 L 59.84375,32.625 L 59.84375,29.65625 L 56.5625,28.65625 L 56.21875,28.625 L 53.40625,28.9375 L 52.53125,24.78125 L 55.21875,23.90625 L 55.53125,23.75 L 58.125,21.5 L 56.90625,18.8125 L 53.5,19.1875 L 53.1875,19.34375 L 50.71875,20.75 L 48.21875,17.3125 L 50.34375,15.4375 L 50.5625,15.15625 L 52,12.0625 L 49.8125,10.0625 L 46.875,11.8125 L 46.625,12.09375 L 44.96875,14.375 L 41.28125,12.25 L 42.4375,9.6875 L 42.53125,9.34375 L 42.59375,5.90625 L 39.78125,5 L 37.8125,7.78125 L 37.6875,8.125 L 37.09375,10.90625 L 32.875,10.4375 L 32.875,7.625 L 32.84375,7.25 L 31.46875,4.125 z M 32.75,25.59375 C 35.87868,25.59375 38.40625,28.121324 38.40625,31.25 C 38.40625,34.378676 35.87868,36.90625 32.75,36.90625 C 29.62132,36.90625 27.09375,34.378676 27.09375,31.25 C 27.09375,28.121324 29.62132,25.59375 32.75,25.59375 z"
+       style="fill:#c5b3b3;fill-opacity:1;stroke:#000000" />
+    <rect
+       style="opacity:1;fill:#fefefe;fill-opacity:1;stroke:#000000;stroke-width:0.28200001000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2403"
+       width="32"
+       height="43.333332"
+       x="29"
+       y="18.333332" />
+    <g
+       id="g4699"
+       transform="matrix(0.2161259,0,0,0.2161259,9.48029,26.273709)">
+      <text
+         id="text4619"
+         y="0.33333716"
+         x="99.333336"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="0.33333716"
+           x="99.333336"
+           id="tspan4621"
+           sodipodi:role="line">Иванов</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="157.33334"
+         y="0.33333716"
+         id="text4623"><tspan
+           sodipodi:role="line"
+           id="tspan4625"
+           x="157.33334"
+           y="0.33333716">45  50  40  45 95</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="99.333336"
+         y="11.925935"
+         id="text4627"><tspan
+           sodipodi:role="line"
+           id="tspan4629"
+           x="99.333336"
+           y="11.925935">Петров</tspan></text>
+      <text
+         id="text4631"
+         y="11.925935"
+         x="157.33334"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="11.925935"
+           x="157.33334"
+           id="tspan4633"
+           sodipodi:role="line">25  30  30  30 60</tspan></text>
+      <text
+         id="text4635"
+         y="23.518528"
+         x="99.333336"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="23.518528"
+           x="99.333336"
+           id="tspan4637"
+           sodipodi:role="line">Рог</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="157.33334"
+         y="23.518528"
+         id="text4639"><tspan
+           sodipodi:role="line"
+           id="tspan4641"
+           x="157.33334"
+           y="23.518528">35  35  30  40 75</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="99.333336"
+         y="35.111122"
+         id="text4643"><tspan
+           sodipodi:role="line"
+           id="tspan4645"
+           x="99.333336"
+           y="35.111122">Иванов</tspan></text>
+      <text
+         id="text4647"
+         y="35.111122"
+         x="157.33334"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="35.111122"
+           x="157.33334"
+           id="tspan4649"
+           sodipodi:role="line">45  50  40  45 95</tspan></text>
+      <text
+         id="text4651"
+         y="46.703716"
+         x="99.333336"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="46.703716"
+           x="99.333336"
+           id="tspan4653"
+           sodipodi:role="line">Петров</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="157.33334"
+         y="46.703716"
+         id="text4655"><tspan
+           sodipodi:role="line"
+           id="tspan4657"
+           x="157.33334"
+           y="46.703716">25  30  30  30 60</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="99.333336"
+         y="58.29631"
+         id="text4659"><tspan
+           sodipodi:role="line"
+           id="tspan4661"
+           x="99.333336"
+           y="58.29631">Рог</tspan></text>
+      <text
+         id="text4663"
+         y="58.29631"
+         x="157.33334"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="58.29631"
+           x="157.33334"
+           id="tspan4665"
+           sodipodi:role="line">35  35  30  40 75</tspan></text>
+      <text
+         id="text4667"
+         y="69.888901"
+         x="99.333336"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="69.888901"
+           x="99.333336"
+           id="tspan4669"
+           sodipodi:role="line">Иванов</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="157.33334"
+         y="69.888901"
+         id="text4671"><tspan
+           sodipodi:role="line"
+           id="tspan4673"
+           x="157.33334"
+           y="69.888901">45  50  40  45 95</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="99.333336"
+         y="81.481499"
+         id="text4675"><tspan
+           sodipodi:role="line"
+           id="tspan4677"
+           x="99.333336"
+           y="81.481499">Петров</tspan></text>
+      <text
+         id="text4679"
+         y="81.481499"
+         x="157.33334"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="81.481499"
+           x="157.33334"
+           id="tspan4681"
+           sodipodi:role="line">25  30  30  30 60</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="99.333336"
+         y="93.074097"
+         id="text4683"><tspan
+           sodipodi:role="line"
+           id="tspan4685"
+           x="99.333336"
+           y="93.074097">Иванов</tspan></text>
+      <text
+         id="text4687"
+         y="93.074097"
+         x="157.33334"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="93.074097"
+           x="157.33334"
+           id="tspan4689"
+           sodipodi:role="line">45  50  40  45 95</tspan></text>
+      <text
+         id="text4691"
+         y="104.66669"
+         x="99.333336"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         xml:space="preserve"><tspan
+           y="104.66669"
+           x="99.333336"
+           id="tspan4693"
+           sodipodi:role="line">Петров</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+         x="157.33334"
+         y="104.66669"
+         id="text4695"><tspan
+           sodipodi:role="line"
+           id="tspan4697"
+           x="157.33334"
+           y="104.66669">25  30  30  30 60</tspan></text>
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4741"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+       transform="translate(-0.8333333,-23.166667)"><flowRegion
+         id="flowRegion4743"
+         style="fill:url(#linearGradient4763);fill-opacity:1"><rect
+           id="rect4745"
+           width="80.333336"
+           height="76"
+           x="1.3333334"
+           y="8.333333"
+           style="font-size:36px;fill:#000000;fill-opacity:1" /></flowRegion><flowPara
+         id="flowPara4747"
+         style="font-size:48px;fill:#000000;fill-opacity:1">α</flowPara></flowRoot>  </g>
+</svg>
