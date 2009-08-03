@@ -17,26 +17,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef USERFORM_H
-#define USERFORM_H
+#ifndef EDITORFORM_H
+#define EDITORFORM_H
 
 #include <QtGui/QMainWindow>
 
-namespace Ui {
-    class UserForm;
+namespace Ui
+{
+    class EditorForm;
 }
 
-class UserForm : public QMainWindow {
+class EditorForm : public QMainWindow
+{
     Q_OBJECT
 public:
-    UserForm(QWidget *parent = 0);
-    ~UserForm();
+    EditorForm(QWidget *parent = 0);
+    ~EditorForm();
 
 protected:
     void changeEvent(QEvent *e);
 
 private:
-    Ui::UserForm *m_ui;
+    Ui::EditorForm *m_ui;
 };
 
-#endif // USERFORM_H
+#endif // EDITORFORM_H
