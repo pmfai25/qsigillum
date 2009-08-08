@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 		return 1;
 	server.close();
 
-	/*QTranslator qtTranslator;
+	QTranslator qtTranslator;
 	qtTranslator.load("qt_" + QLocale::system().name(),
 		QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 	a.installTranslator(&qtTranslator);
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 	QTranslator appTranslator;
 	// Automatic locale loading is possible
 	// If you need it, use Qt internationalization guide
-	appTranslator.load("oxytest_ru");
-	a.installTranslator(&appTranslator);*/
+	appTranslator.load("../res/qsigillum_ru");
+	a.installTranslator(&appTranslator);
 
     //TestSystem w;
 	//w.show();
