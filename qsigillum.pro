@@ -23,5 +23,5 @@ HEADERS += src/userform.h \
 FORMS += src/userform.ui \
     src/editorform.ui
 RESOURCES += res/qsigillum.qrc
-RC_FILE = res/oxytest.rc
+RC_FILE = res/qsigillum.rc
 TRANSLATIONS += res/qsigillum_ru.ts
