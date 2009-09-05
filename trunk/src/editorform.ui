@@ -267,6 +267,7 @@
    <addaction name="separator"/>
    <addaction name="actionAddRow"/>
    <addaction name="actionAddTextField"/>
+   <addaction name="actionAddInterval"/>
    <addaction name="actionRemoveObject"/>
    <addaction name="separator"/>
    <addaction name="actionHelp"/>
@@ -397,6 +398,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionAddInterval">
+   <property name="icon">
+    <iconset resource="../res/qsigillum.qrc">
+     <normaloff>:/insert-link.png</normaloff>:/insert-link.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add interval</string>
+   </property>
+   <property name="toolTip">
+    <string>Add interval between fields</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

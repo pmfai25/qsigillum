@@ -18,5 +18,6 @@
         <file>text-x-sql.png</file>
         <file>transform-scale.png</file>
         <file>configure.png</file>
+        <file>insert-link.png</file>
     </qresource>
 </RCC>
