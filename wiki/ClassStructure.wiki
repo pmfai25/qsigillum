@@ -14,8 +14,9 @@ It is supposed that *UserForm* will be loaded on default application launch; to 
   * *LogicCore* is the interface to business logic layer from UI layer. It controls utilitary classes and contains intermediate and output data itself.
   * *Preprocessor* provides functions for converting image to B&W, noise removal, etc.
   * *Segmentator*  uses *SegmentationTemplate* object to retrieve list of image fragments with their relative coordinates.
-  * *SegmentationTemplate* is structure that contains list of rectangle object information that is used to describe document layout, and information on possibly repeated rows of rectangles.
-  * *OutputData* is structure that contains lists of numbers.
+  * *SegmentationTemplate* is structure that contains list of containers and defines input image requirements.
+  * *TemplateContainer* is a list of fields that can be imagined as a rectangle or a row on image. It can be marked as repeatable.
+  * *TemplateField* represents possible input data fields to be recognized. It defines geometry, value and visual representation (as a text edit widget).
 
 = Core module interfaces details =
   * *ImageLoader* returns image for given filename string (this string can be ignored in some cases).
