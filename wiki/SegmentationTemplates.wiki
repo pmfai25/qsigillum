@@ -11,7 +11,7 @@ A template consists of a number of *containers*. Coordinates and size of a conta
 
 Containers, at least at this moment, are supposed to have horizontal layout. A container consists of a number of *fields*. 
 
-A container can be marked as _repeatable_: it means that this container is factically a row of a table of unknown row count.
+A container can be marked as _repeatable_: it means that this container is factically a row of a table of unknown row count. Row interval value can be set.
 
 = Segmentation process =
 
