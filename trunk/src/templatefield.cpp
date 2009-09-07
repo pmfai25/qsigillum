@@ -17,24 +17,69 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEGMENTATIONTEMPLATE_H
-#define SEGMENTATIONTEMPLATE_H
+#include "templatefield.h"
 
-#include <QObject>
-
-class SegmentationTemplate : public QObject
+TemplateField::TemplateField()
 {
-private:
-	QString title;
-	QString author;
-	QString date;
-	int imageWidth;
-	int imageHeight;
+	setX(0);
+	setY(0);
+	setWidth(0);
+	setHeight(0);
+	lineEdit = NULL;
+}
 
+TemplateField::~TemplateField()
+{
+	if (lineEdit != NULL)
+		delete lineEdit;
+}
 
+int TemplateField::getX()
+{
+	return x;
+}
 
-public:
-    SegmentationTemplate();
-};
+void TemplateField::setX(int x)
+{
+	this->x = x;
+}
 
-#endif // SEGMENTATIONTEMPLATE_H
+int TemplateField::getY()
+{
+	return y;
+}
+
+void TemplateField::setY(int y)
+{
+	this->y = y;
+}
+
+int TemplateField::getWidth()
+{
+	return width;
+}
+
+void TemplateField::setWidth(int width)
+{
+	this->width = width;
+}
+
+int TemplateField::getHeight()
+{
+	return height;
+}
+
+void TemplateField::setHeight(int height)
+{
+	this->height = height;
+}
+
+QLineEdit * TemplateField::getLineEdit()
+{
+	return lineEdit;
+}
+
+void TemplateField::createLineEdit(QWidget *parent)
+{
+	lineEdit = new QLineEdit(parent);
+}

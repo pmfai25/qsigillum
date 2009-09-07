@@ -14,8 +14,8 @@
 	  <width>79</width>
 	  <height>11</height>
 	  <field>
-		<x>25</x>
-		<y>55</y>
+		<x>0</x>
+		<y>0</y>
 		<width>79</width>
 		<height>11</height>
 	  </field>
@@ -25,40 +25,40 @@
 	  <y>325</y>
 	  <width>535</width>
 	  <height>20</height>
-	  <repeatable />
+	  <interval>4</interval>
 	  <field>
-		<x>18</x>
-		<y>325</y>
+		<x>0</x>
+		<y>0</y>
 		<width>22</width>
 		<height>20</height>
 	  </field>
 	  <field>
-		<x>195</x>
-		<y>325</y>
+		<x>178</x>
+		<y>0</y>
 		<width>29</width>
 		<height>20</height>
 	  </field>
 	  <field>
-		<x>277</x>
-		<y>325</y>
+		<x>259</x>
+		<y>0</y>
 		<width>29</width>
 		<height>20</height>
 	  </field>
 	  <field>
-		<x>359</x>
-		<y>325</y>
+		<x>341</x>
+		<y>0</y>
 		<width>29</width>
 		<height>20</height>
 	  </field>
 	  <field>
-		<x>441</x>
-		<y>325</y>
+		<x>423</x>
+		<y>0</y>
 		<width>29</width>
 		<height>20</height>
 	  </field>
 	  <field>
-		<x>523</x>
-		<y>325</y>
+		<x>505</x>
+		<y>0</y>
 		<width>29</width>
 		<height>20</height>
 	  </field>
