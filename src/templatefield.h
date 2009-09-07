@@ -17,24 +17,41 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEGMENTATIONTEMPLATE_H
-#define SEGMENTATIONTEMPLATE_H
+#ifndef TEMPLATEFIELD_H
+#define TEMPLATEFIELD_H
 
-#include <QObject>
+#include <QLineEdit>
 
-class SegmentationTemplate : public QObject
+class TemplateField : public QObject
 {
 private:
-	QString title;
-	QString author;
-	QString date;
-	int imageWidth;
-	int imageHeight;
-
-
+	// Horizontal coordinate in container's coordinate system
+	int x;
+	// Vertical coordinate in container's coordinate system
+	int y;
+	int width;
+	int height;
+	// Widget that represents data field on document
+	QLineEdit *lineEdit;
 
 public:
-    SegmentationTemplate();
+    TemplateField();
+	~TemplateField();
+
+	int getX();
+	void setX(int x);
+
+	int getY();
+	void setY(int y);
+
+	int getWidth();
+	void setWidth(int width);
+
+	int getHeight();
+	void setHeight(int height);
+
+	QLineEdit * getLineEdit();
+	void createLineEdit(QWidget *parent = 0 );
 };
 
-#endif // SEGMENTATIONTEMPLATE_H
+#endif // TEMPLATEFIELD_H
