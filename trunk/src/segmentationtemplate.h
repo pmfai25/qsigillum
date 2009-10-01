@@ -21,6 +21,13 @@
 #define SEGMENTATIONTEMPLATE_H
 
 #include <QObject>
+#include <QList>
+#include <QFile>
+#include <QIODevice>
+#include <QXmlStreamReader>
+#include <QDebug>
+
+#include "templatecontainer.h"
 
 class SegmentationTemplate : public QObject
 {
@@ -28,13 +35,45 @@ private:
 	QString title;
 	QString author;
 	QString date;
+	// Image normalization size
 	int imageWidth;
 	int imageHeight;
 
+	// Template body
+	QList<TemplateContainer*> body;
 
+	// Parse a container definition part of xml file
+	TemplateContainer * loadContainer(QXmlStreamReader& reader);
+
+	// Parse a field definition part of xml file
+	TemplateField * loadField(QXmlStreamReader& reader);
 
 public:
     SegmentationTemplate();
+	~SegmentationTemplate();
+
+	const QString& getTitle();
+	void setTitle(const QString& title);
+
+	const QString& getAuthor();
+	void setAuthor(const QString& author);
+
+	const QString& getDate();
+	void setDate(const QString& date);
+
+	QList<TemplateContainer*>& getBody();
+
+	int getImageWidth();
+	void setImageWidth(int width);
+
+	int getImageHeight();
+	void setImageHeight(int height);
+
+	// Try to load template from file
+	bool loadFromFile(const QString& fileName);
+
+	// Output for debug purposes
+	void dumpData();
 };
 
 #endif // SEGMENTATIONTEMPLATE_H
