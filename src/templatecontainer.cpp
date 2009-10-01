@@ -32,6 +32,8 @@ TemplateContainer::~TemplateContainer()
 {
 	if (groupBox != NULL)
 		delete groupBox;
+	while (!fields.isEmpty())
+		delete fields.takeFirst();
 }
 
 int TemplateContainer::getX()
@@ -86,7 +88,7 @@ void TemplateContainer::setInterval(int interval)
 
 QGroupBox * TemplateContainer::getGroupBox()
 {
-	return lineEdit;
+	return groupBox;
 }
 
 void TemplateContainer::createGroupBox(QWidget *parent)

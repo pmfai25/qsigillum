@@ -24,6 +24,8 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QHostAddress>
 
+#include "segmentationtemplate.h"
+
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
@@ -45,7 +47,12 @@ int main(int argc, char *argv[])
 	appTranslator.load("../res/qsigillum_ru");
 	a.installTranslator(&appTranslator);
 
+	SegmentationTemplate temp;
+	temp.loadFromFile("../data/marksheet.xml");
+	temp.dumpData();
+
     //TestSystem w;
 	//w.show();
-	return a.exec();
+	//return a.exec();
+	return 0;
 }
