@@ -19,9 +19,9 @@ HEADERS += src/userform.h \
     src/segmentator.h \
     src/segmentationtemplate.h \
     src/outputdata.h \
-    src/ImageLoader.h \
-    src/Classificator.h \
-    src/OutputExporter.h \
+	src/imageloader.h \
+	src/classificator.h \
+	src/outputexporter.h \
     src/templatecontainer.h \
     src/templatefield.h
 FORMS += src/userform.ui \

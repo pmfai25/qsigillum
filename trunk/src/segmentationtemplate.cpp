@@ -234,6 +234,16 @@ TemplateContainer * SegmentationTemplate::loadContainer
 			continue;
 		}
 
+		if (reader.name() == "interval")
+		{
+			reader.readNext();
+			if (reader.isCharacters())
+			{
+				container->setInterval(reader.text().toString().toInt());
+			}
+			continue;
+		}
+
 		if (reader.name() == "field")
 		{
 			TemplateField * field = loadField(reader);
@@ -334,7 +344,8 @@ void SegmentationTemplate::dumpData()
 	{
 		qDebug() << "Container " << container->getWidth() << "x" <<
 				container->getHeight() << " at (" <<
-				container->getX() << ";" << container->getY() << ")";
+				container->getX() << ";" << container->getY() <<
+				") / interval" << container->getInterval();
 
 		foreach (TemplateField * field, container->getFields())
 		{

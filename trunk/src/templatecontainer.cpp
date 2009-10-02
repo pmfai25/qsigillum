@@ -25,6 +25,7 @@ TemplateContainer::TemplateContainer()
 	setY(0);
 	setWidth(0);
 	setHeight(0);
+	setInterval(-1);
 	groupBox = NULL;
 }
 
