@@ -20,7 +20,7 @@ It is supposed that *UserForm* will be loaded on default application launch; to 
 
 = Core module interfaces details =
   * *ImageLoader* returns image for given filename string (this string can be ignored in some cases).
-  * *Classificator* returns number (integer value) for given image.
+  * *Classifier* returns number (integer value) for given image.
   * *OutputExporter* saves output data to external file and/or executes some other export operations.
 
 = Plugins details =
