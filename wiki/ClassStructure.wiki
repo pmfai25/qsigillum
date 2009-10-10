@@ -26,6 +26,6 @@ It is supposed that *UserForm* will be loaded on default application launch; to 
 = Plugins details =
   * *FileImageLoader* loads image from existing file. As this class will use Qt, various formats will be supported.
   * *ScannerImageLoader* loads image from scanner. As for this class, it will probably use some external libraries and may be platform-dependent.
-  * *ANNClassificator* is implementation of ANN. 
+  * *ANNClassifier* is implementation of ANN. 
   * *TextFileExporter* saves *OutputData* object line by line to plain text file.
   * *SQLQueryExporter* constructs SQL query and saves it to file (maybe DB call will be implemented too). 
