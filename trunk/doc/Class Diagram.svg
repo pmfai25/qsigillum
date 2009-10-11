@@ -32,6 +32,7 @@ EditorForm</text>
 <rect fill="#ffffff" height="64" stroke="#ffffff" stroke-width="1" width="104" x="198" y="310"/>
 <rect fill="#ffffff" height="17" stroke="#ffffff" stroke-width="1" width="104" x="198" y="310"/>
 <rect fill="none" height="17" stroke="#000000" stroke-width="1" width="104" x="198" y="310"/>
+<rect fill="#ffffff" height="15" stroke="#ffffff" stroke-width="1" width="102" x="199" y="311"/>
 <text font-family="Dialog" font-size="12" x="205" y="326">
 &lt;&lt;interface&gt;&gt;</text>
 <rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="104" x="198" y="327"/>
@@ -43,6 +44,7 @@ ImageLoader</text>
 <rect fill="#ffffff" height="64" stroke="#ffffff" stroke-width="1" width="99" x="654" y="310"/>
 <rect fill="#ffffff" height="17" stroke="#ffffff" stroke-width="1" width="99" x="654" y="310"/>
 <rect fill="none" height="17" stroke="#000000" stroke-width="1" width="99" x="654" y="310"/>
+<rect fill="#ffffff" height="15" stroke="#ffffff" stroke-width="1" width="97" x="655" y="311"/>
 <text font-family="Dialog" font-size="12" x="658" y="326">
 &lt;&lt;interface&gt;&gt;</text>
 <rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="99" x="654" y="327"/>
@@ -87,25 +89,26 @@ Preprocessor</text>
 <rect fill="#ffffff" height="64" stroke="#ffffff" stroke-width="1" width="97" x="374" y="310"/>
 <rect fill="#ffffff" height="17" stroke="#ffffff" stroke-width="1" width="97" x="374" y="310"/>
 <rect fill="none" height="17" stroke="#000000" stroke-width="1" width="97" x="374" y="310"/>
+<rect fill="#ffffff" height="15" stroke="#ffffff" stroke-width="1" width="95" x="375" y="311"/>
 <text font-family="Dialog" font-size="12" x="377" y="326">
 &lt;&lt;interface&gt;&gt;</text>
 <rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="97" x="374" y="327"/>
-<text font-family="Dialog" font-size="12" x="388" y="342">
-Classificator</text>
+<text font-family="Dialog" font-size="12" x="396" y="342">
+Classifier</text>
 <rect fill="#ffffff" height="24" stroke="#ffffff" stroke-width="1" width="97" x="374" y="349"/>
 <line fill="#000000" stroke="#000000" stroke-width="1" x1="374" x2="470" y1="349" y2="349"/>
 <rect fill="none" height="64" stroke="#000000" stroke-width="1" width="97" x="374" y="310"/>
-<rect fill="#ffffff" height="71" stroke="#ffffff" stroke-width="1" width="131" x="486" y="198"/>
-<rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="131" x="486" y="198"/>
-<rect fill="none" height="0" stroke="#000000" stroke-width="1" width="131" x="486" y="198"/>
-<rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="131" x="486" y="198"/>
-<text font-family="Dialog" font-size="12" x="518" y="213">
-OutputData</text>
-<rect fill="#ffffff" height="26" stroke="#ffffff" stroke-width="1" width="131" x="486" y="242"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="486" x2="616" y1="242" y2="242"/>
-<rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="131" x="486" y="220"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="486" x2="616" y1="220" y2="220"/>
-<rect fill="none" height="71" stroke="#000000" stroke-width="1" width="131" x="486" y="198"/>
+<rect fill="#ffffff" height="72" stroke="#ffffff" stroke-width="1" width="112" x="398" y="190"/>
+<rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="112" x="398" y="190"/>
+<rect fill="none" height="0" stroke="#000000" stroke-width="1" width="112" x="398" y="190"/>
+<rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="112" x="398" y="190"/>
+<text font-family="Dialog" font-size="12" x="413" y="205">
+TemplateField</text>
+<rect fill="#ffffff" height="26" stroke="#ffffff" stroke-width="1" width="112" x="398" y="235"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="398" x2="509" y1="235" y2="235"/>
+<rect fill="#ffffff" height="23" stroke="#ffffff" stroke-width="1" width="112" x="398" y="212"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="398" x2="509" y1="212" y2="212"/>
+<rect fill="none" height="72" stroke="#000000" stroke-width="1" width="112" x="398" y="190"/>
 <rect fill="#ffffff" height="68" stroke="#ffffff" stroke-width="1" width="104" x="198" y="182"/>
 <rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="104" x="198" y="182"/>
 <rect fill="none" height="0" stroke="#000000" stroke-width="1" width="104" x="198" y="182"/>
@@ -127,8 +130,7 @@ LogicCore</text>
 <polyline fill="none" points="286,182 286,166 622,166 622,134" stroke="#000000" stroke-width="1"/>
 <polyline fill="none" points="838,134 838,150" stroke="#000000" stroke-width="1"/>
 <polyline fill="none" points="646,134 646,166 758,166" stroke="#000000" stroke-width="1"/>
-<polyline fill="none" points="302,222 486,222" stroke="#000000" stroke-width="1"/>
-<polyline fill="none" points="454,310 454,238 486,238" stroke="#000000" stroke-width="1"/>
+<polyline fill="none" points="302,222 398,222" stroke="#000000" stroke-width="1"/>
 <rect fill="#ffffff" height="68" stroke="#ffffff" stroke-width="1" width="103" x="38" y="262"/>
 <rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="103" x="38" y="262"/>
 <rect fill="none" height="0" stroke="#000000" stroke-width="1" width="103" x="38" y="262"/>
@@ -175,8 +177,8 @@ ScannerImageLoader</text>
 <rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="106" x="374" y="430"/>
 <rect fill="none" height="0" stroke="#000000" stroke-width="1" width="106" x="374" y="430"/>
 <rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="106" x="374" y="430"/>
-<text font-family="Dialog" font-size="12" x="379" y="445">
-ANNClassificator</text>
+<text font-family="Dialog" font-size="12" x="388" y="445">
+ANNClassifier</text>
 <rect fill="#ffffff" height="24" stroke="#ffffff" stroke-width="1" width="106" x="374" y="473"/>
 <line fill="#000000" stroke="#000000" stroke-width="1" x1="374" x2="479" y1="473" y2="473"/>
 <rect fill="#ffffff" height="21" stroke="#ffffff" stroke-width="1" width="106" x="374" y="452"/>
@@ -247,4 +249,18 @@ SQLQueryExporter</text>
 <polygon fill="none" points="718,374 725,386 711,386" stroke="#000000" stroke-width="1"/>
 <text font-family="Dialog" font-size="12" x="702" y="372">
 &lt;&lt;realize&gt;&gt;</text>
+<rect fill="#ffffff" height="68" stroke="#ffffff" stroke-width="1" width="120" x="582" y="214"/>
+<rect fill="#ffffff" height="0" stroke="#ffffff" stroke-width="1" width="120" x="582" y="214"/>
+<rect fill="none" height="0" stroke="#000000" stroke-width="1" width="120" x="582" y="214"/>
+<rect fill="#ffffff" height="22" stroke="#ffffff" stroke-width="1" width="120" x="582" y="214"/>
+<text font-family="Dialog" font-size="12" x="587" y="229">
+TemplateContainer</text>
+<rect fill="#ffffff" height="24" stroke="#ffffff" stroke-width="1" width="120" x="582" y="257"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="582" x2="701" y1="257" y2="257"/>
+<rect fill="#ffffff" height="21" stroke="#ffffff" stroke-width="1" width="120" x="582" y="236"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="582" x2="701" y1="236" y2="236"/>
+<rect fill="none" height="68" stroke="#000000" stroke-width="1" width="120" x="582" y="214"/>
+<polyline fill="none" points="510,198 758,198" stroke="#000000" stroke-width="1"/>
+<polyline fill="none" points="702,222 758,222" stroke="#000000" stroke-width="1"/>
+<polyline fill="none" points="510,230 582,230" stroke="#000000" stroke-width="1"/>
 </svg>

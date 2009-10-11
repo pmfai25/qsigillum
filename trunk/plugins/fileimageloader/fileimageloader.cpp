@@ -17,43 +17,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGELOADER_H
-#define IMAGELOADER_H
-
 #include <QtPlugin>
 
-class QImage;
-class QString;
-class QIcon;
+#include "fileimageloader.h"
 
-class ImageLoader
+// Load image data
+QImage FileImageLoader::loadImage()
 {
-public:
+	// Get file name via a dialog
+	QString fileName = QFileDialog::getOpenFileName(0,
+		tr("Open image file"),"../data/");
+	if (fileName.length() <= 0)
+		return QImage();
 
-	virtual ~ImageLoader() {}
+	return QImage(fileName);
+}
 
-	// Load image data
-	virtual QImage loadImage() = 0;
+// Get icon for menu
+QIcon FileImageLoader::getMenuIcon()
+{
+	return QIcon(":/document-open.png");
+}
 
-	// Get translation file base name
-	virtual QString getTranslationFileBaseName() = 0;
+// Get image loading action description for menu
+QString FileImageLoader::getLoadingDescription()
+{
+	return tr("Open image file");
+}
 
-	// Get icon for menu
-	virtual QIcon getMenuIcon() = 0;
+// Get image loading & processing action description for menu
+QString FileImageLoader::getLoadingProcessingDescription()
+{
+	return tr("Open and process image file");
+}
 
-	// Get image loading action description for menu
-	virtual QString getLoadingDescription() = 0;
+// Get translation file base name
+QString FileImageLoader::getTranslationFileBaseName()
+{
+	return QString("fileimageloader");
+}
 
-	// Get image loading & processing action description for menu
-	virtual QString getLoadingProcessingDescription() = 0;
-
-signals:
-	virtual void activatedLoading() = 0;
-	virtual void activatedAutomatedProcessing() = 0;
-
-};
-
-Q_DECLARE_INTERFACE(ImageLoader,"qSigillum.ImageLoader/0.1");
-
-
-#endif // IMAGELOADER_H
+Q_EXPORT_PLUGIN2(fileimageloader, FileImageLoader)

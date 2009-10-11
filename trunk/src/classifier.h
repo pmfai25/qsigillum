@@ -17,7 +17,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CLASSIFICATOR_H
-#define CLASSIFICATOR_H
+#ifndef CLASSIFIER_H
+#define CLASSIFIER_H
+
+class Classifier
+{
+public:
+
+	virtual ~Classifier();
+
+	// Classify image data
+	virtual QString classify(QImage image);
+};
+
+Q_DECLARE_INTERFACE(Classifier,
+					 "qSigillum.Classifier/0.1");
 
 #endif // CLASSIFICATOR_H

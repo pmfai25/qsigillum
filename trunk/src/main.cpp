@@ -23,8 +23,9 @@
 #include <QLibraryInfo>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QHostAddress>
+#include <QtDebug>
 
-#include "segmentationtemplate.h"
+#include "userform.h"
 
 int main(int argc, char *argv[])
 {
@@ -44,15 +45,10 @@ int main(int argc, char *argv[])
 	QTranslator appTranslator;
 	// Automatic locale loading is possible
 	// If you need it, use Qt internationalization guide
-	appTranslator.load("../res/qsigillum_ru");
+	appTranslator.load("../res/qsigillum_ru.qm");
 	a.installTranslator(&appTranslator);
 
-	SegmentationTemplate temp;
-	temp.loadFromFile("../data/marksheet.xml");
-	temp.dumpData();
-
-    //TestSystem w;
-	//w.show();
-	//return a.exec();
-	return 0;
+	UserForm form;
+	form.show();
+	return a.exec();
 }

@@ -22,14 +22,26 @@
 
 UserForm::UserForm(QWidget *parent) :
     QMainWindow(parent),
-    m_ui(new Ui::UserForm)
+	m_ui(new Ui::UserForm)
 {
     m_ui->setupUi(this);
+	init();
+	logicCore = new LogicCore(this);
+	logicCore->start();
 }
 
 UserForm::~UserForm()
 {
-    delete m_ui;
+	logicCore->quit();
+
+	delete m_ui;
+}
+
+// Init components
+void UserForm::init()
+{
+	connect(m_ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
+
 }
 
 void UserForm::changeEvent(QEvent *e)
@@ -42,4 +54,19 @@ void UserForm::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+QAction * UserForm::getFileMenuHead()
+{
+	return m_ui->menuFile->actions().at(0);
+}
+
+QVBoxLayout * UserForm::getToolbarLayout()
+{
+	return qobject_cast<QVBoxLayout *>(m_ui->groupBox->layout());
+}
+
+QMenu * UserForm::getMenu()
+{
+	return m_ui->menuFile;
 }

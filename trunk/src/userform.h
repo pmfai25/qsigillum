@@ -20,23 +20,43 @@
 #ifndef USERFORM_H
 #define USERFORM_H
 
-#include <QtGui/QMainWindow>
+#include <QtGui>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QMenu>
+#include <QAction>
+#include <QVBoxLayout>
 
-namespace Ui {
+#include "logiccore.h"
+
+class LogicCore;
+
+namespace Ui
+{
     class UserForm;
 }
 
-class UserForm : public QMainWindow {
+class UserForm : public QMainWindow
+{
     Q_OBJECT
 public:
     UserForm(QWidget *parent = 0);
     ~UserForm();
 
+	QMenu * getMenu();
+	QAction * getFileMenuHead();
+	QVBoxLayout * getToolbarLayout();
+
 protected:
     void changeEvent(QEvent *e);
 
 private:
-    Ui::UserForm *m_ui;
+	// Init components
+	void init();
+
+
+	Ui::UserForm *m_ui;
+	LogicCore *logicCore;
 };
 
 #endif // USERFORM_H
