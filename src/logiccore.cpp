@@ -108,7 +108,23 @@ void LogicCore::init()
 
 void LogicCore::getImage()
 {
-	qDebug() << "getImage()";
+	ImageLoader *sender = qobject_cast<ImageLoader *>(this->sender());
+
+	if (sender)
+	{
+		srcImage = sender->loadImage();
+
+		if (!srcImage.isNull())
+		{
+			// Show preview
+			QPixmap pixmap = QPixmap::fromImage(srcImage, Qt::MonoOnly)
+							 .scaled(parent->getPreviewLabel()->size(),
+							 Qt::KeepAspectRatio, Qt::FastTransformation);
+
+			parent->getPreviewLabel()->setPixmap(pixmap);
+		}
+	}
+
 }
 
 void LogicCore::preprocess()
@@ -117,6 +133,10 @@ void LogicCore::preprocess()
 
 void LogicCore::segmentate()
 {
+	segmentator.loadTemplate("../data/marksheet.xml");
+	qDebug() << "Loaded template";
+	segmentator.setImage(&srcImage);
+	segmentator.segmentate();
 }
 
 void LogicCore::classify()
@@ -129,5 +149,8 @@ void LogicCore::saveResults()
 
 void LogicCore::processAutomatedMode()
 {
-	qDebug() << "processAutomatedMode()";
+//  getImage();
+//	preprocess();
+//	segmentate();
+//	classify();
 }

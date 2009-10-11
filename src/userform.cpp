@@ -26,8 +26,6 @@ UserForm::UserForm(QWidget *parent) :
 {
     m_ui->setupUi(this);
 	init();
-	logicCore = new LogicCore(this);
-	logicCore->start();
 }
 
 UserForm::~UserForm()
@@ -41,7 +39,10 @@ UserForm::~UserForm()
 void UserForm::init()
 {
 	connect(m_ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
-
+	logicCore = new LogicCore(this);
+	connect(m_ui->actionSegmentation,SIGNAL(triggered()), logicCore,
+			SLOT(segmentate()));
+	logicCore->start();
 }
 
 void UserForm::changeEvent(QEvent *e)
@@ -70,3 +71,9 @@ QMenu * UserForm::getMenu()
 {
 	return m_ui->menuFile;
 }
+
+QLabel * UserForm::getPreviewLabel()
+{
+	return m_ui->lbPreview;
+}
+

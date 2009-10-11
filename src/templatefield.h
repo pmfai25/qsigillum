@@ -36,6 +36,7 @@ private:
 
 public:
     TemplateField();
+	TemplateField(TemplateField * field);
 	~TemplateField();
 
 	int getX();

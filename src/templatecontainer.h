@@ -47,6 +47,7 @@ private:
 
 public:
     TemplateContainer();
+	TemplateContainer(TemplateContainer * container);
 	~TemplateContainer();
 
 	int getX();

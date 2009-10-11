@@ -21,4 +21,137 @@
 
 Segmentator::Segmentator()
 {
+	segTemplate = NULL;
 }
+
+Segmentator::~Segmentator()
+{
+	if (segTemplate)
+		delete segTemplate;
+}
+
+void Segmentator::loadTemplate(const QString & fileName)
+{
+	if (segTemplate)
+		delete segTemplate;
+
+	segTemplate = new SegmentationTemplate();
+	segTemplate->loadFromFile(fileName);
+}
+
+void Segmentator::setImage(QImage * image)
+{
+	this->image = image;
+}
+
+void Segmentator::segmentate()
+{
+	if (!segTemplate || !image)
+		return;
+
+	while (!body.isEmpty())
+	 delete body.takeFirst();
+
+	// First of all, we should scale image to template defined' size
+	(*image) = image->scaled(segTemplate->getImageWidth(),
+							 segTemplate->getImageHeight(),
+							 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+	qDebug() << "Scaled image";
+
+	// Now we should iterate through containers
+	foreach (TemplateContainer * srcContainer, segTemplate->getBody())
+	{
+		// Add one container
+		body.append(new TemplateContainer(srcContainer));
+
+		qDebug() << "Got another container...";
+
+		if (srcContainer->getInterval() >= 0)
+		{
+			bool isNotEmpty = false;
+			int i = 0;
+
+			do
+			{
+				++i;
+				// If container is repeatable, we should check it
+				TemplateContainer * temp = new TemplateContainer(srcContainer);
+
+				// If we have run out of image, we obviously have to stop
+				if (temp->getY() + (temp->getHeight()
+						   + temp->getInterval())*i >= image->width())
+					break;
+
+				temp->setY(temp->getY() + (temp->getHeight()
+						   + temp->getInterval())*i);
+				isNotEmpty = containerNotEmpty(temp);
+				if (isNotEmpty)
+					body.append(temp);
+				else
+					delete temp;
+
+			} while (isNotEmpty);
+
+		}
+	}
+
+	dumpData();
+}
+
+const QList<TemplateContainer *> & Segmentator::getBody()
+{
+	const QList<TemplateContainer *> & value = body;
+	return value;
+}
+
+bool Segmentator::containerNotEmpty(TemplateContainer * container)
+{
+	double thresholdValue = 0.1;
+
+	foreach (TemplateField * field, container->getFields())
+	{
+		// Calculate average value
+		double fieldSize = static_cast<double>(
+				field->getWidth()*field->getHeight());
+		if (fieldSize == 0.0)
+			continue;
+
+		int blackPixels = 0;
+
+		for (int x = container->getX()+field->getX(); x < container->getX()+
+					 field->getX()+field->getWidth(); x++ )
+		{
+			for (int y = container->getY()+field->getY(); y < container->getY()+
+					 field->getY()+field->getHeight(); y++ )
+			{
+				if (qGray(image->pixel(x,y)) <= 200)
+					blackPixels++;
+			}
+		}
+
+		if (static_cast<double>(blackPixels)/fieldSize >= thresholdValue)
+			return true;
+	}
+
+	return false;
+}
+
+void Segmentator::dumpData()
+{
+	foreach (TemplateContainer * container, body)
+	{
+		qDebug() << "Container " << container->getWidth() << "x" <<
+				container->getHeight() << " at (" <<
+				container->getX() << ";" << container->getY() <<
+				") / interval" << container->getInterval();
+
+		foreach (TemplateField * field, container->getFields())
+		{
+			qDebug() << "\t Field " << field->getWidth() << "x" <<
+				field->getHeight() << " at (" <<
+				field->getX() << ";" << field->getY() << ")";
+		}
+	}
+}
+

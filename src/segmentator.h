@@ -20,12 +20,37 @@
 #ifndef SEGMENTATOR_H
 #define SEGMENTATOR_H
 
-#include <QObject>
+#include <QtGui>
+#include <QString>
+#include <QImage>
+#include <QtDebug>
+
+#include "segmentationtemplate.h"
+#include "templatecontainer.h"
 
 class Segmentator : public QObject
 {
+
 public:
     Segmentator();
+	~Segmentator();
+	void loadTemplate(const QString & fileName);
+	void setImage(QImage * image);
+	void segmentate();
+	const QList<TemplateContainer *> & getBody();
+
+private:
+	SegmentationTemplate *segTemplate;
+	// Source document image
+	QImage * image;
+	// Segmentation results
+	QList<TemplateContainer *> body;
+
+	// Calculate threshold value
+	bool containerNotEmpty(TemplateContainer * container);
+	// Dump body for debug purposes
+	void dumpData();
+
 };
 
 #endif // SEGMENTATOR_H
