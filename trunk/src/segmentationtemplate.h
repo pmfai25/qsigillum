@@ -31,23 +31,6 @@
 
 class SegmentationTemplate : public QObject
 {
-private:
-	QString title;
-	QString author;
-	QString date;
-	// Image normalization size
-	int imageWidth;
-	int imageHeight;
-
-	// Template body
-	QList<TemplateContainer*> body;
-
-	// Parse a container definition part of xml file
-	TemplateContainer * loadContainer(QXmlStreamReader& reader);
-
-	// Parse a field definition part of xml file
-	TemplateField * loadField(QXmlStreamReader& reader);
-
 public:
     SegmentationTemplate();
 	~SegmentationTemplate();
@@ -74,6 +57,23 @@ public:
 
 	// Output for debug purposes
 	void dumpData();
+
+private:
+	QString title;
+	QString author;
+	QString date;
+	// Image normalization size
+	int imageWidth;
+	int imageHeight;
+
+	// Template body
+	QList<TemplateContainer*> body;
+
+	// Parse a container definition part of xml file
+	TemplateContainer * loadContainer(QXmlStreamReader& reader);
+
+	// Parse a field definition part of xml file
+	TemplateField * loadField(QXmlStreamReader& reader);
 };
 
 #endif // SEGMENTATIONTEMPLATE_H

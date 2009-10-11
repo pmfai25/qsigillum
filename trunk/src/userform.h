@@ -26,6 +26,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QVBoxLayout>
+#include <QLabel>
 
 #include "logiccore.h"
 
@@ -46,6 +47,7 @@ public:
 	QMenu * getMenu();
 	QAction * getFileMenuHead();
 	QVBoxLayout * getToolbarLayout();
+	QLabel * getPreviewLabel();
 
 protected:
     void changeEvent(QEvent *e);

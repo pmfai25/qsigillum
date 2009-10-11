@@ -11,21 +11,21 @@
 	<container>
 	  <x>25</x>
 	  <y>55</y>
-	  <width>79</width>
-	  <height>11</height>
+	  <width>80</width>
+	  <height>13</height>
 	  <field>
 		<x>0</x>
 		<y>0</y>
-		<width>79</width>
-		<height>11</height>
+		<width>80</width>
+		<height>13</height>
 	  </field>
 	</container>
 	<container>
 	  <x>18</x>
-	  <y>325</y>
+	  <y>332</y>
 	  <width>535</width>
 	  <height>20</height>
-	  <interval>4</interval>
+	  <interval>2</interval>
 	  <field>
 		<x>0</x>
 		<y>0</y>

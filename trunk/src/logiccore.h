@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QTranslator>
 #include <QImage>
+#include <QPixmap>
 #include <QToolButton>
 
 #include "userform.h"
@@ -35,6 +36,7 @@
 #include "imageloader.h"
 #include "classifier.h"
 #include "outputexporter.h"
+#include "segmentator.h"
 
 class UserForm;
 
@@ -59,7 +61,9 @@ public slots:
 private:
 	UserForm *parent;
 
-	QImage * srcImage;
+	QImage srcImage;
+
+	Segmentator segmentator;
 
 	QList<ImageLoader *> imageLoaders;
 	QList<Classifier *> classifiers;

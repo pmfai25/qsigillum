@@ -29,10 +29,26 @@ TemplateContainer::TemplateContainer()
 	groupBox = NULL;
 }
 
+TemplateContainer::TemplateContainer(TemplateContainer * container)
+{
+	setX(container->getX());
+	setY(container->getY());
+	setWidth(container->getWidth());
+	setHeight(container->getHeight());
+	setInterval(container->getInterval());
+	//if (container->getGroupBox())
+		//createGroupBox(container->getGroupBox()->parentWidget());
+
+	foreach (TemplateField * field, container->getFields())
+	{
+		fields.append(new TemplateField(field));
+	}
+}
+
 TemplateContainer::~TemplateContainer()
 {
-	if (groupBox != NULL)
-		delete groupBox;
+	//if (groupBox != NULL)
+		//delete groupBox;
 	while (!fields.isEmpty())
 		delete fields.takeFirst();
 }

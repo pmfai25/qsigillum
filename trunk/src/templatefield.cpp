@@ -28,10 +28,20 @@ TemplateField::TemplateField()
 	lineEdit = NULL;
 }
 
+TemplateField::TemplateField(TemplateField * field)
+{
+	setX(field->getX());
+	setY(field->getY());
+	setWidth(field->getWidth());
+	setHeight(field->getHeight());
+	//if (field->getLineEdit())
+	//	createLineEdit(field->getLineEdit()->parentWidget());
+}
+
 TemplateField::~TemplateField()
 {
-	if (lineEdit != NULL)
-		delete lineEdit;
+	//if (lineEdit != NULL)
+		//delete lineEdit;
 }
 
 int TemplateField::getX()
