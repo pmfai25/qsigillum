@@ -17,19 +17,43 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OUTPUTEXPORTER_H
-#define OUTPUTEXPORTER_H
+#ifndef FILEIMAGELOADER_H
+#define FILEIMAGELOADER_H
 
-class OutputExporter
+#include <QtPlugin>
+#include <QtGui>
+#include <QImage>
+#include <QFileDialog>
+#include <QString>
+#include <QIcon>
+
+#include "../../src/imageloader.h"
+
+class FileImageLoader : public QObject, public ImageLoader
 {
-public:
+Q_OBJECT
+Q_INTERFACES(ImageLoader)
 
-	virtual ~OutputExporter();
+public:
+	// Load image data
+	QImage loadImage();
+
+	// Get translation file base name
+	QString getTranslationFileBaseName();
+
+	// Get icon for menu
+	QIcon getMenuIcon();
+
+	// Get image loading action description for menu
+	QString getLoadingDescription();
+
+	// Get image loading & processing action description for menu
+	QString getLoadingProcessingDescription();
+
+signals:
+	void activatedLoading();
+	void activatedAutomatedProcessing();
 
 };
 
-Q_DECLARE_INTERFACE(OutputExporter,
-					 "qSigillum.OutputExporter/0.1");
-
-
-#endif // OUTPUTEXPORTER_H
+#endif // FILEIMAGELOADER_H

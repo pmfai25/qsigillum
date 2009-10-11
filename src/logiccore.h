@@ -20,12 +20,53 @@
 #ifndef LOGICCORE_H
 #define LOGICCORE_H
 
-#include <QObject>
+#include <QtCore>
+#include <QtGui>
+#include <QPluginLoader>
+#include <QtDebug>
+#include <QList>
+#include <QDir>
+#include <QTranslator>
+#include <QImage>
+#include <QToolButton>
 
-class LogicCore : public QObject
+#include "userform.h"
+
+#include "imageloader.h"
+#include "classifier.h"
+#include "outputexporter.h"
+
+class UserForm;
+
+// Class incapsulating logic layer
+class LogicCore : public QThread
 {
+	Q_OBJECT
+
 public:
-    LogicCore();
+	LogicCore(UserForm *parent);
+
+	void run();
+
+public slots:
+	void getImage();
+	void preprocess();
+	void segmentate();
+	void classify();
+	void saveResults();
+	void processAutomatedMode();
+
+private:
+	UserForm *parent;
+
+	QImage * srcImage;
+
+	QList<ImageLoader *> imageLoaders;
+	QList<Classifier *> classifiers;
+	QList<OutputExporter *> outputExporters;
+
+	// Initialize all components
+	void init();
 };
 
 #endif // LOGICCORE_H
