@@ -4,7 +4,7 @@
 = Main tasks =
 
   # ~~Implement segmentation template loader ~~ ✔
-  # Implement classifier plugins interface
+  # ~~Implement classifier plugins interface~~ ✔
   # Implement basic classification plugin via Tesseract library
   # Implement GUI output for classification results
 
