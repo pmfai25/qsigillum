@@ -27,6 +27,7 @@
 #include <QAction>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QScrollArea>
 
 #include "logiccore.h"
 
@@ -48,6 +49,7 @@ public:
 	QAction * getFileMenuHead();
 	QVBoxLayout * getToolbarLayout();
 	QLabel * getPreviewLabel();
+	QScrollArea * getScrollArea();
 
 protected:
     void changeEvent(QEvent *e);

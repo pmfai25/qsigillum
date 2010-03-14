@@ -93,6 +93,16 @@ void LogicCore::init()
 						 this, SLOT(processAutomatedMode()));
 				 parent->getToolbarLayout()->insertWidget(position++, button);
 			 }
+
+			 Classifier *iClassifier
+					 = qobject_cast<Classifier *>(plugin);
+			 if (iClassifier)
+			 {
+				 qDebug() << fileName << " is Classifier plugin";
+
+				 classifiers.append(iClassifier);
+			 }
+
 		 }
 	 }
 
@@ -133,14 +143,45 @@ void LogicCore::preprocess()
 
 void LogicCore::segmentate()
 {
-	segmentator.loadTemplate("../data/marksheet.xml");
+	QDir dir(qApp->applicationDirPath());
+	segmentator.loadTemplate(dir.absoluteFilePath("../data/marksheet.xml"));
 	qDebug() << "Loaded template";
 	segmentator.setImage(&srcImage);
 	segmentator.segmentate();
+
+	// Create LineEdit widgets
+	QWidget * saParent = new QWidget();
+	QVBoxLayout * saLayout = new QVBoxLayout();
+	saParent->setLayout(saLayout);
+
+	foreach (TemplateContainer * container, segmentator.getBody())
+	{
+		QHBoxLayout * hLayout = new QHBoxLayout();
+		container->createGroupBox(saParent);
+		container->getGroupBox()->setLayout(hLayout);
+
+		foreach (TemplateField * field, container->getFields())
+		{
+			field->createLineEdit(container->getGroupBox());
+			hLayout->addWidget(field->getLineEdit());
+		}
+
+		saLayout->addWidget(container->getGroupBox());
+	}
+
+	parent->getScrollArea()->setWidget(saParent);
 }
 
 void LogicCore::classify()
 {
+	if (classifiers.isEmpty())
+		return;
+
+	qDebug() << "1.tif: " << classifiers.at(0)->
+			classify(QImage("../data/1.tif"));
+
+	qDebug() << "2.tif: " << classifiers.at(0)->
+			classify(QImage("../data/2.tif"));
 }
 
 void LogicCore::saveResults()
