@@ -62,10 +62,16 @@ void Segmentator::segmentate()
 	// Now we should iterate through containers
 	foreach (TemplateContainer * srcContainer, segTemplate->getBody())
 	{
-		// Add one container
-		body.append(new TemplateContainer(srcContainer));
+		// Check for emptiness and add one container if necessary
+		//body.append(new TemplateContainer(srcContainer));
+		TemplateContainer * temp = new TemplateContainer(srcContainer);
 
-		qDebug() << "Got another container...";
+		if (containerNotEmpty(temp))
+		{
+			body.append(temp);
+		}
+		else
+			delete temp;
 
 		if (srcContainer->getInterval() >= 0)
 		{
@@ -87,7 +93,9 @@ void Segmentator::segmentate()
 						   + temp->getInterval())*i);
 				isNotEmpty = containerNotEmpty(temp);
 				if (isNotEmpty)
+				{
 					body.append(temp);
+				}
 				else
 					delete temp;
 
@@ -153,5 +161,7 @@ void Segmentator::dumpData()
 				field->getX() << ";" << field->getY() << ")";
 		}
 	}
+
+	qDebug() << "Total: " << body.length() << " containers";
 }
 

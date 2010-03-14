@@ -20,9 +20,8 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <QDir>
 #include <QLibraryInfo>
-#include <QtNetwork/QTcpServer>
-#include <QtNetwork/QHostAddress>
 #include <QtDebug>
 
 #include "userform.h"
@@ -30,12 +29,6 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-
-	// We should allow only one application instance to work
-	QTcpServer server;
-	if (!server.listen(QHostAddress::LocalHost,16981))
-		return 1;
-	server.close();
 
 	QTranslator qtTranslator;
 	qtTranslator.load("qt_" + QLocale::system().name(),
@@ -45,7 +38,8 @@ int main(int argc, char *argv[])
 	QTranslator appTranslator;
 	// Automatic locale loading is possible
 	// If you need it, use Qt internationalization guide
-	appTranslator.load("../res/qsigillum_ru.qm");
+	QDir dir(qApp->applicationDirPath());
+	appTranslator.load(dir.absoluteFilePath("../res/qsigillum_ru.qm"));
 	a.installTranslator(&appTranslator);
 
 	UserForm form;

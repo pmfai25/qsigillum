@@ -30,6 +30,8 @@
 #include <QImage>
 #include <QPixmap>
 #include <QToolButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include "userform.h"
 

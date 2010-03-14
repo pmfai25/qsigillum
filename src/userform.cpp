@@ -43,6 +43,7 @@ void UserForm::init()
 	connect(m_ui->actionSegmentation,SIGNAL(triggered()), logicCore,
 			SLOT(segmentate()));
 	logicCore->start();
+	//logicCore->moveToThread(logicCore);
 }
 
 void UserForm::changeEvent(QEvent *e)
@@ -77,3 +78,7 @@ QLabel * UserForm::getPreviewLabel()
 	return m_ui->lbPreview;
 }
 
+QScrollArea * UserForm::getScrollArea()
+{
+	return m_ui->scrollArea;
+}

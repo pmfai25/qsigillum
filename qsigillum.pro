@@ -1,7 +1,7 @@
 TARGET = qsigillum
 DESTDIR = bin
 TEMPLATE = app
-QT += network xml
+QT += xml
 SOURCES += src/main.cpp \
     src/userform.cpp \
     src/editorform.cpp \
@@ -23,7 +23,7 @@ HEADERS += src/userform.h \
     src/classifier.h \
     src/outputexporter.h \
     src/templatecontainer.h \
-    src/templatefield.h
+	src/templatefield.h \
 FORMS += src/userform.ui \
     src/editorform.ui
 RESOURCES += res/qsigillum.qrc
