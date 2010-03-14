@@ -1,7 +1,6 @@
 /*
  *	QSigillum - handwritten digits recognition for structured documents
- *  Copyright 2009 Konstantin "konst" Kucher <konst.hex@gmail.com>,
- *  Miroslav "sid" Sidorov <grans.bwa@gmail.com>
+ *  Copyright 2009 Konstantin "konst" Kucher <konst.hex@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
