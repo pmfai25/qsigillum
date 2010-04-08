@@ -16,41 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEMPLATEFIELD_H
-#define TEMPLATEFIELD_H
+#include "numberclassifier.h"
 
-#include <QLineEdit>
-
-class TemplateField : public QObject
+QString NumberClassifier::classify(QImage image)
 {
-private:
-	// Horizontal coordinate in container's coordinate system
-	int x;
-	// Vertical coordinate in container's coordinate system
-	int y;
-	int width;
-	int height;
-	// Widget that represents data field on document
-	QLineEdit *lineEdit;
-
-public:
-    TemplateField();
-	TemplateField(TemplateField * field);
-
-	int getX();
-	void setX(int x);
-
-	int getY();
-	void setY(int y);
-
-	int getWidth();
-	void setWidth(int width);
-
-	int getHeight();
-	void setHeight(int height);
-
-	QLineEdit * getLineEdit();
-	void createLineEdit(QWidget *parent = 0 );
-};
-
-#endif // TEMPLATEFIELD_H
+	return QString();
+}

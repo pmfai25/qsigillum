@@ -46,8 +46,6 @@ TemplateContainer::TemplateContainer(TemplateContainer * container)
 
 TemplateContainer::~TemplateContainer()
 {
-	//if (groupBox != NULL)
-		//delete groupBox;
 	while (!fields.isEmpty())
 		delete fields.takeFirst();
 }
