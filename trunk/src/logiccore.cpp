@@ -176,11 +176,12 @@ void LogicCore::classify()
 	if (classifiers.isEmpty())
 		return;
 
-	qDebug() << "1.tif: " << classifiers.at(0)->
-			classify(QImage("../data/1.tif"));
-
-	qDebug() << "2.tif: " << classifiers.at(0)->
-			classify(QImage("../data/2.tif"));
+	qDebug() << "0.bmp: " << classifiers.at(0)->
+			classify(QImage("../data/0.bmp"));
+	qDebug() << "5.bmp: " << classifiers.at(0)->
+			classify(QImage("../data/5.bmp"));
+	qDebug() << "9.bmp: " << classifiers.at(0)->
+			classify(QImage("../data/9.bmp"));
 }
 
 void LogicCore::saveResults()

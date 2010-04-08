@@ -33,14 +33,6 @@ TemplateField::TemplateField(TemplateField * field)
 	setY(field->getY());
 	setWidth(field->getWidth());
 	setHeight(field->getHeight());
-	//if (field->getLineEdit())
-	//	createLineEdit(field->getLineEdit()->parentWidget());
-}
-
-TemplateField::~TemplateField()
-{
-	//if (lineEdit != NULL)
-		//delete lineEdit;
 }
 
 int TemplateField::getX()

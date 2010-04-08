@@ -26,14 +26,12 @@ Segmentator::Segmentator()
 
 Segmentator::~Segmentator()
 {
-	if (segTemplate)
-		delete segTemplate;
+	delete segTemplate;
 }
 
 void Segmentator::loadTemplate(const QString & fileName)
 {
-	if (segTemplate)
-		delete segTemplate;
+	delete segTemplate;
 
 	segTemplate = new SegmentationTemplate();
 	segTemplate->loadFromFile(fileName);
