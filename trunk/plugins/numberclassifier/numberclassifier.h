@@ -23,17 +23,88 @@
 #include <QtGui>
 #include <QImage>
 #include <QString>
+#include <QList>
+#include <QtDebug>
 
 #include "../../src/classifier.h"
 
+// Digit glyph parameters
+struct GlyphParameters
+{
+	// Number of dark fields
+	int count;
+	// Size of last light field
+	int last;
+	// Sizes of dark fields
+	QList<int> dark;
+	// Sizes of light fields
+	QList<int> light;
+};
+
 class NumberClassifier : public QObject, public Classifier
 {
-	Q_OBJECT
-	Q_INTERFACES(Classifier)
+Q_OBJECT
+Q_INTERFACES(Classifier)
 
 public:
-		// Classify image data
-		QString classify(QImage image);
+	// Classify image data
+	QString classify(QImage image);
+
+private:
+	// Initialize structure
+	GlyphParameters newParam();
+
+	// Initialize members
+	void init();
+
+	// Find bounding box
+	void getBoundingBox();
+
+	// Get line parameters
+	GlyphParameters getParameters(int y);
+
+	// Upper digit part processing
+	void processUpperPart();
+
+	// Check for digit "1"
+	void check1();
+
+	// Basic check for digit "6"
+	void check6();
+
+	// Image
+	QImage image;
+
+	// Control flow label
+	QString control_flow;
+
+	// Dark color threshold
+	int color;
+
+	// Dark fields bounding box coordinates
+	int x_min, y_min, x_max, y_max;
+
+	// Bounding box height
+	int h;
+
+	// Vertical verges
+	int verge1, verge2;
+
+	// Output results criteria
+	int result[10];
+
+	// Feature variables
+	int feature_strongly_double, feature_double, feature_single;
+	int feature_vertical, feature_horizontal, feature_strongly_horizontal;
+	int feature_line_distance;
+
+	// Additional flag
+	int flag;
+	// Max size of last light field
+	int max_last;
+
+	// Last light fields sizes
+	QList<int> lasts;
 
 };
 
