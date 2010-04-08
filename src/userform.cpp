@@ -41,6 +41,8 @@ void UserForm::init()
 	logicCore = new LogicCore(this);
 	connect(m_ui->actionSegmentation,SIGNAL(triggered()), logicCore,
 			SLOT(segmentate()));
+	connect(m_ui->actionRecognition,SIGNAL(triggered()), logicCore,
+			SLOT(classify()));
 	logicCore->start();
 	//logicCore->moveToThread(logicCore);
 }

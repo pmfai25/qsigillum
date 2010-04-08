@@ -103,6 +103,8 @@ void LogicCore::init()
 			 }
 
 		 }
+		 else
+		 qDebug() << fileName << " " <<loader.errorString();
 	 }
 
 	if (! newFileActions.isEmpty())

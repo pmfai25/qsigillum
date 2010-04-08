@@ -19,17 +19,20 @@
 #ifndef CLASSIFIER_H
 #define CLASSIFIER_H
 
+#include <QtPlugin>
+
+class QImage;
+
 class Classifier
 {
 public:
 
-	virtual ~Classifier();
+	virtual ~Classifier() {}
 
 	// Classify image data
-	virtual QString classify(QImage image);
+	virtual QString classify(QImage image) = 0;
 };
 
-Q_DECLARE_INTERFACE(Classifier,
-					 "qSigillum.Classifier/0.1");
+Q_DECLARE_INTERFACE(Classifier,"qSigillum.Classifier/0.1");
 
 #endif // CLASSIFICATOR_H
