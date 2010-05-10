@@ -27,6 +27,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QScrollArea>
+#include <QDesktopServices>
+#include <QDir>
 
 #include "logiccore.h"
 
@@ -57,9 +59,13 @@ private:
 	// Init components
 	void init();
 
-
 	Ui::UserForm *m_ui;
 	LogicCore *logicCore;
+
+private slots:
+	void on_actionAboutApplication_triggered();
+	void on_actionAboutQt_triggered();
+	void on_actionHelp_triggered();
 };
 
 #endif // USERFORM_H

@@ -36,9 +36,9 @@ struct GlyphParameters
 	// Size of last light field
 	int last;
 	// Sizes of dark fields
-	QList<int> dark;
+	QVector<int> dark;
 	// Sizes of light fields
-	QList<int> light;
+	QVector<int> light;
 };
 
 class NumberClassifier : public QObject, public Classifier
@@ -72,6 +72,33 @@ private:
 	// Basic check for digit "6"
 	void check6();
 
+	// Check for digit "4"
+	void check4();
+
+	// Check for digit "0"
+	void check0();
+
+	// Check for digit "3"
+	void check3();
+
+	// Check for digit "8"
+	void check8();
+
+	// Check for digit "2"
+	void check2();
+
+	// Full check for digit "6"
+	void fullCheck6();
+
+	// Check for digit "9"
+	void check9();
+
+	// Check for digit "5"
+	void check5();
+
+	// Check for digit "7"
+	void check7();
+
 	// Image
 	QImage image;
 
@@ -80,6 +107,9 @@ private:
 
 	// Dark color threshold
 	int color;
+
+	// Current horizontal coordinate
+	int x;
 
 	// Dark fields bounding box coordinates
 	int x_min, y_min, x_max, y_max;
@@ -104,7 +134,7 @@ private:
 	int max_last;
 
 	// Last light fields sizes
-	QList<int> lasts;
+	QVector<int> lasts;
 
 };
 
