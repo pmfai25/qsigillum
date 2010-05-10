@@ -83,3 +83,23 @@ QScrollArea * UserForm::getScrollArea()
 {
 	return m_ui->scrollArea;
 }
+
+void UserForm::on_actionHelp_triggered()
+{
+	// Get help file URL
+	QDir dir(qApp->applicationDirPath());
+	QDesktopServices::openUrl(
+			QUrl(QString("file:///").
+				 append(dir.absoluteFilePath("../doc/help.htm"))));
+}
+
+void UserForm::on_actionAboutQt_triggered()
+{
+	QMessageBox::aboutQt(this, tr("About Qt"));
+}
+
+void UserForm::on_actionAboutApplication_triggered()
+{
+	QMessageBox::about(this,tr("About application"),
+					   tr("<b>QSigillum</b> - Handwritten digits recognition for structured documents<br>Copyright 2009 Konstantin \"konst\" Kucher (konst.hex@gmail.com)"));
+}

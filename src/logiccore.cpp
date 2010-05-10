@@ -178,12 +178,9 @@ void LogicCore::classify()
 	if (classifiers.isEmpty())
 		return;
 
-	qDebug() << "0.bmp: " << classifiers.at(0)->
-			classify(QImage("../data/0.bmp"));
-	qDebug() << "5.bmp: " << classifiers.at(0)->
-			classify(QImage("../data/5.bmp"));
-	qDebug() << "9.bmp: " << classifiers.at(0)->
-			classify(QImage("../data/9.bmp"));
+	qDebug() << "n0.bmp: " << classifiers.at(0)->
+			classify(QImage("../data/n0.bmp"));
+
 }
 
 void LogicCore::saveResults()

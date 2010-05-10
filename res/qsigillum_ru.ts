@@ -171,7 +171,7 @@
     </message>
     <message>
         <location filename="../src/userform.ui" line="35"/>
-        <location filename="../src/userform.ui" line="172"/>
+        <location filename="../src/userform.ui" line="175"/>
         <source>Actions</source>
         <translation>Действия</translation>
     </message>
@@ -193,7 +193,7 @@
     </message>
     <message>
         <location filename="../src/userform.ui" line="67"/>
-        <location filename="../src/userform.ui" line="198"/>
+        <location filename="../src/userform.ui" line="201"/>
         <source>Quit</source>
         <translation>Выход</translation>
     </message>
@@ -208,51 +208,58 @@
         <translation>Просмотр</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="164"/>
+        <location filename="../src/userform.ui" line="167"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="180"/>
-        <location filename="../src/userform.ui" line="216"/>
+        <location filename="../src/userform.ui" line="183"/>
+        <location filename="../src/userform.ui" line="219"/>
         <source>Help</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="207"/>
+        <location filename="../src/userform.ui" line="210"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="219"/>
+        <location filename="../src/userform.ui" line="222"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="228"/>
         <location filename="../src/userform.ui" line="231"/>
+        <location filename="../src/userform.ui" line="234"/>
+        <location filename="../src/userform.cpp" line="103"/>
         <source>About application</source>
         <translation>Про приложение</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="240"/>
+        <location filename="../src/userform.ui" line="243"/>
+        <location filename="../src/userform.cpp" line="98"/>
         <source>About Qt</source>
         <translation>Про Qt</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="249"/>
+        <location filename="../src/userform.ui" line="252"/>
         <source>Preprocessing</source>
         <translation>Предобработка</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="258"/>
+        <location filename="../src/userform.ui" line="261"/>
         <source>Segmentation</source>
         <translation>Сегментация</translation>
     </message>
     <message>
-        <location filename="../src/userform.ui" line="267"/>
+        <location filename="../src/userform.ui" line="270"/>
         <source>Recognition</source>
         <translation>Распознавание</translation>
+    </message>
+    <message>
+        <location filename="../src/userform.cpp" line="104"/>
+        <source>&lt;b&gt;QSigillum&lt;/b&gt; - Handwritten digits recognition for structured documents&lt;br&gt;Copyright 2009 Konstantin &quot;konst&quot; Kucher (konst.hex@gmail.com)</source>
+        <translation>&lt;b&gt;QSigillum&lt;/b&gt; - Приложение для распознавания рукописных цифр в структурированных документах&lt;br&gt;Copyright 2009 Konstantin &quot;konst&quot; Kucher (konst.hex@gmail.com)</translation>
     </message>
 </context>
 </TS>
