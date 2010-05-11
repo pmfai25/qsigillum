@@ -37,6 +37,7 @@ public:
 	void setImage(QImage * image);
 	void segmentate();
 	const QList<TemplateContainer *> & getBody();
+	QImage getInterestPart();
 
 private:
 	SegmentationTemplate *segTemplate;
@@ -45,10 +46,15 @@ private:
 	// Segmentation results
 	QList<TemplateContainer *> body;
 
-	// Calculate threshold value
-	bool containerNotEmpty(TemplateContainer * container);
+	// Check if source image line is empty
+	bool emptyLine(int y);
 	// Dump body for debug purposes
 	void dumpData();
+
+	// Real-to-suspected image width ratio
+	double width_ratio;
+	// Real-to-suspected image height ratio
+	double height_ratio;
 
 };
 

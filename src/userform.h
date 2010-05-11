@@ -51,6 +51,7 @@ public:
 	QVBoxLayout * getToolbarLayout();
 	QLabel * getPreviewLabel();
 	QScrollArea * getScrollArea();
+	QStatusBar * getStatusBar();
 
 protected:
     void changeEvent(QEvent *e);

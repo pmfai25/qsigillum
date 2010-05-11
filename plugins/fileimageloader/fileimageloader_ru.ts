@@ -4,13 +4,13 @@
 <context>
     <name>FileImageLoader</name>
     <message>
-        <location filename="fileimageloader.cpp" line="29"/>
-        <location filename="fileimageloader.cpp" line="46"/>
+        <location filename="fileimageloader.cpp" line="28"/>
+        <location filename="fileimageloader.cpp" line="44"/>
         <source>Open image file</source>
         <translation>Открыть файл изображения</translation>
     </message>
     <message>
-        <location filename="fileimageloader.cpp" line="53"/>
+        <location filename="fileimageloader.cpp" line="50"/>
         <source>Open and process image file</source>
         <translation>Открыть и распознать файл изображения</translation>
     </message>

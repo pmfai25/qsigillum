@@ -20,11 +20,27 @@
 #define PREPROCESSOR_H
 
 #include <QObject>
+#include <QImage>
+#include <QPoint>
+#include <QDebug>
 
 class Preprocessor : public QObject
 {
 public:
     Preprocessor();
+
+	// Remove dark fields from image borders
+	QImage removeDarkFields(const QImage& image);
+	// Check if image column is empty
+	bool emptyColumn(const QImage& image, int x);
+
+private:
+	// Minimum mean value of non-dark field
+	int light_threshold;
+	// Maximum size of dark field
+	double field_size;
+	// Empty column critical value
+	int empty_threshold;
 };
 
 #endif // PREPROCESSOR_H
