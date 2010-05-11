@@ -24,6 +24,11 @@ LogicCore::LogicCore(UserForm *parent)
 	init();
 }
 
+LogicCore::~LogicCore()
+{
+
+}
+
 void LogicCore::run()
 {
 	exec();
@@ -103,11 +108,9 @@ void LogicCore::init()
 			 }
 
 		 }
-		 else
-		 qDebug() << fileName << " " <<loader.errorString();
 	 }
 
-	if (! newFileActions.isEmpty())
+	if (!newFileActions.isEmpty())
 	{
 		QAction * insertPoint = parent->getFileMenuHead();
 
@@ -123,6 +126,9 @@ void LogicCore::getImage()
 
 	if (sender)
 	{
+		// Update status message
+		parent->getStatusBar()->showMessage(tr("Loading image..."));
+
 		srcImage = sender->loadImage();
 
 		if (!srcImage.isNull())
@@ -133,20 +139,53 @@ void LogicCore::getImage()
 							 Qt::KeepAspectRatio, Qt::FastTransformation);
 
 			parent->getPreviewLabel()->setPixmap(pixmap);
+
+			// Update status message
+			parent->getStatusBar()->showMessage(tr("Image successfully loaded"), 2000);
 		}
+		else
+			// Update status message
+			parent->getStatusBar()->showMessage(tr("Image loading failed"), 2000);
 	}
 
 }
 
 void LogicCore::preprocess()
 {
+	if (srcImage.isNull())
+		return;
+
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Preprocessing image..."));
+
+	// Remove dark fields
+	srcImage = preprocessor.removeDarkFields(srcImage);
+
+	if (!srcImage.isNull())
+	{
+		// Show preview
+		QPixmap pixmap = QPixmap::fromImage(srcImage, Qt::MonoOnly)
+						 .scaled(parent->getPreviewLabel()->size(),
+						 Qt::KeepAspectRatio, Qt::FastTransformation);
+
+		parent->getPreviewLabel()->setPixmap(pixmap);
+	}
+
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Image successfully preprocessed"), 2000);
+
 }
 
 void LogicCore::segmentate()
 {
+	if (srcImage.isNull())
+		return;
+
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Segmentating image..."));
+
 	QDir dir(qApp->applicationDirPath());
 	segmentator.loadTemplate(dir.absoluteFilePath("../data/marksheet.xml"));
-	qDebug() << "Loaded template";
 	segmentator.setImage(&srcImage);
 	segmentator.segmentate();
 
@@ -171,16 +210,82 @@ void LogicCore::segmentate()
 	}
 
 	parent->getScrollArea()->setWidget(saParent);
+
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Image successfully segmentated"), 2000);
 }
 
 void LogicCore::classify()
 {
-	if (classifiers.isEmpty())
+	if (srcImage.isNull() || classifiers.isEmpty() || segmentator.getBody().isEmpty())
 		return;
 
-	qDebug() << "n0.bmp: " << classifiers.at(0)->
-			classify(QImage("../data/n0.bmp"));
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Image classification..."));
 
+	int min_width = qRound(srcImage.width() * 0.004);
+	int z = 0;
+
+	// Traversing segments
+	foreach (TemplateContainer * container, segmentator.getBody())
+	{
+		foreach (TemplateField * field, container->getFields())
+		{
+			// Extracting image part
+			QImage part = preprocessor.removeDarkFields(
+					srcImage.copy(container->getX() + field->getX(),
+					container->getY() + field->getY(),
+					field->getWidth(), field->getHeight()));
+
+			// Subdividing fields onto digits and classifying them
+			QString result;
+
+			// Horizontal borders of digit
+			int b1 = -1, b2 = 0;
+
+			// Horizontal scanning
+			for (int j = 1; j < part.width(); j++)
+			{
+				// Light-to-dark region transition
+				if (!preprocessor.emptyColumn(part, j)
+					&& preprocessor.emptyColumn(part, j-1))
+				{
+					b1 = j - 1;
+				}
+				// Dark-to-light region transition
+				if (preprocessor.emptyColumn(part, j)
+					&& !preprocessor.emptyColumn(part, j-1))
+				{
+					b2 = j;
+				}
+
+				// Digit extraction
+				if (b1 > -1 && b2 > 0 && (b2 - b1) >= min_width)
+				{
+					//qDebug() << b1 << " 0 " << b2 << " " << part.height() << " z=" << z;
+
+					//QImage q = part.copy(b1, 0, b2-b1+1, part.height());
+					//q.save(QString("../data/trash/").append(QString::number(z)).append(QString(".jpg")));
+
+					result.append(classifiers.at(0)
+								  ->classify(part.copy
+											 (b1, 0, b2-b1+1, part.height())));
+
+					// Reset
+					b1 = -1, b2 = 0;
+
+					z++;
+				}
+			}
+
+			// Updating label
+			field->getLineEdit()->setText(result);
+
+		}
+	}
+
+	// Update status message
+	parent->getStatusBar()->showMessage(tr("Image successfully classified"), 2000);
 }
 
 void LogicCore::saveResults()

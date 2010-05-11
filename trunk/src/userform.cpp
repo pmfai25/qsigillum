@@ -30,6 +30,7 @@ UserForm::UserForm(QWidget *parent) :
 UserForm::~UserForm()
 {
 	logicCore->quit();
+	delete logicCore;
 
 	delete m_ui;
 }
@@ -39,6 +40,8 @@ void UserForm::init()
 {
 	connect(m_ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
 	logicCore = new LogicCore(this);
+	connect(m_ui->actionPreprocessing,SIGNAL(triggered()), logicCore,
+			SLOT(preprocess()));
 	connect(m_ui->actionSegmentation,SIGNAL(triggered()), logicCore,
 			SLOT(segmentate()));
 	connect(m_ui->actionRecognition,SIGNAL(triggered()), logicCore,
@@ -82,6 +85,11 @@ QLabel * UserForm::getPreviewLabel()
 QScrollArea * UserForm::getScrollArea()
 {
 	return m_ui->scrollArea;
+}
+
+QStatusBar * UserForm::getStatusBar()
+{
+	return m_ui->statusbar;
 }
 
 void UserForm::on_actionHelp_triggered()

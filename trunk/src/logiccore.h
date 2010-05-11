@@ -34,6 +34,7 @@
 
 #include "userform.h"
 
+#include "preprocessor.h"
 #include "imageloader.h"
 #include "classifier.h"
 #include "outputexporter.h"
@@ -48,6 +49,7 @@ class LogicCore : public QThread
 
 public:
 	LogicCore(UserForm *parent);
+	~LogicCore();
 
 	void run();
 
@@ -65,6 +67,7 @@ private:
 	QImage srcImage;
 
 	Segmentator segmentator;
+	Preprocessor preprocessor;
 
 	QList<ImageLoader *> imageLoaders;
 	QList<Classifier *> classifiers;
