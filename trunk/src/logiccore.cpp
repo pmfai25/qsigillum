@@ -264,12 +264,14 @@ void LogicCore::classify()
 				{
 					//qDebug() << b1 << " 0 " << b2 << " " << part.height() << " z=" << z;
 
+					QImage q = preprocessor.removeBorderTrash(
+							part.copy(b1, 0, b2-b1+1, part.height()));
 					//QImage q = part.copy(b1, 0, b2-b1+1, part.height());
-					//q.save(QString("../data/trash/").append(QString::number(z)).append(QString(".jpg")));
+					q.save(QString("../data/trash/").
+						   append(QString::number(z)).append(QString(".jpg")));
 
 					result.append(classifiers.at(0)
-								  ->classify(part.copy
-											 (b1, 0, b2-b1+1, part.height())));
+								  ->classify(q));
 
 					// Reset
 					b1 = -1, b2 = 0;
@@ -290,12 +292,29 @@ void LogicCore::classify()
 
 void LogicCore::saveResults()
 {
+	// Saving results to text file
+	if (segmentator.getBody().isEmpty())
+		return;
+
+	QFile data("../data/output.txt");
+	if (data.open(QFile::WriteOnly | QFile::Truncate)) {
+		QTextStream out(&data);
+
+		// Traversing segments
+		foreach (TemplateContainer * container, segmentator.getBody())
+		{
+			foreach (TemplateField * field, container->getFields())
+			{
+				out << field->getLineEdit()->text();
+			}
+		}
+	}
 }
 
 void LogicCore::processAutomatedMode()
 {
-//  getImage();
-//	preprocess();
-//	segmentate();
-//	classify();
+	getImage();
+	preprocess();
+	segmentate();
+	classify();
 }

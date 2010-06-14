@@ -46,6 +46,8 @@ void UserForm::init()
 			SLOT(segmentate()));
 	connect(m_ui->actionRecognition,SIGNAL(triggered()), logicCore,
 			SLOT(classify()));
+	connect(m_ui->tbSaveResultsAs,SIGNAL(clicked()), logicCore,
+			SLOT(saveResults()));
 	logicCore->start();
 	//logicCore->moveToThread(logicCore);
 }
@@ -111,3 +113,4 @@ void UserForm::on_actionAboutApplication_triggered()
 	QMessageBox::about(this,tr("About application"),
 					   tr("<b>QSigillum</b> - Handwritten digits recognition for structured documents<br>Copyright 2009 Konstantin \"konst\" Kucher (konst.hex@gmail.com)"));
 }
+
