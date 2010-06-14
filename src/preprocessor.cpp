@@ -28,6 +28,9 @@ Preprocessor::Preprocessor()
 
 	// Empty column checking
 	empty_threshold = 200;
+
+	// Trash removal
+	empty_field_size = 0.1;
 }
 
 // Remove dark fields from image borders
@@ -96,11 +99,152 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 	return image.copy(p1.x(), p1.y(), p2.x()-p1.x()+1, p2.y()-p1.y()+1);
 }
 
+// Remove trash from image borders
+QImage Preprocessor::removeBorderTrash(const QImage& image)
+{
+	if (image.isNull())
+	{
+		qDebug() << "Preprocessor got empty image";
+		return QImage();
+	}
+
+	QPoint p1, p2;
+	long int temp;
+	bool gotBlack, gotWhite;
+
+	// Loop from left
+	gotBlack = false; gotWhite = false;
+	for (int j = 0; j <= qRound(image.width() * field_size); j++)
+	{
+		p1.setX(j);
+		temp = 0;
+		// Check column values
+		for (int i = 0; i < image.height(); i++)
+			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			temp++;
+
+		// Got black column
+		if (temp >= qRound(image.height() * field_size) && !gotBlack)
+		{
+			gotBlack = true;
+			continue;
+		}
+
+		// Got empty column
+		if (temp < qRound(image.height() * empty_field_size) && gotBlack)
+		{
+			gotWhite = true;
+			break;
+		}
+	}
+	if (!gotWhite)
+		p1.setX(0);
+
+	// Loop from right
+	gotBlack = false; gotWhite = false;
+	for (int j = image.width() - 1;
+	j >= image.width() - qRound(image.width() * field_size); j--)
+	{
+		p2.setX(j);
+		temp = 0;
+		// Check column values
+		for (int i = 0; i < image.height(); i++)
+			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			temp++;
+
+		// Got black column
+		if (temp >= qRound(image.height() * field_size) && !gotBlack)
+		{
+			gotBlack = true;
+			continue;
+		}
+
+		// Got empty column
+		if (temp < qRound(image.height() * empty_field_size) && gotBlack)
+		{
+			gotWhite = true;
+			break;
+		}
+	}
+	if (!gotWhite)
+		p2.setX(image.width() - 1);
+
+	// Loop from top
+	gotBlack = false; gotWhite = false;
+	for (int i = 0; i <= qRound(image.height() * field_size); i++)
+	{
+		p1.setY(i);
+		temp = 0;
+		// Check row values
+		for (int j = 0; j < image.width(); j++)
+			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			temp++;
+
+		// Got black column
+		if (temp >= qRound(image.width() * field_size) && !gotBlack)
+		{
+			gotBlack = true;
+			continue;
+		}
+
+		// Got empty column
+		if (temp < qRound(image.width() * empty_field_size) && gotBlack)
+		{
+			gotWhite = true;
+			break;
+		}
+	}
+	if (!gotWhite)
+		p1.setY(0);
+
+	// Loop from bottom
+	gotBlack = false; gotWhite = false;
+	for (int i = image.height() - 1;
+	i >= image.height() - qRound(image.height() * field_size); i--)
+	{
+		p2.setY(i);
+		temp = 0;
+		// Check row values
+		for (int j = 0; j < image.width(); j++)
+			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			temp++;
+
+		// Got black column
+		if (temp >= qRound(image.width() * field_size) && !gotBlack)
+		{
+			gotBlack = true;
+			continue;
+		}
+
+		// Got empty column
+		if (temp < qRound(image.width() * empty_field_size) && gotBlack)
+		{
+			gotWhite = true;
+			break;
+		}
+	}
+	if (!gotWhite)
+		p2.setY(image.height() - 1);
+
+	// Copy resulting image
+	return image.copy(p1.x(), p1.y(), p2.x()-p1.x()+1, p2.y()-p1.y()+1);
+}
+
 // Check if image column is empty
 bool Preprocessor::emptyColumn(const QImage& image, int x)
 {
 	for (int i = 0; i < image.height(); i++)
 		if (qGray(image.pixel(x, i)) <= empty_threshold)
+			return false;
+
+	return true;
+}
+
+// Check if image row is empty
+bool Preprocessor::emptyRow(const QImage& image, int y)
+{
+	for (int j = 0; j < image.width(); j++)
+		if (qGray(image.pixel(j, y)) <= empty_threshold)
 			return false;
 
 	return true;

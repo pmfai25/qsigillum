@@ -31,14 +31,20 @@ public:
 
 	// Remove dark fields from image borders
 	QImage removeDarkFields(const QImage& image);
+	// Remove trash from image borders
+	QImage removeBorderTrash(const QImage& image);
 	// Check if image column is empty
 	bool emptyColumn(const QImage& image, int x);
+	// Check if image row is empty
+	bool emptyRow(const QImage& image, int y);
 
 private:
 	// Minimum mean value of non-dark field
 	int light_threshold;
 	// Maximum size of dark field
 	double field_size;
+	// Threshold size of empty field
+	double empty_field_size;
 	// Empty column critical value
 	int empty_threshold;
 };
