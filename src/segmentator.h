@@ -37,14 +37,23 @@ public:
 	void setImage(QImage * image);
 	void segmentate();
 	const QList<TemplateContainer *> & getBody();
-	QImage getInterestPart();
+	// Analyze image and return real anchor coordinates
+	QPoint getRealAnchor();
 
 private:
+	// Segmentation template instance
 	SegmentationTemplate *segTemplate;
 	// Source document image
 	QImage * image;
 	// Segmentation results
 	QList<TemplateContainer *> body;
+
+	// Image width size used for scaling
+	const int scale_width;
+	// Maximum deviation
+	const unsigned int max_deviation;
+	// Region size for second pass analysis
+	const int region_size;
 
 	// Check if source image line is empty
 	bool emptyLine(int y);

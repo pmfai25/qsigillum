@@ -44,6 +44,9 @@ QString NumberClassifier::classify(QImage image)
 	check5();
 	check7();
 
+	/*for (int i = 0; i < 10; i++)
+		qDebug() << i << ": " << this->result[i];*/
+
 	// Results processing
 	if (this->result[0] == 1)
 		return QString("0");
@@ -156,8 +159,8 @@ GlyphParameters NumberClassifier::getParameters(int y)
 		// Recording light field size
 		if (temp.count >= 1)
 		{
-			temp.light.resize(temp.count);
-			temp.light[temp.count - 1] = i;
+			temp.light.resize(temp.light.size() + 1);
+			temp.light[temp.light.size() - 1] = i;
 		}
 
 		// Dark field size
@@ -167,14 +170,14 @@ GlyphParameters NumberClassifier::getParameters(int y)
 		{
 			j++;
 			x++;
-		} while (x <= this->x_max
+		} while (x < this->x_max
 			 && qGray(this->image.pixel(x,y)) <= color);
 		// If we reach a light field, we should record
 		// dark field size and reset last light field size
 		if (x <= this->x_max)
 		{
-			temp.dark.resize(temp.count);
-			temp.dark[temp.count - 1] = j;
+			temp.dark.resize(temp.dark.size() + 1);
+			temp.dark[temp.dark.size() - 1] = j;
 		}
 	} while (x <= this->x_max);
 
@@ -200,8 +203,10 @@ void NumberClassifier::processUpperPart()
 		// Save current last light field size
 		this->lasts.append(p.last);
 
+		//qDebug() << x_delayed << " " << p.last << " " << (x_delayed - p.last < -3);
+
 		// Mark '5' result
-		if (x_delayed != 0 && x_delayed - p.last < -5)
+		if (x_delayed != 0 && x_delayed - p.last < -3)
 			this->result[5] = 1;
 
 		// If there are 2 dark fields, we should increase
@@ -209,11 +214,12 @@ void NumberClassifier::processUpperPart()
 		if (p.count == 2)
 			this->feature_strongly_double++;
 
+
+		//qDebug() << "here" << " " << y << " " << p.count << " " << p.dark.size();
 		// In case of one dark field of small size
 		if (p.count == 1 && p.dark.size() > 0
-			&& p.dark[0] < 9)
+			&& p.dark[0] < 10)
 		{
-
 			// Search for doubling
 			if (p.light.size() > 0 && p.light[0] < qRound(this->x_min/4))
 			{
@@ -248,11 +254,15 @@ void NumberClassifier::processUpperPart()
 }
 
 // Check for digit "1"
-// Also effects "4" and "6" features
+// Also effects "4" feature
 void NumberClassifier::check1()
 {
 	// Glyph line parameters
 	GlyphParameters p;
+
+	/*qDebug() << this->feature_vertical << " " <<  this->verge1 << " "
+					 <<  this->y_min << " " << qRound((this->verge1 - this->y_min) / 4 + 1);*/
+
 
 	// If length of a vertical line is bigger than 75% of
 	// the first part of digit
@@ -305,10 +315,12 @@ void NumberClassifier::check6()
 	GlyphParameters p = this->getParameters(y);
 
 	// Scanning upwards to check lower part
-	for (; (y > this->verge2 - 1 && p.dark.size() > 0
-		&& p.count >= 1 && p.dark[0] <= 5 ) ; y-- )
+	do
 	{
-	}
+		y--;
+		p = this->getParameters(y);
+	} while (y > this->verge2 - 1 && p.dark.size() > 0
+		   && p.dark[0] <= 5 );
 
 	if (y > (this->verge2 - 1))
 	{
@@ -322,9 +334,12 @@ void NumberClassifier::check6()
 			// line distance feature should be increased
 			if (p.count > 1)
 				this->feature_line_distance++;
-		} while (y >= (this->verge2 - 5));
+		} while (y >= this->verge2 - 5);
 
-		if (this->feature_line_distance > 4)
+
+		//qDebug() << "here " << this->feature_line_distance;
+		// old value: 4
+		if (this->feature_line_distance > 7)
 		{
 			// Suppressing digit "1" feature
 			this->result[1] = 0;
@@ -373,7 +388,8 @@ void NumberClassifier::check4()
 // Check for digit "0"
 void NumberClassifier::check0()
 {
-	if (this->control_flow != QString(""))
+	if (this->control_flow != QString("")
+		&& this->control_flow != QString("six"))
 		return;
 
 	this->feature_double = 0;
@@ -547,7 +563,7 @@ void NumberClassifier::check3()
 					x_delayed = p.last;
 				if (p.count == 1 && this->feature_single == 0)
 					this->feature_single = 1;
-				if (p.light.size() > 0 && p.light[0] < qRound(this->x_min / 3))
+				if (p.light.size() > 0 && p.light[0] < qRound(this->x_min / 5))
 					this->feature_strongly_double++;
 
 				// Transition to next line
@@ -561,6 +577,7 @@ void NumberClassifier::check3()
 			// Digit "3" feature setting
 			if (this->feature_single != 0 && this->feature_strongly_double < y)
 				this->result[3] = 1;
+
 		}
 	}
 
@@ -668,6 +685,8 @@ void NumberClassifier::check8()
 // Check for digit "2"
 void NumberClassifier::check2()
 {
+	//qDebug() << "here(2) - 1" << this->control_flow;
+
 	if (this->control_flow != QString(""))
 		return;
 
@@ -730,9 +749,12 @@ void NumberClassifier::check2()
 				 && !(p.count == 1 && ((p.dark.size() > 0 && p.dark[0] < 10)
 									   || this->x < 4)));
 
+
+		/*qDebug() << p.count << " " << p.light[0] << " "
+				<< " " << (3 * qRound(this->x_min / 4)) << " y:" << y << " " << this->y_max;*/
 		// If just one line is detected in right quarter of the digit
 		// and vertical coordinate belongs to allowed space:
-		if (p.count == 1 && p.light.size() > 0
+		if (p.count == 1 && p.light.size() > 0 && p.light[0] > 10
 			&& p.light[0] > 3 * qRound(this->x_min / 4)	&& y < this->y_max - 2)
 			this->flag = 1;
 
@@ -766,6 +788,7 @@ void NumberClassifier::check2()
 
 			if (this->flag != 0)
 				this->result[2] = 0;
+
 		}
 	}
 }
@@ -803,6 +826,8 @@ void NumberClassifier::fullCheck6()
 		this->feature_double = 0;
 		if (p.light.size() > 0)
 			this->x = p.light[0];
+		else
+			this->x = 0;
 
 		do
 		{
@@ -821,11 +846,19 @@ void NumberClassifier::fullCheck6()
 		} while (y >= this->verge1 &&
 				 !(p.count == 1 && p.dark.size() > 0 && p.dark[0] <= 6));
 
+
+	/*qDebug() << (p.light.size() > 0) << " " << (qAbs(this->feature_line_distance - p.light[0]) < 5)
+			<< " " << (p.light[0] <= qRound(this->x_min / 2)) << " " << (y < this->y_max - qRound(this->h / 3))
+			<< " " << (p.last - this->feature_strongly_double >= 0);
+	qDebug() << p.light[0] << " " << this->x_min << " " << qRound(2* this->x_min / 3);
+	qDebug() << y << " " << this->y_max << " " << qRound(this->h / 3);
+	qDebug() << p.last << " " << this->feature_strongly_double;*/
+
 		// If drops are allowed and loop belongs to left half
 		// and merge is at allowed height and drop is positive
 		if (p.light.size() > 0
 			&& qAbs(this->feature_line_distance - p.light[0]) < 5
-			&& p.light[0] < qRound(this->x_min / 2)
+			//&& p.light[0] <= qRound(this->x_min / 2)
 			&& y < this->y_max - qRound(this->h / 3)
 			&& p.last - this->feature_strongly_double > 0)
 		{
@@ -917,6 +950,42 @@ void NumberClassifier::check9()
 			&& this->result[3] == 0 && y > this->y_min + qRound(this->h / 3))
 			this->result[9] = 1;
 	}
+
+	if (this->result[9] == 0)
+	{
+		y = this->y_max;
+		p = this->getParameters(y);
+		this->feature_line_distance = -1;
+		this->feature_strongly_double = -1;
+		while (p.count == 1 && y > this->verge2)
+		{
+			y--;
+			p = this->getParameters(y);
+		}
+
+		if (y <= this->verge2)
+			return;
+
+		while (p.count == 2 && y > this->verge2 + 3)
+		{
+			p = this->getParameters(y);
+			if (p.count == 2 && p.light.size() > 1) {
+				this->feature_strongly_double = p.light[0];
+				this->feature_line_distance = p.light[1];
+			}
+			y--;
+		}
+
+		if (y > this->verge2 + 3)
+		{
+			if (this->feature_line_distance > 3 && p.light.size() > 0
+				&& this->feature_strongly_double < p.light[0])
+			{
+				this->result[9] = 1;
+			}
+		}
+
+	}
 }
 
 // Check for digit "5"
@@ -924,6 +993,14 @@ void NumberClassifier::check5()
 {
 	if (this->control_flow != QString("") || this->result[5] != 0)
 		return;
+
+	// Checking for other digits features
+	if (this->result[7] == 0 && this->result[3] == 0
+		&& this->result[1] == 0 && this->result[6] == 0)
+	{
+		this->result[5] = 1;
+		return;
+	}
 
 	this->flag = 0;
 	int y = this->verge1;
@@ -942,6 +1019,9 @@ void NumberClassifier::check5()
 		if (this->x != 0 && x_delayed - p.last < -5 && x_delayed != -1)
 			this->flag = 1;
 
+//		if (p.last > 5)
+//			this->flag = 1;
+
 		y++;
 
 	} while (y <= this->verge2 && this->flag != 1 && p.count != 1);
@@ -952,6 +1032,7 @@ void NumberClassifier::check5()
 		this->result[5] = 1;
 		this->control_flow = QString("end");
 	}
+
 }
 
 // Check for digit "7"
@@ -986,6 +1067,27 @@ void NumberClassifier::check7()
 			this->result[7] = 1;
 
 	}
+
+//	int y = this->y_max;
+//	int x_delayed = -1;
+//	GlyphParameters p = this->getParameters(y);
+//	this->feature_line_distance = -1;
+//	while (p.count == 1 && y > this->verge2)
+//	{
+//		y--;
+//		if (p.light.size() > 0)
+//			x_delayed = p.light[0];
+//		p = this->getParameters(y);
+//
+//
+//		if (p.light.size() > 0 && qAbs(x_delayed - p.light[0]) < 3)
+//		{
+//			this->result[7] = 1;
+//			this->result[3] = 0;
+//		}
+//
+//	}
+
 }
 
 

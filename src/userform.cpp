@@ -30,6 +30,7 @@ UserForm::UserForm(QWidget *parent) :
 UserForm::~UserForm()
 {
 	logicCore->quit();
+	logicCore->terminate();
 	delete logicCore;
 
 	delete m_ui;

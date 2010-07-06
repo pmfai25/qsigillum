@@ -22,6 +22,8 @@ SegmentationTemplate::SegmentationTemplate()
 {
 	imageHeight = 0;
 	imageWidth = 0;
+	anchorX = 0;
+	anchorY = 0;
 }
 
 SegmentationTemplate::~SegmentationTemplate()
@@ -63,6 +65,17 @@ void SegmentationTemplate::setDate(const QString& date)
 	this->date = date;
 }
 
+const QString& SegmentationTemplate::getAnchorFileName()
+{
+	const QString& value = anchorFileName;
+	return value;
+}
+
+void SegmentationTemplate::setAnchorFileName(const QString& fileName)
+{
+	this->anchorFileName = fileName;
+}
+
 QList<TemplateContainer*>& SegmentationTemplate::getBody()
 {
 	QList<TemplateContainer*>& value = body;
@@ -87,6 +100,26 @@ int SegmentationTemplate::getImageHeight()
 void SegmentationTemplate::setImageHeight(int height)
 {
 	imageHeight = height;
+}
+
+int SegmentationTemplate::getAnchorX()
+{
+	return anchorX;
+}
+
+void SegmentationTemplate::setAnchorX(int x)
+{
+	anchorX = x;
+}
+
+int SegmentationTemplate::getAnchorY()
+{
+	return anchorY;
+}
+
+void SegmentationTemplate::setAnchorY(int y)
+{
+	anchorY = y;
 }
 
 bool SegmentationTemplate::loadFromFile(const QString& fileName)
@@ -144,6 +177,16 @@ bool SegmentationTemplate::loadFromFile(const QString& fileName)
 				continue;
 			}
 
+			if (reader.name() == "anchor_filename")
+			{
+				reader.readNext();
+				if (reader.isCharacters())
+				{
+					this->setAnchorFileName(reader.text().toString());
+				}
+				continue;
+			}
+
 			if (reader.name() == "image_width")
 			{
 				reader.readNext();
@@ -160,6 +203,26 @@ bool SegmentationTemplate::loadFromFile(const QString& fileName)
 				if (reader.isCharacters())
 				{
 					this->setImageHeight(reader.text().toString().toInt());
+				}
+				continue;
+			}
+
+			if (reader.name() == "anchor_x")
+			{
+				reader.readNext();
+				if (reader.isCharacters())
+				{
+					this->setAnchorX(reader.text().toString().toInt());
+				}
+				continue;
+			}
+
+			if (reader.name() == "anchor_Y")
+			{
+				reader.readNext();
+				if (reader.isCharacters())
+				{
+					this->setAnchorY(reader.text().toString().toInt());
 				}
 				continue;
 			}

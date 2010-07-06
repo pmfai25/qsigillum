@@ -3,61 +3,46 @@
   <properties>
 	<title>Учебная ведомость</title>
 	<author>Константин Кучер</author>
-	<date>2009-09-05 20:27</date>
+	<date>2010-06-20 19:44</date>
 	<image_width>2460</image_width>
 	<image_height>3388</image_height>
+	<anchor_filename>header_ved.jpg</anchor_filename>
+	<anchor_x>57</anchor_x>
+	<anchor_y>943</anchor_y>
   </properties>
   <body>
 	<container>
-	  <x>97</x>
-	  <y>226</y>
-	  <width>314</width>
-	  <height>49</height>
-	  <field>
-		<x>0</x>
-		<y>0</y>
-		<width>314</width>
-		<height>49</height>
-	  </field>
-	</container>
-	<container>
-	  <x>58</x>
-	  <y>1315</y>
-	  <width>2168</width>
+	  <x>736</x>
+	  <y>372</y>
+	  <width>1443</width>
 	  <height>88</height>
 	  <interval>8</interval>
 	  <field>
 		<x>0</x>
 		<y>0</y>
-		<width>89</width>
+		<width>120</width>
 		<height>82</height>
 	  </field>
 	  <field>
-		<x>730</x>
+		<x>333</x>
 		<y>0</y>
 		<width>120</width>
 		<height>82</height>
 	  </field>
 	  <field>
-		<x>1057</x>
+		<x>663</x>
 		<y>0</y>
 		<width>120</width>
 		<height>82</height>
 	  </field>
 	  <field>
-		<x>1386</x>
+		<x>991</x>
 		<y>0</y>
 		<width>120</width>
 		<height>82</height>
 	  </field>
 	  <field>
-		<x>1719</x>
-		<y>0</y>
-		<width>120</width>
-		<height>82</height>
-	  </field>
-	  <field>
-		<x>2049</x>
+		<x>1324</x>
 		<y>0</y>
 		<width>120</width>
 		<height>82</height>

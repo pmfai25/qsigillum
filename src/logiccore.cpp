@@ -189,6 +189,8 @@ void LogicCore::segmentate()
 	segmentator.setImage(&srcImage);
 	segmentator.segmentate();
 
+	segmentator.getRealAnchor();
+
 	// Create LineEdit widgets
 	QWidget * saParent = new QWidget();
 	QVBoxLayout * saLayout = new QVBoxLayout();
@@ -217,6 +219,65 @@ void LogicCore::segmentate()
 
 void LogicCore::classify()
 {
+	/*QImage test = preprocessor.binarize(QImage("../data/trash/a.bmp"));
+	qDebug() << "Result: " << classifiers.at(0)->classify(test);
+	return;*/
+
+	/*// Testing classifier
+	for (int i = 0; i < 100; i++)
+	{
+		int number = 0;
+		QImage marked = preprocessor.markCC(preprocessor.erode(
+				preprocessor.dilate(preprocessor.binarize(
+				preprocessor.removeBorderTrash(
+						(QImage(QString("../data/test/")
+						.append(QString::number(i))
+						.append(QString(".jpg")))))))), &number);
+
+		// Subdividing fields onto digits and classifying them
+		QString result;
+
+		// If zero or one component is found, analysis is vain
+		if (number <= 1)
+		{
+			result.append(classifiers.at(0)
+						  ->classify(marked));
+		}
+		else
+		{
+			// Get fields parameters
+			QVector< QVector<int> > fields = preprocessor.analyseComponents(marked, number);
+
+			// Check field and add it to the list
+			for (int n = 1; n <= number; n++)
+			{
+				QVector<int> field = fields[n];
+
+				int h = field[3] - field[1];
+				int w = field[2] - field[0];
+
+				if (h <= 0 || w <= 0 || h * w < 50)
+					continue;
+
+				// Get image
+				QImage temp(w + 10, h + 10, QImage::Format_RGB32);
+				temp.fill(qRgb(255, 255, 255));
+				for (int y = field[1]; y <= field[3]; y++)
+				for (int x = field[0]; x <= field[2]; x++)
+				{
+					int label = qRed(marked.pixel(x, y));
+					if (label == n)
+						temp.setPixel(x - field[0] + 6, y - field[1] + 6, qRgb(0, 0, 0));
+				}
+
+				result.append(classifiers.at(0)
+							  ->classify(temp));
+		}
+		qDebug() << i << ": " << result;
+	}
+	}
+	return; */
+
 	if (srcImage.isNull() || classifiers.isEmpty() || segmentator.getBody().isEmpty())
 		return;
 
@@ -224,7 +285,14 @@ void LogicCore::classify()
 	parent->getStatusBar()->showMessage(tr("Image classification..."));
 
 	int min_width = qRound(srcImage.width() * 0.004);
-	int z = 0;
+	int z = 0; int zz = 0;
+	// Number of marked connected components
+	int num = 0;
+	// Size of field
+	int h = 0;
+	int w = 0;
+	// Current label
+	int label = 0;
 
 	// Traversing segments
 	foreach (TemplateContainer * container, segmentator.getBody())
@@ -232,14 +300,73 @@ void LogicCore::classify()
 		foreach (TemplateField * field, container->getFields())
 		{
 			// Extracting image part
-			QImage part = preprocessor.removeDarkFields(
+			QImage part = preprocessor.erode(
+					preprocessor.dilate(preprocessor.binarize(
+					preprocessor.removeBorderTrash(
 					srcImage.copy(container->getX() + field->getX(),
 					container->getY() + field->getY(),
-					field->getWidth(), field->getHeight()));
+					field->getWidth(), field->getHeight())))));
+
+			num = 0;
+			QImage marked = preprocessor.markCC(part, &num);
+
+			marked.save(QString("../data/trash/marked-").
+				   append(QString::number(zz)).append(QString("-")).
+				   append(QString::number(num)).append(QString(".bmp")));
+
 
 			// Subdividing fields onto digits and classifying them
 			QString result;
 
+			// If zero or one component is found, analysis is vain
+			if (num <= 1)
+			{
+				result.append(classifiers.at(0)
+							  ->classify(part));
+			}
+			else
+			{
+				// Get fields parameters
+				QVector< QVector<int> > fields = preprocessor.analyseComponents(marked, num);
+
+				// Check field and add it to the list
+				for (int n = 1; n <= num; n++)
+				{
+					QVector<int> field = fields[n];
+
+					h = field[3] - field[1];
+					w = field[2] - field[0];
+
+					if (h <= 0 || w <= 0 || h * w < 50)
+						continue;
+
+					// Get image
+					QImage temp(w + 10, h + 10, QImage::Format_RGB32);
+					temp.fill(qRgb(255, 255, 255));
+					for (int y = field[1]; y <= field[3]; y++)
+					for (int x = field[0]; x <= field[2]; x++)
+					{
+						label = qRed(marked.pixel(x, y));
+						if (label == n)
+							temp.setPixel(x - field[0] + 6, y - field[1] + 6, qRgb(0, 0, 0));
+					}
+
+					temp.save(QString("../data/trash/temp-").
+						   append(QString::number(zz)).append(QString("-")).
+						   append(QString::number(z)).append(QString("-h")).
+						   append(QString::number(h)).append(QString("-w")).
+						   append(QString::number(w)).append(QString(".bmp")));
+					z++;
+
+					result.append(classifiers.at(0)
+								  ->classify(temp));
+				}
+
+
+			}
+			zz++;
+
+/*
 			// Horizontal borders of digit
 			int b1 = -1, b2 = 0;
 
@@ -264,11 +391,11 @@ void LogicCore::classify()
 				{
 					//qDebug() << b1 << " 0 " << b2 << " " << part.height() << " z=" << z;
 
-					QImage q = preprocessor.removeBorderTrash(
-							part.copy(b1, 0, b2-b1+1, part.height()));
-					//QImage q = part.copy(b1, 0, b2-b1+1, part.height());
+					// QImage q = preprocessor.removeBorderTrash(
+					//		part.copy(b1, 0, b2-b1+1, part.height()));
+					QImage q = part.copy(b1, 0, b2-b1+1, part.height());
 					q.save(QString("../data/trash/").
-						   append(QString::number(z)).append(QString(".jpg")));
+						   append(QString::number(z)).append(QString(".bmp")));
 
 					result.append(classifiers.at(0)
 								  ->classify(q));
@@ -279,7 +406,7 @@ void LogicCore::classify()
 					z++;
 				}
 			}
-
+*/
 			// Updating label
 			field->getLineEdit()->setText(result);
 
