@@ -51,6 +51,15 @@ public:
 	int getImageHeight();
 	void setImageHeight(int height);
 
+	const QString& getAnchorFileName();
+	void setAnchorFileName(const QString& fileName);
+
+	int getAnchorX();
+	void setAnchorX(int x);
+
+	int getAnchorY();
+	void setAnchorY(int y);
+
 	// Try to load template from file
 	bool loadFromFile(const QString& fileName);
 
@@ -61,9 +70,16 @@ private:
 	QString title;
 	QString author;
 	QString date;
+
 	// Image normalization size
 	int imageWidth;
 	int imageHeight;
+
+	// Anchor image name
+	QString anchorFileName;
+	// Anchor coordinates
+	int anchorX;
+	int anchorY;
 
 	// Template body
 	QList<TemplateContainer*> body;

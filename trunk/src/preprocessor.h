@@ -22,7 +22,9 @@
 #include <QObject>
 #include <QImage>
 #include <QPoint>
+#include <QQueue>
 #include <QDebug>
+#include <QVector>
 
 class Preprocessor : public QObject
 {
@@ -37,6 +39,16 @@ public:
 	bool emptyColumn(const QImage& image, int x);
 	// Check if image row is empty
 	bool emptyRow(const QImage& image, int y);
+	// Binarization
+	QImage binarize(const QImage& image);
+	// Connected components analysis
+	QImage markCC(const QImage& image, int* number);
+	// Morphological dilation
+	QImage dilate(const QImage& image);
+	// Morphological erosion
+	QImage erode(const QImage& image);
+	// Analyse connected components
+	QVector< QVector<int> > analyseComponents(const QImage& marked, int number);
 
 private:
 	// Minimum mean value of non-dark field

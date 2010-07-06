@@ -19,6 +19,7 @@
 #include "segmentator.h"
 
 Segmentator::Segmentator()
+	: scale_width(175), max_deviation(30000000), region_size(20)
 {
 	segTemplate = NULL;
 	while (!body.isEmpty())
@@ -165,20 +166,125 @@ bool Segmentator::emptyLine(int y)
 	return true;
 }
 
-// Read part of image based on interest zones from template
-QImage Segmentator::getInterestPart()
+// Analyze image and return real anchor coordinates
+QPoint Segmentator::getRealAnchor()
 {
-	if (segTemplate != NULL
-		&& segTemplate->getBody().size() > 0)
+	// Result coordinates
+	QPoint result;
+
+	// Load anchor image
+	QImage anchorImage = QImage(QString("../data/")
+								.append(segTemplate->getAnchorFileName()));
+
+	if (anchorImage.isNull()
+		|| segTemplate->getAnchorX() < 0
+		|| segTemplate->getAnchorY() < 0)
+		return result;
+
+	// Scale images
+	double ratio = double(image->width()) / scale_width;
+	int im_width = scale_width;
+	int im_height = qRound(double(image->height()) / ratio);
+
+	int a_width = qRound((double(segTemplate->getImageWidth()) / image->width())
+						 * anchorImage.width() / ratio);
+	int a_height = qRound((double(segTemplate->getImageHeight()) / image->height())
+						 * anchorImage.height() / ratio);
+
+	if (a_width > im_width || a_height > im_height)
+		return result;
+
+	QImage imScaled = image->scaled(im_width, im_height,
+									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+	QImage aScaled = anchorImage.scaled(a_width, a_height,
+									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+	// Create correlation matrix
+	int m_height = imScaled.height() - aScaled.height();
+	if (m_height <= 0)
+		m_height = 1;
+	int m_width = imScaled.width() - aScaled.width();
+	if (m_width <= 0)
+		m_width = 1;
+
+	unsigned int * matrix = new unsigned int[m_width * m_height];
+	if (!matrix)
+		return result;
+	// Sum of deviations
+	unsigned int sum = 0;
+
+	// Deviation sums calculation
+	for (int i = 0; i < m_height; i++)
 	{
-		int x = segTemplate->getBody().at(0)->getX();
-		int y = segTemplate->getBody().at(0)->getY();
-		int w = segTemplate->getBody().at(0)->getWidth();
-		int h = segTemplate->getBody().at(0)->getHeight();
-		return image->copy(x, y, w, h);
+		for (int j = 0; j < m_width; j++)
+		{
+			// Value initialization
+			matrix[i * m_width + j] = max_deviation;
+			sum = 0;
+
+			// Calculate deviations
+			for (int y = 0; y < a_height; y++)
+				for (int x = 0; x < a_width; x++)
+			{
+				sum += qAbs(qGray(imScaled.pixel(j+x, i+y))
+							- qGray(aScaled.pixel(x, y)));
+				if (sum > max_deviation)
+					sum = max_deviation;
+			}
+
+			// Value saving
+			matrix[i * m_width + j] = sum;
+		}
 	}
-	else
-		return QImage();
+
+	// Searching for minimum value
+	unsigned int min = matrix[0];
+	unsigned int max = matrix[0];
+	// Deviation sums calculation
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			if (matrix[i * m_width + j] < min)
+			{
+				min = matrix[i * m_width + j];
+				result.setX(j);
+				result.setY(i);
+			}
+			if (matrix[i * m_width + j] > min)
+				max = matrix[i * m_width + j];
+		}
+	}
+
+	delete[] matrix;
+
+	qDebug() << " result: " << result.x() << ", " << result.y()
+			<< " scaled result: " << result.x() * ratio << ", " << result.y() * ratio
+			<< " min: " << min << " max: " << max;
+
+	// Intermediate result
+	int ix = qAbs(result.x() * ratio);
+	int iy = qAbs(result.y() * ratio);
+
+	// Second pass region bounds
+	int bl = (ix - region_size > 0) ? (ix - region_size) : 0;
+	int br = (ix + region_size < image->width()) ? (ix + region_size) : image->width() - 1;
+	int bt = (iy - region_size > 0) ? (iy - region_size) : 0;
+	int bb = (iy + region_size < image->height()) ? (iy + region_size) : image->height() - 1;
+
+	qDebug() << "bounds: " << bl << br << bt << bb;
+
+	// Anchor image scaling
+	int a_width = qRound((double(segTemplate->getImageWidth()) / image->width())
+						 * anchorImage.width());
+	int a_height = qRound((double(segTemplate->getImageHeight()) / image->height())
+						 * anchorImage.height());
+	aScaled = anchorImage.scaled(a_width, a_height,
+										Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+
+
+	return result;
 }
 
 const QList<TemplateContainer *> & Segmentator::getBody()
