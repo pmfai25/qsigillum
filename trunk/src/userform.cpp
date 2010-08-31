@@ -29,10 +29,7 @@ UserForm::UserForm(QWidget *parent) :
 
 UserForm::~UserForm()
 {
-	logicCore->quit();
-	logicCore->terminate();
 	delete logicCore;
-
 	delete m_ui;
 }
 
@@ -49,8 +46,6 @@ void UserForm::init()
 			SLOT(classify()));
 	connect(m_ui->tbSaveResultsAs,SIGNAL(clicked()), logicCore,
 			SLOT(saveResults()));
-	logicCore->start();
-	//logicCore->moveToThread(logicCore);
 }
 
 void UserForm::changeEvent(QEvent *e)

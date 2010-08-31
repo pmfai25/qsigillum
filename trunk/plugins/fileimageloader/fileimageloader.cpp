@@ -29,6 +29,9 @@ QImage FileImageLoader::loadImage()
 	if (fileName.length() <= 0)
 		return QImage();
 
+	if (statusBar)
+		statusBar->showMessage(tr("Loading image: ") + fileName);
+
 	return QImage(fileName);
 }
 
@@ -54,6 +57,12 @@ QString FileImageLoader::getLoadingProcessingDescription()
 QString FileImageLoader::getTranslationFileBaseName()
 {
 	return QString("fileimageloader");
+}
+
+// Set status bar for updating GUI info
+void FileImageLoader::setStatusBar(QStatusBar * statusBar)
+{
+	this->statusBar = statusBar;
 }
 
 Q_EXPORT_PLUGIN2(fileimageloader, FileImageLoader)

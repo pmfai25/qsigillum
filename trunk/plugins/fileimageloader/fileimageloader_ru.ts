@@ -5,12 +5,17 @@
     <name>FileImageLoader</name>
     <message>
         <location filename="fileimageloader.cpp" line="28"/>
-        <location filename="fileimageloader.cpp" line="44"/>
+        <location filename="fileimageloader.cpp" line="47"/>
         <source>Open image file</source>
         <translation>Открыть файл изображения</translation>
     </message>
     <message>
-        <location filename="fileimageloader.cpp" line="50"/>
+        <location filename="fileimageloader.cpp" line="33"/>
+        <source>Loading image: </source>
+        <translation>Загрузка изображения: </translation>
+    </message>
+    <message>
+        <location filename="fileimageloader.cpp" line="53"/>
         <source>Open and process image file</source>
         <translation>Открыть и распознать файл изображения</translation>
     </message>

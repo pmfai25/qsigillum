@@ -43,15 +43,12 @@
 class UserForm;
 
 // Class incapsulating logic layer
-class LogicCore : public QThread
+class LogicCore : public QObject
 {
 	Q_OBJECT
 
 public:
 	LogicCore(UserForm *parent);
-	~LogicCore();
-
-	void run();
 
 public slots:
 	void getImage();

@@ -24,6 +24,7 @@
 class QImage;
 class QString;
 class QIcon;
+class QStatusBar;
 
 class ImageLoader
 {
@@ -46,13 +47,15 @@ public:
 	// Get image loading & processing action description for menu
 	virtual QString getLoadingProcessingDescription() = 0;
 
+	// Set status bar for updating GUI info
+	virtual void setStatusBar(QStatusBar *) = 0;
+
 signals:
 	virtual void activatedLoading() = 0;
 	virtual void activatedAutomatedProcessing() = 0;
-
 };
 
-Q_DECLARE_INTERFACE(ImageLoader,"qSigillum.ImageLoader/0.1");
+Q_DECLARE_INTERFACE(ImageLoader,"qSigillum.ImageLoader/0.2");
 
 
 #endif // IMAGELOADER_H

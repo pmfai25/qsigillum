@@ -19,7 +19,7 @@
 #include "segmentator.h"
 
 Segmentator::Segmentator()
-	: scale_width(175), max_deviation(30000000), region_size(20)
+	: scale_width(160), max_deviation(30000000), region_size(20)
 {
 	segTemplate = NULL;
 	while (!body.isEmpty())
@@ -70,14 +70,23 @@ void Segmentator::segmentate()
 	 delete body.takeFirst();
 
 	// Scanning zone height
-	int scan_height = (qRound(image->height() * 0.003) > 0)
-					  ? qRound(image->height() * 0.003) : 1;
+	int scan_height = (segTemplate->getBody().length() > 0)
+					  ? segTemplate->getBody().at(0)->getHeight() / 2
+					  : 30;
+
+	// Get real image anchor point
+	QPoint anchor = getRealAnchor();
+	//qDebug() << "anchor point: (" << anchor.x() << "; " << anchor.y()
+	//		<< ") scan height:" << scan_height;
 
 	// Now we should iterate through containers
 	foreach (TemplateContainer * srcContainer, segTemplate->getBody())
 	{
 		// Check for emptiness and add one container if necessary
 		TemplateContainer * temp = new TemplateContainer(srcContainer);
+		// Set correct coordinates
+		temp->setX(temp->getX() + anchor.x());
+		temp->setY(temp->getY() + anchor.y());
 
 		bool isNotEmpty = false;
 
@@ -99,6 +108,8 @@ void Segmentator::segmentate()
 		if (isNotEmpty)
 		{
 			body.append(temp);
+			//qDebug() << "container at (" << temp->getX() << "; "
+			//	<< temp->getY() << ")";
 		}
 		else
 			delete temp;
@@ -109,7 +120,7 @@ void Segmentator::segmentate()
 			// Data analysis success
 			bool success;
 
-			int i = srcContainer->getY() + srcContainer->getHeight()
+			int i = srcContainer->getY() + anchor.y() + srcContainer->getHeight()
 					+ srcContainer->getInterval();
 
 			do
@@ -120,6 +131,9 @@ void Segmentator::segmentate()
 				int b1 = i;
 				int b2 = (i + scan_height < image->height() )
 						 ? (i + scan_height) : image->height() - 1;
+
+				//qDebug() << "scanning from " << b1 << "to "
+				//		<< b2 << " (height " << scan_height << ")";
 
 				// Local scanning
 				for (int y = b1; y <= b2 ; y++)
@@ -139,10 +153,16 @@ void Segmentator::segmentate()
 				// Appending template row
 				TemplateContainer * temp = new TemplateContainer(srcContainer);
 				temp->setY(i);
+				temp->setX(temp->getX() + anchor.x());
 				body.append(temp);
+				//qDebug() << "container at (" << temp->getX() << "; "
+				//		<< temp->getY() << ")";
 
 				// Incrementing vertical coordinate
 				i += srcContainer->getHeight() + srcContainer->getInterval();
+
+				// Update GUI to avoid freezing
+				qApp->processEvents();
 
 			} while (success);
 
@@ -199,7 +219,7 @@ QPoint Segmentator::getRealAnchor()
 	QImage aScaled = anchorImage.scaled(a_width, a_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-	// Create correlation matrix
+	// Deviation matrix size
 	int m_height = imScaled.height() - aScaled.height();
 	if (m_height <= 0)
 		m_height = 1;
@@ -207,6 +227,7 @@ QPoint Segmentator::getRealAnchor()
 	if (m_width <= 0)
 		m_width = 1;
 
+	// Deviation matrix
 	unsigned int * matrix = new unsigned int[m_width * m_height];
 	if (!matrix)
 		return result;
@@ -235,6 +256,9 @@ QPoint Segmentator::getRealAnchor()
 			// Value saving
 			matrix[i * m_width + j] = sum;
 		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	// Searching for minimum value
@@ -254,17 +278,22 @@ QPoint Segmentator::getRealAnchor()
 			if (matrix[i * m_width + j] > min)
 				max = matrix[i * m_width + j];
 		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	delete[] matrix;
 
-	qDebug() << " result: " << result.x() << ", " << result.y()
-			<< " scaled result: " << result.x() * ratio << ", " << result.y() * ratio
-			<< " min: " << min << " max: " << max;
-
 	// Intermediate result
 	int ix = qAbs(result.x() * ratio);
 	int iy = qAbs(result.y() * ratio);
+
+
+	/*qDebug() << "first pass result: (" << ix << ", " << iy
+			<< ") min: " << min << " max: " << max
+			<< " matrix size: (" << m_height << ", " << m_width << ")";
+	*/
 
 	// Second pass region bounds
 	int bl = (ix - region_size > 0) ? (ix - region_size) : 0;
@@ -272,18 +301,88 @@ QPoint Segmentator::getRealAnchor()
 	int bt = (iy - region_size > 0) ? (iy - region_size) : 0;
 	int bb = (iy + region_size < image->height()) ? (iy + region_size) : image->height() - 1;
 
-	qDebug() << "bounds: " << bl << br << bt << bb;
+	//qDebug() << "second pass bounds: " << bl << br << bt << bb;
 
 	// Anchor image scaling
-	int a_width = qRound((double(segTemplate->getImageWidth()) / image->width())
+	a_width = qRound((double(segTemplate->getImageWidth()) / image->width())
 						 * anchorImage.width());
-	int a_height = qRound((double(segTemplate->getImageHeight()) / image->height())
+	a_height = qRound((double(segTemplate->getImageHeight()) / image->height())
 						 * anchorImage.height());
 	aScaled = anchorImage.scaled(a_width, a_height,
 										Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
+	// Second pass deviation matrix
+	m_height = (bb - bt + 1) - region_size;
+	if (m_height <= 0)
+		m_height = 1;
+	m_width = (br - bl + 1) - region_size;
+	if (m_width <= 0)
+		m_width = 1;
+	matrix = new unsigned int[m_width * m_height];
+	if (!matrix)
+		return result;
 
+	// Deviations sum
+	sum = 0;
 
+	// Deviation sums calculation
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			// Value initialization
+			matrix[i * m_width + j] = max_deviation;
+			sum = 0;
+
+			// Calculate deviations
+			for (int y = 0; y < 2 * region_size; y++)
+				for (int x = 0; x < 2 * region_size; x++)
+			{
+				sum += qAbs(qGray(image->pixel(bl+j+x, bt+i+y))
+							- qGray(aScaled.pixel(x, y)));
+				if (sum > max_deviation)
+					sum = max_deviation;
+			}
+
+			// Value saving
+			matrix[i * m_width + j] = sum;
+		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
+	}
+
+	// Searching for minimum value
+	min = matrix[0];
+	max = matrix[0];
+	// Deviation sums calculation
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			if (matrix[i * m_width + j] < min)
+			{
+				min = matrix[i * m_width + j];
+				result.setX(j);
+				result.setY(i);
+			}
+			if (matrix[i * m_width + j] > min)
+				max = matrix[i * m_width + j];
+		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
+	}
+
+	delete[] matrix;
+
+	result.setX(result.x() + bl);
+	result.setY(result.y() + bt);
+
+	/*qDebug() << "second pass result: (" << result.x() << ", " << result.y()
+			<< ") min: " << min << " max: " << max
+			<< " matrix size: (" << m_height << ", " << m_width << ")";
+	*/
 	return result;
 }
 
