@@ -55,6 +55,9 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 			temp += qGray(image.pixel(j, i));
 		if (qRound(double(temp) / image.height()) > light_threshold)
 			break;
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	// Loop from right
@@ -68,6 +71,9 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 			temp += qGray(image.pixel(j, i));
 		if (qRound(double(temp) / image.height()) > light_threshold)
 			break;
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	// Loop from top
@@ -80,6 +86,9 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 			temp += qGray(image.pixel(j, i));
 		if (qRound(double(temp) / image.width()) > light_threshold)
 			break;
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	// Loop from bottom
@@ -93,6 +102,9 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 			temp += qGray(image.pixel(j, i));
 		if (qRound(double(temp) / image.width()) > light_threshold)
 			break;
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
 	}
 
 	// Copy resulting image

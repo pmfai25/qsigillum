@@ -20,6 +20,7 @@
 #define PREPROCESSOR_H
 
 #include <QObject>
+#include <QApplication>
 #include <QImage>
 #include <QPoint>
 #include <QQueue>

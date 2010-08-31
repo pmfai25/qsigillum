@@ -25,6 +25,7 @@
 #include <QFileDialog>
 #include <QString>
 #include <QIcon>
+#include <QStatusBar>
 
 #include "../../src/imageloader.h"
 
@@ -49,10 +50,16 @@ public:
 	// Get image loading & processing action description for menu
 	QString getLoadingProcessingDescription();
 
+	// Set status bar for updating GUI info
+	void setStatusBar(QStatusBar * statusBar);
+
+private:
+	// Main window status bar
+	QStatusBar * statusBar;
+
 signals:
 	void activatedLoading();
 	void activatedAutomatedProcessing();
-
 };
 
 #endif // FILEIMAGELOADER_H

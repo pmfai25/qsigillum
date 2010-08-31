@@ -24,16 +24,6 @@ LogicCore::LogicCore(UserForm *parent)
 	init();
 }
 
-LogicCore::~LogicCore()
-{
-
-}
-
-void LogicCore::run()
-{
-	exec();
-}
-
 // Initialize all components
 void LogicCore::init()
 {
@@ -69,7 +59,6 @@ void LogicCore::init()
 				 translator->load(pluginsDir.absolutePath()+"/"+
 								  iImageLoader->getTranslationFileBaseName()
 								  + "_ru.qm");
-				 translator->moveToThread(qApp->thread());
 				 qApp->installTranslator(translator);
 
 				 // Update menu
@@ -77,7 +66,6 @@ void LogicCore::init()
 												iImageLoader->
 												getLoadingDescription(),
 												parent);
-				 action->moveToThread(qApp->thread());
 				 connect(action, SIGNAL(triggered()), plugin,
 						 SIGNAL(activatedLoading()));
 				 connect(plugin, SIGNAL(activatedLoading()),
@@ -90,12 +78,14 @@ void LogicCore::init()
 									getLoadingProcessingDescription());
 				 button->setIcon(iImageLoader->getMenuIcon());
 				 button->setIconSize(QSize(48,48));
-				 button->moveToThread(qApp->thread());
 				 connect(button, SIGNAL(clicked()), plugin,
 						 SIGNAL(activatedAutomatedProcessing()));
 				 connect(plugin, SIGNAL(activatedAutomatedProcessing()),
 						 this, SLOT(processAutomatedMode()));
 				 parent->getToolbarLayout()->insertWidget(position++, button);
+
+				 // Set status bar
+				 iImageLoader->setStatusBar(parent->getStatusBar());
 			 }
 
 			 Classifier *iClassifier
@@ -189,18 +179,21 @@ void LogicCore::segmentate()
 	segmentator.setImage(&srcImage);
 	segmentator.segmentate();
 
-	segmentator.getRealAnchor();
-
 	// Create LineEdit widgets
 	QWidget * saParent = new QWidget();
 	QVBoxLayout * saLayout = new QVBoxLayout();
 	saParent->setLayout(saLayout);
+
+	// Container (i.e. row) counter
+	int row = 1;
 
 	foreach (TemplateContainer * container, segmentator.getBody())
 	{
 		QHBoxLayout * hLayout = new QHBoxLayout();
 		container->createGroupBox(saParent);
 		container->getGroupBox()->setLayout(hLayout);
+		hLayout->addWidget(new QLabel
+						   (QString::number(row++).leftJustified(2)));
 
 		foreach (TemplateField * field, container->getFields())
 		{
@@ -283,6 +276,11 @@ void LogicCore::classify()
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image classification..."));
+	// Status message progress bar
+	QProgressBar * progressBar = new QProgressBar();
+	progressBar->setRange(0, segmentator.getBody().length());
+	progressBar->reset();
+	parent->getStatusBar()->addWidget(progressBar);
 
 	int min_width = qRound(srcImage.width() * 0.004);
 	int z = 0; int zz = 0;
@@ -297,6 +295,9 @@ void LogicCore::classify()
 	// Traversing segments
 	foreach (TemplateContainer * container, segmentator.getBody())
 	{
+		// Update progress bar
+		progressBar->setValue(progressBar->value() + 1);
+
 		foreach (TemplateField * field, container->getFields())
 		{
 			// Extracting image part
@@ -415,6 +416,8 @@ void LogicCore::classify()
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully classified"), 2000);
+	parent->getStatusBar()->removeWidget(progressBar);
+	delete progressBar;
 }
 
 void LogicCore::saveResults()

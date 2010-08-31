@@ -25,6 +25,7 @@
 #include <QString>
 #include <QIcon>
 #include <QtDebug>
+#include <QStatusBar>
 
 #include "../../src/imageloader.h"
 #include <sane/sane.h>
@@ -50,10 +51,16 @@ public:
 	// Get image loading & processing action description for menu
 	QString getLoadingProcessingDescription();
 
+	// Set status bar for updating GUI info
+	void setStatusBar(QStatusBar * statusBar);
+
+private:
+	// Main window status bar
+	QStatusBar * statusBar;
+
 signals:
 	void activatedLoading();
 	void activatedAutomatedProcessing();
-
 };
 
 #endif // SANEIMAGELOADER_H

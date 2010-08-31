@@ -140,4 +140,11 @@ QString SaneImageLoader::getTranslationFileBaseName()
 	return QString("saneimageloader");
 }
 
+// Set status bar for updating GUI info
+void SaneImageLoader::setStatusBar(QStatusBar * statusBar)
+{
+	this->statusBar = statusBar;
+}
+
+
 Q_EXPORT_PLUGIN2(saneimageloader, SaneImageLoader)
