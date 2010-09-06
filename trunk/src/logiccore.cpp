@@ -46,7 +46,7 @@ void LogicCore::init()
 		 {
 			 qDebug() << "Loaded plugin: " << fileName;
 
-			 ImageLoader *iImageLoader = qobject_cast<ImageLoader *>(plugin);
+			 ImageLoader * iImageLoader = qobject_cast<ImageLoader *>(plugin);
 			 if (iImageLoader)
 			 {
 				 qDebug() << fileName << " is ImageLoader plugin";
@@ -54,7 +54,7 @@ void LogicCore::init()
 				 imageLoaders.append(iImageLoader);
 
 				 // Update translation
-				 QTranslator *translator = new QTranslator();
+				 QTranslator * translator = new QTranslator();
 				 // TODO: remove hardcoded russian translation value
 				 translator->load(pluginsDir.absolutePath()+"/"+
 								  iImageLoader->getTranslationFileBaseName()
@@ -73,7 +73,7 @@ void LogicCore::init()
 				 newFileActions.append(action);
 
 				 // Update toolbar
-				 QToolButton* button = new QToolButton();
+				 QToolButton * button = new QToolButton();
 				 button->setToolTip(iImageLoader->
 									getLoadingProcessingDescription());
 				 button->setIcon(iImageLoader->getMenuIcon());
@@ -201,10 +201,51 @@ void LogicCore::segmentate()
 			hLayout->addWidget(field->getLineEdit());
 		}
 
+		// Add container removal button
+		QPushButton * button = new QPushButton();
+		button->setIcon(QIcon(":/list-remove.png"));
+		button->setToolTip(tr("Remove row"));
+		hLayout->addWidget(button);
+		connect(button, SIGNAL(clicked()), this, SLOT(deleteContainer()));
+
+		// Add container insertion button
+		button = new QPushButton();
+		button->setIcon(QIcon(":/insert-table.png"));
+		button->setToolTip(tr("Insert row"));
+		hLayout->addWidget(button);
+		connect(button, SIGNAL(clicked()), this, SLOT(insertContainer()));
+
 		saLayout->addWidget(container->getGroupBox());
 	}
 
 	parent->getScrollArea()->setWidget(saParent);
+
+	// Update preview
+	if (parent->getPreviewLabel()->pixmap())
+	{
+		QPixmap preview = parent->getPreviewLabel()->pixmap()->copy();
+		QPainter painter(&preview);
+
+		// Calculate preview to source image size ratio
+		double preview_ratio = double(preview.width()) / srcImage.width();
+
+		// Paint anchor point
+		painter.setBrush(Qt::green);
+		painter.drawEllipse(segmentator.getRealAnchor() * preview_ratio, 3, 3);
+
+		// Paint template containers
+		foreach (TemplateContainer * container, segmentator.getBody())
+		{
+			painter.drawRoundedRect(
+					QRectF(container->getX() * preview_ratio,
+						   container->getY() * preview_ratio,
+						   container->getWidth() * preview_ratio,
+						   container->getHeight() * preview_ratio), 3, 3);
+		}
+
+		parent->getPreviewLabel()->setPixmap(preview);
+	}
+
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully segmentated"), 2000);
@@ -308,12 +349,27 @@ void LogicCore::classify()
 					container->getY() + field->getY(),
 					field->getWidth(), field->getHeight())))));
 
+			/*int cor1 = container->getX() + field->getX();
+			int cor2 = container->getY() + field->getY();
+			int cor3 = field->getWidth();
+			int cor4 = field->getHeight();
+			QImage part0 = srcImage.copy(cor1, cor2, cor3, cor4);
+			part0.save(QString("../data/trash/part-").
+				   append(QString::number(progressBar->value())).append(QString("-zz")).
+				   append(QString::number(zz)).
+				   append(QString("-x")).append(QString::number(cor1)).
+				   append(QString("-y")).append(QString::number(cor2)).
+				   append(QString("-w")).append(QString::number(cor3)).
+				   append(QString("-h")).append(QString::number(cor4)).
+				   append(QString(".bmp")));*/
+
 			num = 0;
 			QImage marked = preprocessor.markCC(part, &num);
 
-			marked.save(QString("../data/trash/marked-").
-				   append(QString::number(zz)).append(QString("-")).
-				   append(QString::number(num)).append(QString(".bmp")));
+			//marked.save(QString("../data/trash/marked-").
+			//	   append(QString::number(progressBar->value())).append(QString("-zz")).
+			//	   append(QString::number(zz)).append(QString("-")).
+			//	   append(QString::number(num)).append(QString(".bmp")));
 
 
 			// Subdividing fields onto digits and classifying them
@@ -338,7 +394,9 @@ void LogicCore::classify()
 					h = field[3] - field[1];
 					w = field[2] - field[0];
 
-					if (h <= 0 || w <= 0 || h * w < 50)
+					// Validating field
+					if (h <= 0 || w <= 0 || h * w < 800 || field[4] < 100
+						|| field[4] > 1500)
 						continue;
 
 					// Get image
@@ -353,10 +411,12 @@ void LogicCore::classify()
 					}
 
 					temp.save(QString("../data/trash/temp-").
+						   append(QString::number(progressBar->value())).append(QString("-zz")).
 						   append(QString::number(zz)).append(QString("-")).
 						   append(QString::number(z)).append(QString("-h")).
 						   append(QString::number(h)).append(QString("-w")).
-						   append(QString::number(w)).append(QString(".bmp")));
+						   append(QString::number(w)).append(QString("-po")).
+						   append(QString::number(field[4])).append(QString(".bmp")));
 					z++;
 
 					result.append(classifiers.at(0)
@@ -410,6 +470,14 @@ void LogicCore::classify()
 */
 			// Updating label
 			field->getLineEdit()->setText(result);
+			// Validating result
+			if (result.length() <= 0 || result.length() > 3
+				|| (result.length() == 3 && result.toInt() != 100))
+			{
+				QPalette p = field->getLineEdit()->palette();
+				p.setColor(QPalette::Base, Qt::red);
+				field->getLineEdit()->setPalette(p);
+			}
 
 		}
 	}
@@ -447,4 +515,72 @@ void LogicCore::processAutomatedMode()
 	preprocess();
 	segmentate();
 	classify();
+}
+
+void LogicCore::deleteContainer()
+{
+	QPushButton * sender = qobject_cast<QPushButton *>(this->sender());
+	if (sender)
+	{
+		// Check existing containers
+		for (int i = 0; i < segmentator.getBody().length(); i++)
+		{
+			if (sender->parent() == segmentator.getBody().at(i)->getGroupBox())
+			{
+				sender->disconnect(SIGNAL(clicked()));
+				delete segmentator.getBody().at(i)->getGroupBox();
+				segmentator.removeBodyElement(i);
+				return;
+			}
+		}
+	}
+}
+
+void LogicCore::insertContainer()
+{
+	QPushButton * sender = qobject_cast<QPushButton *>(this->sender());
+	if (sender)
+	{
+		// Check existing containers
+		for (int i = 0; i < segmentator.getBody().length(); i++)
+		{
+			if (sender->parent() == segmentator.getBody().at(i)->getGroupBox())
+			{
+				// Duplicate TemplateContainer in body list
+				segmentator.duplicateBodyElement(i);
+				TemplateContainer * container = segmentator.getBody().value(i+1);
+
+				// Widgets creating routine
+				QHBoxLayout * hLayout = new QHBoxLayout();
+				container->createGroupBox(parent->getScrollArea()->widget());
+				container->getGroupBox()->setLayout(hLayout);
+
+				foreach (TemplateField * field, container->getFields())
+				{
+					field->createLineEdit(container->getGroupBox());
+					hLayout->addWidget(field->getLineEdit());
+				}
+
+				// Add container removal button
+				QPushButton * button = new QPushButton();
+				button->setIcon(QIcon(":/list-remove.png"));
+				button->setToolTip(tr("Remove row"));
+				hLayout->addWidget(button);
+				connect(button, SIGNAL(clicked()), this, SLOT(deleteContainer()));
+
+				// Add container insertion button
+				button = new QPushButton();
+				button->setIcon(QIcon(":/insert-table.png"));
+				button->setToolTip(tr("Insert row"));
+				hLayout->addWidget(button);
+				connect(button, SIGNAL(clicked()), this, SLOT(insertContainer()));
+
+				QVBoxLayout * saLayout = qobject_cast<QVBoxLayout *>
+										 (parent->getScrollArea()->widget()->layout());
+				saLayout->insertWidget(i+1, container->getGroupBox());
+
+				return;
+			}
+		}
+	}
 }
