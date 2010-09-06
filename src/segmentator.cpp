@@ -43,6 +43,9 @@ void Segmentator::loadTemplate(const QString & fileName)
 
 	segTemplate = new SegmentationTemplate();
 	segTemplate->loadFromFile(fileName);
+	// Reset anchor
+	anchor = QPoint();
+	anchorFound = false;
 }
 
 void Segmentator::setImage(QImage * image)
@@ -71,11 +74,16 @@ void Segmentator::segmentate()
 
 	// Scanning zone height
 	int scan_height = (segTemplate->getBody().length() > 0)
-					  ? segTemplate->getBody().at(0)->getHeight() / 2
+					  ? segTemplate->getBody().at(0)->getHeight() / 4
 					  : 30;
 
 	// Get real image anchor point
-	QPoint anchor = getRealAnchor();
+	searchAnchor();
+	if (!anchorFound)
+	{
+		anchor = QPoint(segTemplate->getAnchorX(), segTemplate->getAnchorY());
+	}
+
 	//qDebug() << "anchor point: (" << anchor.x() << "; " << anchor.y()
 	//		<< ") scan height:" << scan_height;
 
@@ -189,9 +197,37 @@ bool Segmentator::emptyLine(int y)
 // Analyze image and return real anchor coordinates
 QPoint Segmentator::getRealAnchor()
 {
-	// Result coordinates
-	QPoint result;
+	return anchor;
+}
 
+const QList<TemplateContainer *> & Segmentator::getBody()
+{
+	const QList<TemplateContainer *> & value = body;
+	return value;
+}
+
+void Segmentator::dumpData()
+{
+	foreach (TemplateContainer * container, body)
+	{
+		qDebug() << "Container " << container->getWidth() << "x" <<
+				container->getHeight() << " at (" <<
+				container->getX() << ";" << container->getY() <<
+				") / interval" << container->getInterval();
+
+		foreach (TemplateField * field, container->getFields())
+		{
+			qDebug() << "\t Field " << field->getWidth() << "x" <<
+				field->getHeight() << " at (" <<
+				field->getX() << ";" << field->getY() << ")";
+		}
+	}
+
+	qDebug() << "Total: " << body.length() << " containers";
+}
+
+void Segmentator::searchAnchor()
+{
 	// Load anchor image
 	QImage anchorImage = QImage(QString("../data/")
 								.append(segTemplate->getAnchorFileName()));
@@ -199,7 +235,7 @@ QPoint Segmentator::getRealAnchor()
 	if (anchorImage.isNull()
 		|| segTemplate->getAnchorX() < 0
 		|| segTemplate->getAnchorY() < 0)
-		return result;
+		return;
 
 	// Scale images
 	double ratio = double(image->width()) / scale_width;
@@ -212,7 +248,7 @@ QPoint Segmentator::getRealAnchor()
 						 * anchorImage.height() / ratio);
 
 	if (a_width > im_width || a_height > im_height)
-		return result;
+		return;
 
 	QImage imScaled = image->scaled(im_width, im_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -230,7 +266,7 @@ QPoint Segmentator::getRealAnchor()
 	// Deviation matrix
 	unsigned int * matrix = new unsigned int[m_width * m_height];
 	if (!matrix)
-		return result;
+		return;
 	// Sum of deviations
 	unsigned int sum = 0;
 
@@ -272,8 +308,8 @@ QPoint Segmentator::getRealAnchor()
 			if (matrix[i * m_width + j] < min)
 			{
 				min = matrix[i * m_width + j];
-				result.setX(j);
-				result.setY(i);
+				anchor.setX(j);
+				anchor.setY(i);
 			}
 			if (matrix[i * m_width + j] > min)
 				max = matrix[i * m_width + j];
@@ -286,9 +322,8 @@ QPoint Segmentator::getRealAnchor()
 	delete[] matrix;
 
 	// Intermediate result
-	int ix = qAbs(result.x() * ratio);
-	int iy = qAbs(result.y() * ratio);
-
+	int ix = qAbs(anchor.x() * ratio);
+	int iy = qAbs(anchor.y() * ratio);
 
 	/*qDebug() << "first pass result: (" << ix << ", " << iy
 			<< ") min: " << min << " max: " << max
@@ -320,7 +355,7 @@ QPoint Segmentator::getRealAnchor()
 		m_width = 1;
 	matrix = new unsigned int[m_width * m_height];
 	if (!matrix)
-		return result;
+		return;
 
 	// Deviations sum
 	sum = 0;
@@ -363,8 +398,8 @@ QPoint Segmentator::getRealAnchor()
 			if (matrix[i * m_width + j] < min)
 			{
 				min = matrix[i * m_width + j];
-				result.setX(j);
-				result.setY(i);
+				anchor.setX(j);
+				anchor.setY(i);
 			}
 			if (matrix[i * m_width + j] > min)
 				max = matrix[i * m_width + j];
@@ -376,39 +411,28 @@ QPoint Segmentator::getRealAnchor()
 
 	delete[] matrix;
 
-	result.setX(result.x() + bl);
-	result.setY(result.y() + bt);
+	anchor.setX(anchor.x() + bl);
+	anchor.setY(anchor.y() + bt);
+	anchorFound = true;
 
 	/*qDebug() << "second pass result: (" << result.x() << ", " << result.y()
 			<< ") min: " << min << " max: " << max
 			<< " matrix size: (" << m_height << ", " << m_width << ")";
 	*/
-	return result;
 }
 
-const QList<TemplateContainer *> & Segmentator::getBody()
+void Segmentator::removeBodyElement(int element)
 {
-	const QList<TemplateContainer *> & value = body;
-	return value;
-}
-
-void Segmentator::dumpData()
-{
-	foreach (TemplateContainer * container, body)
+	if (element >= 0 && element < body.length())
 	{
-		qDebug() << "Container " << container->getWidth() << "x" <<
-				container->getHeight() << " at (" <<
-				container->getX() << ";" << container->getY() <<
-				") / interval" << container->getInterval();
-
-		foreach (TemplateField * field, container->getFields())
-		{
-			qDebug() << "\t Field " << field->getWidth() << "x" <<
-				field->getHeight() << " at (" <<
-				field->getX() << ";" << field->getY() << ")";
-		}
+		delete body.takeAt(element);
 	}
-
-	qDebug() << "Total: " << body.length() << " containers";
 }
 
+void Segmentator::duplicateBodyElement(int element)
+{
+	if (element >= 0 && element < body.length())
+	{
+		body.insert(element+1, new TemplateContainer(body.at(element)));
+	}
+}

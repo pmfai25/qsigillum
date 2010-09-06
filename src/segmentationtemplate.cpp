@@ -217,7 +217,7 @@ bool SegmentationTemplate::loadFromFile(const QString& fileName)
 				continue;
 			}
 
-			if (reader.name() == "anchor_Y")
+			if (reader.name() == "anchor_y")
 			{
 				reader.readNext();
 				if (reader.isCharacters())

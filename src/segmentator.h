@@ -36,9 +36,14 @@ public:
 	void loadTemplate(const QString & fileName);
 	void setImage(QImage * image);
 	void segmentate();
-	const QList<TemplateContainer *> & getBody();
-	// Analyze image and return real anchor coordinates
+	// Get real anchor coordinates
 	QPoint getRealAnchor();
+
+	const QList<TemplateContainer *> & getBody();
+	// Remove container from body list
+	void removeBodyElement(int element);
+	// Duplicate container using element number
+	void duplicateBodyElement(int element);
 
 private:
 	// Segmentation template instance
@@ -55,15 +60,22 @@ private:
 	// Region size for second pass analysis
 	const int region_size;
 
-	// Check if source image line is empty
-	bool emptyLine(int y);
-	// Dump body for debug purposes
-	void dumpData();
-
 	// Real-to-suspected image width ratio
 	double width_ratio;
 	// Real-to-suspected image height ratio
 	double height_ratio;
+
+	// Real anchor coordinates
+	QPoint anchor;
+	// Anchor change flag
+	bool anchorFound;
+
+	// Check if source image line is empty
+	bool emptyLine(int y);
+	// Dump body for debug purposes
+	void dumpData();
+	// Search for real anchor coordinates
+	void searchAnchor();
 
 };
 

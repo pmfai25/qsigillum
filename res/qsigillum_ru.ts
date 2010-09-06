@@ -165,47 +165,59 @@
 <context>
     <name>LogicCore</name>
     <message>
-        <location filename="../src/logiccore.cpp" line="125"/>
+        <location filename="../src/logiccore.cpp" line="120"/>
         <source>Loading image...</source>
         <translation>Загрузка изображения...</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="139"/>
+        <location filename="../src/logiccore.cpp" line="134"/>
         <source>Image successfully loaded</source>
         <translation>Изображение загружено</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="143"/>
+        <location filename="../src/logiccore.cpp" line="138"/>
         <source>Image loading failed</source>
         <translation>Изображение недоступно</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="154"/>
+        <location filename="../src/logiccore.cpp" line="149"/>
         <source>Preprocessing image...</source>
         <translation>Предварительная обработка...</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="226"/>
+        <location filename="../src/logiccore.cpp" line="165"/>
         <source>Image successfully preprocessed</source>
         <translation>Предварительная обработка закончена</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="236"/>
+        <location filename="../src/logiccore.cpp" line="175"/>
         <source>Segmentating image...</source>
         <translation>Сегментация изображения...</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="266"/>
+        <location filename="../src/logiccore.cpp" line="207"/>
+        <location filename="../src/logiccore.cpp" line="540"/>
+        <source>Remove row</source>
+        <translation>Удалить ряд</translation>
+    </message>
+    <message>
+        <location filename="../src/logiccore.cpp" line="214"/>
+        <location filename="../src/logiccore.cpp" line="547"/>
+        <source>Insert row</source>
+        <translation>Вставить ряд</translation>
+    </message>
+    <message>
+        <location filename="../src/logiccore.cpp" line="251"/>
         <source>Image successfully segmentated</source>
         <translation>Сегментация закончена</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="275"/>
+        <location filename="../src/logiccore.cpp" line="319"/>
         <source>Image classification...</source>
         <translation>Распознавание...</translation>
     </message>
     <message>
-        <location filename="../src/logiccore.cpp" line="282"/>
+        <location filename="../src/logiccore.cpp" line="459"/>
         <source>Image successfully classified</source>
         <translation>Распознавание закончено</translation>
     </message>
@@ -279,13 +291,13 @@
     <message>
         <location filename="../src/userform.ui" line="231"/>
         <location filename="../src/userform.ui" line="234"/>
-        <location filename="../src/userform.cpp" line="110"/>
+        <location filename="../src/userform.cpp" line="109"/>
         <source>About application</source>
         <translation>Про приложение</translation>
     </message>
     <message>
         <location filename="../src/userform.ui" line="243"/>
-        <location filename="../src/userform.cpp" line="105"/>
+        <location filename="../src/userform.cpp" line="104"/>
         <source>About Qt</source>
         <translation>Про Qt</translation>
     </message>
@@ -305,7 +317,7 @@
         <translation>Распознавание</translation>
     </message>
     <message>
-        <location filename="../src/userform.cpp" line="111"/>
+        <location filename="../src/userform.cpp" line="110"/>
         <source>&lt;b&gt;QSigillum&lt;/b&gt; - Handwritten digits recognition for structured documents&lt;br&gt;Copyright 2009 Konstantin &quot;konst&quot; Kucher (konst.hex@gmail.com)</source>
         <translation>&lt;b&gt;QSigillum&lt;/b&gt; - Приложение для распознавания рукописных цифр в структурированных документах&lt;br&gt;Copyright 2009 Konstantin &quot;konst&quot; Kucher (konst.hex@gmail.com)</translation>
     </message>

@@ -58,6 +58,11 @@ public slots:
 	void saveResults();
 	void processAutomatedMode();
 
+	// Delete container
+	void deleteContainer();
+	// Insert container
+	void insertContainer();
+
 private:
 	UserForm *parent;
 

@@ -35,8 +35,6 @@ TemplateContainer::TemplateContainer(TemplateContainer * container)
 	setWidth(container->getWidth());
 	setHeight(container->getHeight());
 	setInterval(container->getInterval());
-	//if (container->getGroupBox())
-		//createGroupBox(container->getGroupBox()->parentWidget());
 
 	foreach (TemplateField * field, container->getFields())
 	{
