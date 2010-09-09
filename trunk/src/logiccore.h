@@ -48,7 +48,7 @@ class LogicCore : public QObject
 	Q_OBJECT
 
 public:
-	LogicCore(UserForm *parent);
+	LogicCore(UserForm * parent);
 
 public slots:
 	void getImage();
@@ -64,7 +64,8 @@ public slots:
 	void insertContainer();
 
 private:
-	UserForm *parent;
+	UserForm * parent;
+	QSettings * settings;
 
 	QImage srcImage;
 

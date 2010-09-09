@@ -18,7 +18,7 @@
 
 #include "logiccore.h"
 
-LogicCore::LogicCore(UserForm *parent)
+LogicCore::LogicCore(UserForm * parent)
 		: parent(parent)
 {
 	init();
@@ -40,7 +40,7 @@ void LogicCore::init()
 	foreach (QString fileName, pluginsDir.entryList(QDir::Files))
 	{
 		 QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-		 QObject *plugin = loader.instance();
+		 QObject * plugin = loader.instance();
 
 		 if (plugin)
 		 {
@@ -88,7 +88,7 @@ void LogicCore::init()
 				 iImageLoader->setStatusBar(parent->getStatusBar());
 			 }
 
-			 Classifier *iClassifier
+			 Classifier * iClassifier
 					 = qobject_cast<Classifier *>(plugin);
 			 if (iClassifier)
 			 {
@@ -108,11 +108,14 @@ void LogicCore::init()
 		parent->getMenu()->insertSeparator(insertPoint);
 	}
 
+	// Load application settings
+	settings = new QSettings("../res/qsigillum.ini", QSettings::IniFormat, this);
+
 }
 
 void LogicCore::getImage()
 {
-	ImageLoader *sender = qobject_cast<ImageLoader *>(this->sender());
+	ImageLoader * sender = qobject_cast<ImageLoader *>(this->sender());
 
 	if (sender)
 	{

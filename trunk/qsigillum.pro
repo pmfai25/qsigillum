@@ -9,7 +9,6 @@ SOURCES += src/main.cpp \
     src/preprocessor.cpp \
     src/segmentator.cpp \
     src/segmentationtemplate.cpp \
-    src/outputdata.cpp \
     src/templatecontainer.cpp \
     src/templatefield.cpp
 HEADERS += src/userform.h \
@@ -18,13 +17,14 @@ HEADERS += src/userform.h \
     src/preprocessor.h \
     src/segmentator.h \
     src/segmentationtemplate.h \
-    src/outputdata.h \
     src/imageloader.h \
     src/classifier.h \
     src/outputexporter.h \
     src/templatecontainer.h \
-	src/templatefield.h \
-FORMS += src/userform.ui \
+    src/templatefield.h \
+    FORMS \
+    += \
+    src/userform.ui \
     src/editorform.ui
 RESOURCES += res/qsigillum.qrc
 RC_FILE = res/qsigillum.rc
