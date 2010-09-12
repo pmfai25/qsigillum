@@ -40,16 +40,18 @@ public:
 	bool emptyColumn(const QImage& image, int x);
 	// Check if image row is empty
 	bool emptyRow(const QImage& image, int y);
-	// Binarization
+	// Binarization (8-bit image with 2 colors is used)
 	QImage binarize(const QImage& image);
-	// Connected components analysis
-	QImage markCC(const QImage& image, int* number);
+	// Transform to 8-bit image with 255 colors
+	QImage grayscale(const QImage& image);
+	// Connected components analysis on binary images
+	int* markCC(const QImage& image, int* number);
 	// Morphological dilation
 	QImage dilate(const QImage& image);
 	// Morphological erosion
 	QImage erode(const QImage& image);
 	// Analyse connected components
-	QVector< QVector<int> > analyseComponents(const QImage& marked, int number);
+	QVector< QVector<int> > analyseComponents(const QImage& image, int* marked, int number);
 
 private:
 	// Minimum mean value of non-dark field
@@ -60,6 +62,9 @@ private:
 	double empty_field_size;
 	// Empty column critical value
 	int empty_threshold;
+
+	// Grayscale image color table
+	QVector<QRgb> grayColorTable;
 };
 
 #endif // PREPROCESSOR_H

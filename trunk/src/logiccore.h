@@ -31,6 +31,7 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <cstdio>
 
 #include "userform.h"
 

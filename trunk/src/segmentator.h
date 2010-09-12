@@ -26,6 +26,7 @@
 
 #include "segmentationtemplate.h"
 #include "templatecontainer.h"
+#include "preprocessor.h"
 
 class Segmentator : public QObject
 {
@@ -35,6 +36,7 @@ public:
 	~Segmentator();
 	void loadTemplate(const QString & fileName);
 	void setImage(QImage * image);
+	void setPreprocessor(Preprocessor * preprocessor);
 	void segmentate();
 	// Get real anchor coordinates
 	QPoint getRealAnchor();
@@ -46,8 +48,10 @@ public:
 	void duplicateBodyElement(int element);
 
 private:
+	// Preprocessor instance
+	Preprocessor * preprocessor;
 	// Segmentation template instance
-	SegmentationTemplate *segTemplate;
+	SegmentationTemplate * segTemplate;
 	// Source document image
 	QImage * image;
 	// Segmentation results

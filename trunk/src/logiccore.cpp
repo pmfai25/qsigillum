@@ -27,6 +27,8 @@ LogicCore::LogicCore(UserForm * parent)
 // Initialize all components
 void LogicCore::init()
 {
+	segmentator.setPreprocessor(&preprocessor);
+
 	// List of actions to be inserted to File menu
 	QList<QAction *> newFileActions;
 
@@ -126,6 +128,9 @@ void LogicCore::getImage()
 
 		if (!srcImage.isNull())
 		{
+			// Convert image to 8-bit
+			srcImage = preprocessor.grayscale(srcImage);
+
 			// Show preview
 			QPixmap pixmap = QPixmap::fromImage(srcImage, Qt::MonoOnly)
 							 .scaled(parent->getPreviewLabel()->size(),
@@ -326,7 +331,6 @@ void LogicCore::classify()
 	progressBar->reset();
 	parent->getStatusBar()->addWidget(progressBar);
 
-	int min_width = qRound(srcImage.width() * 0.004);
 	int z = 0; int zz = 0;
 	// Number of marked connected components
 	int num = 0;
@@ -367,13 +371,21 @@ void LogicCore::classify()
 				   append(QString(".bmp")));*/
 
 			num = 0;
-			QImage marked = preprocessor.markCC(part, &num);
+			int* marked = preprocessor.markCC(part, &num);
 
-			//marked.save(QString("../data/trash/marked-").
-			//	   append(QString::number(progressBar->value())).append(QString("-zz")).
-			//	   append(QString::number(zz)).append(QString("-")).
-			//	   append(QString::number(num)).append(QString(".bmp")));
-
+			/*part.save(QString("../data/trash/part-").
+				   append(QString::number(progressBar->value())).append(QString("-zz")).
+				   append(QString::number(zz)).append(QString("-")).
+				   append(QString::number(num)).append(QString(".bmp")));
+			*/
+			/*if (zz == 0)
+			{
+				part.save(QString("../data/trash/part-").
+								   append(QString::number(progressBar->value())).append(QString("-zz")).
+								   append(QString::number(zz)).append(QString("-")).
+								   append(QString::number(num)).append(QString(".bmp")));
+				qDebug() << num;
+			}*/
 
 			// Subdividing fields onto digits and classifying them
 			QString result;
@@ -387,39 +399,49 @@ void LogicCore::classify()
 			else
 			{
 				// Get fields parameters
-				QVector< QVector<int> > fields = preprocessor.analyseComponents(marked, num);
+				QVector< QVector<int> > pfields = preprocessor.analyseComponents(part, marked, num);
 
 				// Check field and add it to the list
 				for (int n = 1; n <= num; n++)
 				{
-					QVector<int> field = fields[n];
+					QVector<int> pfield = pfields[n];
 
-					h = field[3] - field[1];
-					w = field[2] - field[0];
+					h = pfield[3] - pfield[1];
+					w = pfield[2] - pfield[0];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 800 || field[4] < 100
-						|| field[4] > 1500)
+					if (h <= 0 || w <= 0 || h * w < 800 || pfield[4] < 100
+						|| pfield[4] > 1500)
 						continue;
 
 					// Get image
 					QImage temp(w + 10, h + 10, QImage::Format_RGB32);
 					temp.fill(qRgb(255, 255, 255));
-					for (int y = field[1]; y <= field[3]; y++)
-					for (int x = field[0]; x <= field[2]; x++)
+					for (int y = pfield[1]; y <= pfield[3]; y++)
+					for (int x = pfield[0]; x <= pfield[2]; x++)
 					{
-						label = qRed(marked.pixel(x, y));
+						label = marked[part.width() * y + x];
 						if (label == n)
-							temp.setPixel(x - field[0] + 6, y - field[1] + 6, qRgb(0, 0, 0));
+							temp.setPixel(x - pfield[0] + 6, y - pfield[1] + 6, qRgb(0, 0, 0));
 					}
 
-					temp.save(QString("../data/trash/temp-").
+					/*temp.save(QString("../data/trash/temp-").
 						   append(QString::number(progressBar->value())).append(QString("-zz")).
 						   append(QString::number(zz)).append(QString("-")).
 						   append(QString::number(z)).append(QString("-h")).
 						   append(QString::number(h)).append(QString("-w")).
 						   append(QString::number(w)).append(QString("-po")).
-						   append(QString::number(field[4])).append(QString(".bmp")));
+						   append(QString::number(pfield[4])).append(QString(".bmp")));
+					QImage ppart = part.copy(pfield[0], pfield[1], w, h);
+					ppart.save(QString("../data/trash/ppart-").
+						   append(QString::number(progressBar->value())).append(QString("-zz")).
+						   append(QString::number(zz)).append(QString("-")).
+						   append(QString::number(z)).append(QString("-h")).
+						   append(QString::number(h)).append(QString("-w")).
+						   append(QString::number(w)).append(QString("-po")).
+						   append(QString::number(pfield[4])).append(QString(".bmp")));
+					*/
+
 					z++;
 
 					result.append(classifiers.at(0)
@@ -429,6 +451,9 @@ void LogicCore::classify()
 
 			}
 			zz++;
+
+			if (marked)
+				delete[] marked;
 
 /*
 			// Horizontal borders of digit

@@ -64,6 +64,11 @@ void Segmentator::setImage(QImage * image)
 	}
 }
 
+void Segmentator::setPreprocessor(Preprocessor * preprocessor)
+{
+	this->preprocessor = preprocessor;
+}
+
 void Segmentator::segmentate()
 {
 	if (!segTemplate || !image)
@@ -188,7 +193,7 @@ bool Segmentator::emptyLine(int y)
 	int threshold = 200;
 
 	for (int j = 0; j < image->width(); j++)
-		if (qGray(image->pixel(j, y)) <= threshold)
+		if ((image->scanLine(y))[j] <= threshold)
 			return false;
 
 	return true;
@@ -228,6 +233,9 @@ void Segmentator::dumpData()
 
 void Segmentator::searchAnchor()
 {
+	anchor = QPoint();
+	anchorFound = false;
+
 	// Load anchor image
 	QImage anchorImage = QImage(QString("../data/")
 								.append(segTemplate->getAnchorFileName()));
@@ -236,6 +244,11 @@ void Segmentator::searchAnchor()
 		|| segTemplate->getAnchorX() < 0
 		|| segTemplate->getAnchorY() < 0)
 		return;
+
+	// Damn, it seems that this way it works better
+	//anchorImage = preprocessor->grayscale(anchorImage);
+	// So we should use reconverted image
+	QImage cImage = image->convertToFormat(QImage::Format_RGB32);
 
 	// Scale images
 	double ratio = double(image->width()) / scale_width;
@@ -250,7 +263,8 @@ void Segmentator::searchAnchor()
 	if (a_width > im_width || a_height > im_height)
 		return;
 
-	QImage imScaled = image->scaled(im_width, im_height,
+	//QImage imScaled = image->scaled(im_width, im_height,
+	QImage imScaled = cImage.scaled(im_width, im_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	QImage aScaled = anchorImage.scaled(a_width, a_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -283,6 +297,8 @@ void Segmentator::searchAnchor()
 			for (int y = 0; y < a_height; y++)
 				for (int x = 0; x < a_width; x++)
 			{
+				//sum += qAbs((imScaled.scanLine(i+y))[j+x]
+				//			- (aScaled.scanLine(y))[x]);
 				sum += qAbs(qGray(imScaled.pixel(j+x, i+y))
 							- qGray(aScaled.pixel(x, y)));
 				if (sum > max_deviation)
@@ -311,7 +327,7 @@ void Segmentator::searchAnchor()
 				anchor.setX(j);
 				anchor.setY(i);
 			}
-			if (matrix[i * m_width + j] > min)
+			if (matrix[i * m_width + j] > max)
 				max = matrix[i * m_width + j];
 		}
 
@@ -325,9 +341,10 @@ void Segmentator::searchAnchor()
 	int ix = qAbs(anchor.x() * ratio);
 	int iy = qAbs(anchor.y() * ratio);
 
-	/*qDebug() << "first pass result: (" << ix << ", " << iy
+	/*qDebug() << "first pass result: (" << ix << "," << iy
+			<< ") source (" << anchor.x() << anchor.y()
 			<< ") min: " << min << " max: " << max
-			<< " matrix size: (" << m_height << ", " << m_width << ")";
+			<< " matrix size: (" << m_height << "," << m_width << ")";
 	*/
 
 	// Second pass region bounds
@@ -373,7 +390,9 @@ void Segmentator::searchAnchor()
 			for (int y = 0; y < 2 * region_size; y++)
 				for (int x = 0; x < 2 * region_size; x++)
 			{
-				sum += qAbs(qGray(image->pixel(bl+j+x, bt+i+y))
+				//sum += qAbs((image->scanLine(bt+i+y))[bl+j+x]
+				//			- (aScaled.scanLine(y))[x]);
+				sum += qAbs(qGray(cImage.pixel(bl+j+x, bt+i+y))
 							- qGray(aScaled.pixel(x, y)));
 				if (sum > max_deviation)
 					sum = max_deviation;
@@ -401,7 +420,7 @@ void Segmentator::searchAnchor()
 				anchor.setX(j);
 				anchor.setY(i);
 			}
-			if (matrix[i * m_width + j] > min)
+			if (matrix[i * m_width + j] > max)
 				max = matrix[i * m_width + j];
 		}
 
@@ -415,10 +434,12 @@ void Segmentator::searchAnchor()
 	anchor.setY(anchor.y() + bt);
 	anchorFound = true;
 
-	/*qDebug() << "second pass result: (" << result.x() << ", " << result.y()
+	/*qDebug() << "second pass result: (" << anchor.x() << ", " << anchor.y()
+			<< ") source: (" << anchor.x() - bl << anchor.y() - bt
 			<< ") min: " << min << " max: " << max
 			<< " matrix size: (" << m_height << ", " << m_width << ")";
 	*/
+
 }
 
 void Segmentator::removeBodyElement(int element)
