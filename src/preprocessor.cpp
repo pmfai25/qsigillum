@@ -31,6 +31,13 @@ Preprocessor::Preprocessor()
 
 	// Trash removal
 	empty_field_size = 0.1;
+
+	// Set the color table
+	grayColorTable.resize(256);
+	for (int i=0; i < 256; i++)
+	{
+		grayColorTable[i] = qRgb(i, i, i);
+	}
 }
 
 // Remove dark fields from image borders
@@ -38,7 +45,7 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 {
 	if (image.isNull())
 	{
-		qDebug() << "Preprocessor got empty image";
+		qDebug() << "Null image sent to Preprocessor::removeDarkFields";
 		return QImage();
 	}
 
@@ -52,7 +59,7 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 		temp = 0;
 		// Check column mean value
 		for (int i = 0; i < image.height(); i++)
-			temp += qGray(image.pixel(j, i));
+			temp += (image.scanLine(i))[j];
 		if (qRound(double(temp) / image.height()) > light_threshold)
 			break;
 
@@ -68,7 +75,7 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 		temp = 0;
 		// Check column mean value
 		for (int i = 0; i < image.height(); i++)
-			temp += qGray(image.pixel(j, i));
+			temp += (image.scanLine(i))[j];
 		if (qRound(double(temp) / image.height()) > light_threshold)
 			break;
 
@@ -83,7 +90,7 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 		temp = 0;
 		// Check row mean value
 		for (int j = 0; j < image.width(); j++)
-			temp += qGray(image.pixel(j, i));
+			temp += (image.scanLine(i))[j];
 		if (qRound(double(temp) / image.width()) > light_threshold)
 			break;
 
@@ -99,7 +106,7 @@ QImage Preprocessor::removeDarkFields(const QImage& image)
 		temp = 0;
 		// Check row mean value
 		for (int j = 0; j < image.width(); j++)
-			temp += qGray(image.pixel(j, i));
+			temp += (image.scanLine(i))[j];
 		if (qRound(double(temp) / image.width()) > light_threshold)
 			break;
 
@@ -116,7 +123,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 {
 	if (image.isNull())
 	{
-		qDebug() << "Preprocessor got empty image";
+		qDebug() << "Null image sent to Preprocessor::removeBorderTrash";
 		return QImage();
 	}
 
@@ -132,7 +139,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 		temp = 0;
 		// Check column values
 		for (int i = 0; i < image.height(); i++)
-			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			if ((image.scanLine(i))[j] <= (uint)empty_threshold)
 			temp++;
 
 		// Got black column
@@ -161,7 +168,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 		temp = 0;
 		// Check column values
 		for (int i = 0; i < image.height(); i++)
-			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			if ((image.scanLine(i))[j] <= (uint)empty_threshold)
 			temp++;
 
 		// Got black column
@@ -189,7 +196,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 		temp = 0;
 		// Check row values
 		for (int j = 0; j < image.width(); j++)
-			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			if ((image.scanLine(i))[j] <= (uint)empty_threshold)
 			temp++;
 
 		// Got black column
@@ -218,7 +225,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 		temp = 0;
 		// Check row values
 		for (int j = 0; j < image.width(); j++)
-			if (qGray(image.pixel(j, i)) <= empty_threshold)
+			if ((image.scanLine(i))[j] <= (uint)empty_threshold)
 			temp++;
 
 		// Got black column
@@ -246,7 +253,7 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 bool Preprocessor::emptyColumn(const QImage& image, int x)
 {
 	for (int i = 0; i < image.height(); i++)
-		if (qGray(image.pixel(x, i)) <= empty_threshold)
+		if ((image.scanLine(i))[x] <= (uint)empty_threshold)
 			return false;
 
 	return true;
@@ -256,7 +263,7 @@ bool Preprocessor::emptyColumn(const QImage& image, int x)
 bool Preprocessor::emptyRow(const QImage& image, int y)
 {
 	for (int j = 0; j < image.width(); j++)
-		if (qGray(image.pixel(j, y)) <= empty_threshold)
+		if ((image.scanLine(y))[j] <= (uint)empty_threshold)
 			return false;
 
 	return true;
@@ -265,29 +272,69 @@ bool Preprocessor::emptyRow(const QImage& image, int y)
 // Binarization
 QImage Preprocessor::binarize(const QImage& image)
 {
-	QImage result = image.copy();
+	QImage result;
+	if (image.isNull())
+	{
+		qDebug() << "Null image sent to Preprocessor::binarize";
+		return result;
+	}
+
+	// Create 8-bit QImage and set appropriate color table
+	result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColor(0, qRgb(0, 0, 0));
+	result.setColor(1, qRgb(255, 255, 255));
 
 	// Loop on whole image
 	for (int i = 0; i < result.height(); i++)
 	for (int j = 0; j < result.width(); j++)
 	{
 		// Check pixel value
-		if (qGray(result.pixel(j, i)) <= empty_threshold)
-			result.setPixel(j, i, qRgb(0, 0, 0));
+		if ((image.scanLine(i))[j] <= (uint)empty_threshold)
+			(result.scanLine(i))[j] = 0;
 		else
-			result.setPixel(j, i, qRgb(255, 255, 255));
+			(result.scanLine(i))[j] = 1;
 	}
 
 	return result;
 }
 
-// Connected components analysis
-QImage Preprocessor::markCC(const QImage& image, int* number)
+// Transform to 8-bit image with 255 colors
+QImage Preprocessor::grayscale(const QImage& image)
 {
-	QImage result = image.copy();
-	// Accessory image
-	QImage map(result.size(), QImage::Format_Mono);
-	map.fill(0);
+	QImage result;
+	if (image.isNull())
+	{
+		qDebug() << "Null image sent to Preprocessor::grayscale";
+		return result;
+	}
+
+	// Create 8-bit QImage and set appropriate color table
+	result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColorTable(grayColorTable);
+
+	// Loop on whole image
+	for (int i = 0; i < result.height(); i++)
+	for (int j = 0; j < result.width(); j++)
+	{
+		(result.scanLine(i))[j] = qGray(image.pixel(j, i));
+	}
+
+	return result;
+}
+
+// Connected components analysis on binary images
+int* Preprocessor::markCC(const QImage& image, int* number)
+{
+	if (image.isNull())
+		return NULL;
+
+	// Marking matrix
+	int * matrix = new int[image.width() * image.height()];
+	if (!matrix)
+		return NULL;
+	for (int i = 0; i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+		matrix[image.width() * i + j] = -1;
 
 	// Components number
 	int n = 0;
@@ -300,15 +347,15 @@ QImage Preprocessor::markCC(const QImage& image, int* number)
 	int y = 0;
 
 	// Search for unmarked pixels
-	for (int j = 0; j < result.width(); j++)
-	for (int i = 0; i < result.height(); i++)
+	for (int i = 0; i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
 	{
 		// Check pixel occupation
-		if (map.pixelIndex(j,i) == 1)
+		if (matrix[image.width() * i + j] != -1)
 			continue;
 
 		// Check pixel value
-		if (qGray(result.pixel(j, i)) <= empty_threshold)
+		if ((image.scanLine(i))[j] == 0)
 		{
 			// Append pixel
 			queue.enqueue(QPoint(j, i));
@@ -319,40 +366,41 @@ QImage Preprocessor::markCC(const QImage& image, int* number)
 				QPoint point = queue.dequeue();
 				x = point.x();
 				y = point.y();
-				if (map.pixelIndex(point) == 1)
+				if (matrix[image.width() * y + x] != -1
+					|| (image.scanLine(y))[x] != 0)
 					continue;
 
 				// Mark pixel
-				result.setPixel(point, qRgb(current_label, 0, 0));
-				map.setPixel(point, 1);
+				matrix[image.width() * y + x] = current_label;
 
 				// Check neighbours
-				if (x > 0 && map.pixelIndex(x-1, y) == 0
-					&& qGray(result.pixel(x-1, y)) <= empty_threshold)
+				if (x > 0 && matrix[image.width() * y + x-1] == -1
+					&& (image.scanLine(i))[j-1] == 0)
 					queue.enqueue(QPoint(x-1, y));
-				if (x > 0 && y > 0 && map.pixelIndex(x-1, y-1) == 0
-					&& qGray(result.pixel(x-1, y-1)) <= empty_threshold)
+				if (x > 0 && y > 0 && matrix[image.width() * (y-1) + x-1] == -1
+					&& (image.scanLine(i-1))[j-1] == 0)
 					queue.enqueue(QPoint(x-1, y-1));
-				if (y > 0 && map.pixelIndex(x, y-1) == 0
-					&& qGray(result.pixel(x, y-1)) <= empty_threshold)
+				if (y > 0 && matrix[image.width() * (y-1) + x] == -1
+					&& (image.scanLine(i-1))[j] == 0)
 					queue.enqueue(QPoint(x, y-1));
-				if (x < result.width() - 1 && y > 0 && map.pixelIndex(x+1, y-1) == 0
-					&& qGray(result.pixel(x+1, y-1)) <= empty_threshold)
+				if (x < image.width() - 1 && y > 0
+					&& matrix[image.width() * (y-1) + x+1] == -1
+					&& (image.scanLine(i-1))[j+1] == 0)
 					queue.enqueue(QPoint(x+1, y-1));
-				if (x < result.width() - 1 && map.pixelIndex(x+1, y) == 0
-					&& qGray(result.pixel(x+1, y)) <= empty_threshold)
+				if (x < image.width() - 1 && matrix[image.width() * y + x+1] == -1
+					&& (image.scanLine(i))[j+1] == 0)
 					queue.enqueue(QPoint(x+1, y));
-				if (x < result.width() - 1 && y < result.height() - 1
-					&& map.pixelIndex(x+1, y+1) == 0
-					&& qGray(result.pixel(x+1, y+1)) <= empty_threshold)
+				if (x < image.width() - 1 && y < image.height() - 1
+					&& matrix[image.width() * (y+1) + x+1] == -1
+					&& (image.scanLine(i+1))[j+1] == 0)
 					queue.enqueue(QPoint(x+1, y+1));
-				if (y < result.height() - 1
-					&& map.pixelIndex(x, y+1) == 0
-					&& qGray(result.pixel(x, y+1)) <= empty_threshold)
+				if (y < image.height() - 1
+					&& matrix[image.width() * (y+1) + x] == -1
+					&& (image.scanLine(i+1))[j] == 0)
 					queue.enqueue(QPoint(x, y+1));
-				if (x > 0 && y < result.height() - 1
-					&& map.pixelIndex(x-1, y+1) == 0
-					&& qGray(result.pixel(x-1, y+1)) <= empty_threshold)
+				if (x > 0 && y < image.height() - 1
+					&& matrix[image.width() * (y+1) + x-1] == -1
+					&& (image.scanLine(i+1))[j-1] == 0)
 					queue.enqueue(QPoint(x-1, y+1));
 			}
 
@@ -362,8 +410,7 @@ QImage Preprocessor::markCC(const QImage& image, int* number)
 		}
 		else
 		{
-			result.setPixel(j, i, qRgb(255, 255, 255));
-			map.setPixel(j, i, 1);
+			matrix[image.width() * i + j] = 0;
 		}
 	}
 
@@ -371,62 +418,67 @@ QImage Preprocessor::markCC(const QImage& image, int* number)
 	// Set number
 	if (number)
 		*number = n;
-	return result;
+	return matrix;
 }
 
 // Morphological dilation
 QImage Preprocessor::dilate(const QImage& image)
 {
-	QImage result(image.size(), image.format());
-	result.fill(qRgb(255, 255, 255));
+	QImage result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColor(0, qRgb(0, 0, 0));
+	result.setColor(1, qRgb(255, 255, 255));
+	result.fill(1);
 
 	// Loop on whole image
 	for (int i = 0; i < result.height(); i++)
 	for (int j = 0; j < result.width(); j++)
 	{
-		if (qGray(image.pixel(j, i)) <= empty_threshold)
+		if ((image.scanLine(i))[j] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j > 0 && qGray(image.pixel(j-1, i)) <= empty_threshold)
+		if (j > 0 && (image.scanLine(i))[j-1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j > 0 && i > 0 && qGray(image.pixel(j-1, i-1)) <= empty_threshold)
+		if (j > 0 && i > 0 && (image.scanLine(i-1))[j-1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (i > 0 && qGray(image.pixel(j, i-1)) <= empty_threshold)
+		if (i > 0 && (image.scanLine(i-1))[j] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j < image.width() - 1 && i > 0 && qGray(image.pixel(j+1, i-1)) <= empty_threshold)
+		if (j < image.width() - 1 && i > 0
+			&& (image.scanLine(i-1))[j+1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j < image.width() - 1 && qGray(image.pixel(j+1, i)) <= empty_threshold)
+		if (j < image.width() - 1 && (image.scanLine(i))[j+1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j < image.width() - 1 && i < image.height() - 1 && qGray(image.pixel(j+1, i+1)) <= empty_threshold)
+		if (j < image.width() - 1 && i < image.height() - 1
+			&& (image.scanLine(i+1))[j+1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (i < image.height() - 1 && qGray(image.pixel(j, i+1)) <= empty_threshold)
+		if (i < image.height() - 1 && (image.scanLine(i+1))[j] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
-		if (j > 0 && i < image.height() - 1 && qGray(image.pixel(j-1, i+1)) <= empty_threshold)
+		if (j > 0 && i < image.height() - 1
+			&& (image.scanLine(i+1))[j-1] == 0)
 		{
-			result.setPixel(j, i, qRgb(0, 0, 0));
+			(result.scanLine(i))[j] = 0;
 			continue;
 		}
 	}
@@ -437,41 +489,45 @@ QImage Preprocessor::dilate(const QImage& image)
 // Morphological erosion
 QImage Preprocessor::erode(const QImage& image)
 {
-	QImage result(image.size(), image.format());
-	result.fill(qRgb(255, 255, 255));
+	QImage result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColor(0, qRgb(0, 0, 0));
+	result.setColor(1, qRgb(255, 255, 255));
+	result.fill(1);
 
 	// Loop on whole image
 	for (int i = 0; i < result.height(); i++)
 	for (int j = 0; j < result.width(); j++)
 	{
-		if (qGray(image.pixel(j, i)) > empty_threshold)
+		if ((image.scanLine(i))[j] == 1)
 			continue;
-		if (j > 0 && qGray(image.pixel(j-1, i)) > empty_threshold)
+		if (j > 0 && (image.scanLine(i))[j-1] == 1)
 			continue;
-		if (j > 0 && i > 0 && qGray(image.pixel(j-1, i-1)) > empty_threshold)
+		if (j > 0 && i > 0 && (image.scanLine(i-1))[j-1] == 1)
 			continue;
-		if (i > 0 && qGray(image.pixel(j, i-1)) > empty_threshold)
+		if (i > 0 && (image.scanLine(i-1))[j] == 1)
 			continue;
-		if (j < image.width() - 1 && i > 0 && qGray(image.pixel(j+1, i-1)) > empty_threshold)
+		if (j < image.width() - 1 && i > 0 && (image.scanLine(i-1))[j+1] == 1)
 			continue;
-		if (j < image.width() - 1 && qGray(image.pixel(j+1, i)) > empty_threshold)
+		if (j < image.width() - 1 && (image.scanLine(i))[j+1] == 1)
 			continue;
 		if (j < image.width() - 1 && i < image.height() - 1
-			&& qGray(image.pixel(j+1, i+1)) > empty_threshold)
+			&& (image.scanLine(i+1))[j+1] == 1)
 			continue;
-		if (i < image.height() - 1 && qGray(image.pixel(j, i+1)) > empty_threshold)
+		if (i < image.height() - 1 && (image.scanLine(i+1))[j] == 1)
 			continue;
-		if (j > 0 && i < image.height() - 1 && qGray(image.pixel(j-1, i+1)) > empty_threshold)
+		if (j > 0 && i < image.height() - 1
+			&& (image.scanLine(i+1))[j-1] == 1)
 			continue;
 
-		result.setPixel(j, i, qRgb(0, 0, 0));
+		(result.scanLine(i))[j] = 0;
 	}
 
 	return result;
 }
 
 // Analyse connected components
-QVector< QVector<int> > Preprocessor::analyseComponents(const QImage& marked, int number)
+QVector< QVector<int> > Preprocessor::analyseComponents(const QImage& image,
+														int *marked, int number)
 {
 	// Values order in inline vector: x_min, y_min, x_max, y_max, points number
 	QVector< QVector<int> > result(number+1, QVector<int>(5, 0));
@@ -479,18 +535,18 @@ QVector< QVector<int> > Preprocessor::analyseComponents(const QImage& marked, in
 	// Initialize maximum border coordinates
 	for (int i = 0; i <= number; i++)
 	{
-		result[i][0] = marked.width() - 1;
-		result[i][1] = marked.height() - 1;
+		result[i][0] = image.width() - 1;
+		result[i][1] = image.height() - 1;
 	}
 
 	int label = 0;
 
 	// Loop on whole image
-	for (int y = 0; y < marked.height(); y++)
-	for (int x = 0; x < marked.width(); x++)
+	for (int y = 0; y < image.height(); y++)
+	for (int x = 0; x < image.width(); x++)
 	{
 		// Get pixel number
-		label = qRed(marked.pixel(x, y));
+		label = marked[image.width() * y + x];
 		if (label > 0 && label <= number)
 		{
 			// Increase corresponding pixel number
