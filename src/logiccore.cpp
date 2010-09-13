@@ -28,6 +28,7 @@ LogicCore::LogicCore(UserForm * parent)
 void LogicCore::init()
 {
 	segmentator.setPreprocessor(&preprocessor);
+	operationRunning = false;
 
 	// List of actions to be inserted to File menu
 	QList<QAction *> newFileActions;
@@ -117,6 +118,10 @@ void LogicCore::init()
 
 void LogicCore::getImage()
 {
+	if (operationRunning)
+		return;
+	operationRunning = true;
+
 	ImageLoader * sender = qobject_cast<ImageLoader *>(this->sender());
 
 	if (sender)
@@ -146,12 +151,17 @@ void LogicCore::getImage()
 			parent->getStatusBar()->showMessage(tr("Image loading failed"), 2000);
 	}
 
+	operationRunning = false;
 }
 
 void LogicCore::preprocess()
 {
 	if (srcImage.isNull())
 		return;
+
+	if (operationRunning)
+		return;
+	operationRunning = true;
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Preprocessing image..."));
@@ -172,12 +182,17 @@ void LogicCore::preprocess()
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully preprocessed"), 2000);
 
+	operationRunning = false;
 }
 
 void LogicCore::segmentate()
 {
 	if (srcImage.isNull())
 		return;
+
+	if (operationRunning)
+		return;
+	operationRunning = true;
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Segmentating image..."));
@@ -257,6 +272,8 @@ void LogicCore::segmentate()
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully segmentated"), 2000);
+
+	operationRunning = false;
 }
 
 void LogicCore::classify()
@@ -323,6 +340,10 @@ void LogicCore::classify()
 	if (srcImage.isNull() || classifiers.isEmpty() || segmentator.getBody().isEmpty())
 		return;
 
+	if (operationRunning)
+		return;
+	operationRunning = true;
+
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image classification..."));
 	// Status message progress bar
@@ -331,7 +352,10 @@ void LogicCore::classify()
 	progressBar->reset();
 	parent->getStatusBar()->addWidget(progressBar);
 
-	int z = 0; int zz = 0;
+	// Counters for debug output purposes
+	int containerCounter = 0;
+	int fieldCounter = 0;
+
 	// Number of marked connected components
 	int num = 0;
 	// Size of field
@@ -343,11 +367,16 @@ void LogicCore::classify()
 	// Traversing segments
 	foreach (TemplateContainer * container, segmentator.getBody())
 	{
+		containerCounter++;
+		fieldCounter = 0;
+
 		// Update progress bar
 		progressBar->setValue(progressBar->value() + 1);
 
 		foreach (TemplateField * field, container->getFields())
 		{
+			fieldCounter++;
+
 			// Extracting image part
 			QImage part = preprocessor.erode(
 					preprocessor.dilate(preprocessor.binarize(
@@ -373,11 +402,24 @@ void LogicCore::classify()
 			num = 0;
 			int* marked = preprocessor.markCC(part, &num);
 
-			/*part.save(QString("../data/trash/part-").
-				   append(QString::number(progressBar->value())).append(QString("-zz")).
-				   append(QString::number(zz)).append(QString("-")).
-				   append(QString::number(num)).append(QString(".bmp")));
-			*/
+			/*if (containerCounter == 2 && fieldCounter == 5)
+			{
+				qDebug() << container->getX() + field->getX()
+						<< container->getY() + field->getY();
+
+				for (int mi = 0; mi < part.height(); mi++)
+				{
+					for (int mj = 0; mj < part.width(); mj++)
+						printf("%d ", marked[part.width() * mi + mj]);
+
+					printf("\n");
+				}
+
+				part.save(QString("../data/trash/cntnr_").append(QString::number(containerCounter)).
+				   append(QString("-fld_")).append(QString::number(fieldCounter)).
+				   append(QString("-lbls_")).append(QString::number(num)).
+				   append(QString(".bmp")));
+			}*/
 			/*if (zz == 0)
 			{
 				part.save(QString("../data/trash/part-").
@@ -442,15 +484,12 @@ void LogicCore::classify()
 						   append(QString::number(pfield[4])).append(QString(".bmp")));
 					*/
 
-					z++;
-
 					result.append(classifiers.at(0)
 								  ->classify(temp));
 				}
 
 
 			}
-			zz++;
 
 			if (marked)
 				delete[] marked;
@@ -505,6 +544,8 @@ void LogicCore::classify()
 				QPalette p = field->getLineEdit()->palette();
 				p.setColor(QPalette::Base, Qt::red);
 				field->getLineEdit()->setPalette(p);
+				connect(field->getLineEdit(), SIGNAL(editingFinished()),
+						this, SLOT(changeFieldColor()));
 			}
 
 		}
@@ -514,6 +555,8 @@ void LogicCore::classify()
 	parent->getStatusBar()->showMessage(tr("Image successfully classified"), 2000);
 	parent->getStatusBar()->removeWidget(progressBar);
 	delete progressBar;
+
+	operationRunning = false;
 }
 
 void LogicCore::saveResults()
@@ -521,6 +564,10 @@ void LogicCore::saveResults()
 	// Saving results to text file
 	if (segmentator.getBody().isEmpty())
 		return;
+
+	if (operationRunning)
+		return;
+	operationRunning = true;
 
 	QFile data("../data/output.txt");
 	if (data.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -535,10 +582,15 @@ void LogicCore::saveResults()
 			}
 		}
 	}
+
+	operationRunning = false;
 }
 
 void LogicCore::processAutomatedMode()
 {
+	if (operationRunning)
+		return;
+
 	getImage();
 	preprocess();
 	segmentate();
@@ -610,5 +662,14 @@ void LogicCore::insertContainer()
 				return;
 			}
 		}
+	}
+}
+
+void LogicCore::changeFieldColor()
+{
+	QLineEdit * sender = qobject_cast<QLineEdit *>(this->sender());
+	if (sender)
+	{
+		sender->setPalette(QPalette());
 	}
 }

@@ -375,32 +375,32 @@ int* Preprocessor::markCC(const QImage& image, int* number)
 
 				// Check neighbours
 				if (x > 0 && matrix[image.width() * y + x-1] == -1
-					&& (image.scanLine(i))[j-1] == 0)
+					&& (image.scanLine(y))[x-1] == 0)
 					queue.enqueue(QPoint(x-1, y));
 				if (x > 0 && y > 0 && matrix[image.width() * (y-1) + x-1] == -1
-					&& (image.scanLine(i-1))[j-1] == 0)
+					&& (image.scanLine(y-1))[x-1] == 0)
 					queue.enqueue(QPoint(x-1, y-1));
 				if (y > 0 && matrix[image.width() * (y-1) + x] == -1
-					&& (image.scanLine(i-1))[j] == 0)
+					&& (image.scanLine(y-1))[x] == 0)
 					queue.enqueue(QPoint(x, y-1));
 				if (x < image.width() - 1 && y > 0
 					&& matrix[image.width() * (y-1) + x+1] == -1
-					&& (image.scanLine(i-1))[j+1] == 0)
+					&& (image.scanLine(y-1))[x+1] == 0)
 					queue.enqueue(QPoint(x+1, y-1));
 				if (x < image.width() - 1 && matrix[image.width() * y + x+1] == -1
-					&& (image.scanLine(i))[j+1] == 0)
+					&& (image.scanLine(y))[x+1] == 0)
 					queue.enqueue(QPoint(x+1, y));
 				if (x < image.width() - 1 && y < image.height() - 1
 					&& matrix[image.width() * (y+1) + x+1] == -1
-					&& (image.scanLine(i+1))[j+1] == 0)
+					&& (image.scanLine(y+1))[x+1] == 0)
 					queue.enqueue(QPoint(x+1, y+1));
 				if (y < image.height() - 1
 					&& matrix[image.width() * (y+1) + x] == -1
-					&& (image.scanLine(i+1))[j] == 0)
+					&& (image.scanLine(y+1))[x] == 0)
 					queue.enqueue(QPoint(x, y+1));
 				if (x > 0 && y < image.height() - 1
 					&& matrix[image.width() * (y+1) + x-1] == -1
-					&& (image.scanLine(i+1))[j-1] == 0)
+					&& (image.scanLine(y+1))[x-1] == 0)
 					queue.enqueue(QPoint(x-1, y+1));
 			}
 

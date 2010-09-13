@@ -44,9 +44,27 @@ QImage ExternalImageLoader::loadImage()
 	if (!process.waitForStarted())
 		return result;
 
-	// Check for program exit
+	// Get timeout value
+	int timeout = settings.value("timeout").toInt();
+	QTime timer;
+	timer.start();
+
+	// Check for program exit or timeout event
 	while (process.state() != QProcess::NotRunning)
+	{
+		if (timeout > 0 && timer.elapsed() > timeout)
+		{
+			// Stop process
+			process.kill();
+			// Try to delete file
+			QDir dir;
+			dir.remove(filename);
+			// Return null image
+			return result;
+		}
+
 		qApp->processEvents();
+	}
 
 	// Ensure program has finished correctly
 	if (process.exitStatus() != QProcess::NormalExit)

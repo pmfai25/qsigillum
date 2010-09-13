@@ -63,6 +63,8 @@ public slots:
 	void deleteContainer();
 	// Insert container
 	void insertContainer();
+	// Change field line edit background color
+	void changeFieldColor();
 
 private:
 	UserForm * parent;
@@ -79,6 +81,9 @@ private:
 
 	// Initialize all components
 	void init();
+
+	// Operation lock
+	bool operationRunning;
 };
 
 #endif // LOGICCORE_H
