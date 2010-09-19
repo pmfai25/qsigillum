@@ -54,6 +54,8 @@ private:
 	SegmentationTemplate * segTemplate;
 	// Source document image
 	QImage * image;
+	// RGB version of document image for difference calculation
+	QImage rgbImage;
 	// Segmentation results
 	QList<TemplateContainer *> body;
 

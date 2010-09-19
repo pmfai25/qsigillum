@@ -347,8 +347,9 @@ int* Preprocessor::markCC(const QImage& image, int* number)
 	int y = 0;
 
 	// Search for unmarked pixels
-	for (int i = 0; i < image.height(); i++)
+	// Column-wise order is necessary to maintain left-to-right digits order
 	for (int j = 0; j < image.width(); j++)
+	for (int i = 0; i < image.height(); i++)
 	{
 		// Check pixel occupation
 		if (matrix[image.width() * i + j] != -1)
