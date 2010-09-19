@@ -59,7 +59,7 @@ void LogicCore::init()
 				 // Update translation
 				 QTranslator * translator = new QTranslator();
 				 // TODO: remove hardcoded russian translation value
-				 translator->load(pluginsDir.absolutePath()+"/"+
+				 translator->load(pluginsDir.absolutePath()+"/../res/"+
 								  iImageLoader->getTranslationFileBaseName()
 								  + "_ru.qm");
 				 qApp->installTranslator(translator);
@@ -112,7 +112,8 @@ void LogicCore::init()
 	}
 
 	// Load application settings
-	settings = new QSettings("../res/qsigillum.ini", QSettings::IniFormat, this);
+	settings = new QSettings(qApp->applicationDirPath()
+							 .append(QString("/../res/qsigillum.ini")), QSettings::IniFormat, this);
 
 }
 
@@ -569,7 +570,7 @@ void LogicCore::saveResults()
 		return;
 	operationRunning = true;
 
-	QFile data("../data/output.txt");
+	QFile data(qApp->applicationDirPath().append(QString("/../data/output.txt")));
 	if (data.open(QFile::WriteOnly | QFile::Truncate)) {
 		QTextStream out(&data);
 

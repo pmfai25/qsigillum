@@ -26,6 +26,7 @@ Segmentator::Segmentator()
 		delete body.takeFirst();
 	width_ratio = 1;
 	height_ratio = 1;
+	rgbImage = QImage();
 }
 
 Segmentator::~Segmentator()
@@ -51,6 +52,7 @@ void Segmentator::loadTemplate(const QString & fileName)
 void Segmentator::setImage(QImage * image)
 {
 	this->image = image;
+	this->rgbImage = image->convertToFormat(QImage::Format_RGB32);
 
 	// Set ratio
 	if (image != NULL
@@ -237,18 +239,14 @@ void Segmentator::searchAnchor()
 	anchorFound = false;
 
 	// Load anchor image
-	QImage anchorImage = QImage(QString("../data/")
+	QImage anchorImage = QImage(qApp->applicationDirPath()
+								.append(QString("/../data/"))
 								.append(segTemplate->getAnchorFileName()));
 
 	if (anchorImage.isNull()
 		|| segTemplate->getAnchorX() < 0
 		|| segTemplate->getAnchorY() < 0)
 		return;
-
-	// Damn, it seems that this way it works better
-	//anchorImage = preprocessor->grayscale(anchorImage);
-	// So we should use reconverted image
-	QImage cImage = image->convertToFormat(QImage::Format_RGB32);
 
 	// Scale images
 	double ratio = double(image->width()) / scale_width;
@@ -263,8 +261,7 @@ void Segmentator::searchAnchor()
 	if (a_width > im_width || a_height > im_height)
 		return;
 
-	//QImage imScaled = image->scaled(im_width, im_height,
-	QImage imScaled = cImage.scaled(im_width, im_height,
+	QImage imScaled = rgbImage.scaled(im_width, im_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	QImage aScaled = anchorImage.scaled(a_width, a_height,
 									Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -390,9 +387,7 @@ void Segmentator::searchAnchor()
 			for (int y = 0; y < 2 * region_size; y++)
 				for (int x = 0; x < 2 * region_size; x++)
 			{
-				//sum += qAbs((image->scanLine(bt+i+y))[bl+j+x]
-				//			- (aScaled.scanLine(y))[x]);
-				sum += qAbs(qGray(cImage.pixel(bl+j+x, bt+i+y))
+				sum += qAbs(qGray(rgbImage.pixel(bl+j+x, bt+i+y))
 							- qGray(aScaled.pixel(x, y)));
 				if (sum > max_deviation)
 					sum = max_deviation;
