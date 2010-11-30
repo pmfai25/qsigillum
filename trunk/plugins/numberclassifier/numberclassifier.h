@@ -50,6 +50,9 @@ public:
 	// Classify image data
 	QString classify(QImage image);
 
+	// Get base plugin name
+	QString getBaseName();
+
 private:
 	// Initialize structure
 	GlyphParameters newParam();

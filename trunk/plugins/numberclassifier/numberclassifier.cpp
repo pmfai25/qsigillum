@@ -1090,5 +1090,11 @@ void NumberClassifier::check7()
 
 }
 
+// Get base plugin name
+QString NumberClassifier::getBaseName()
+{
+	return QString("NumberClassifier");
+}
+
 
 Q_EXPORT_PLUGIN2(numberclassifier, NumberClassifier)

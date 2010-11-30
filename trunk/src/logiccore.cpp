@@ -216,6 +216,11 @@ void LogicCore::segmentate()
 		QHBoxLayout * hLayout = new QHBoxLayout();
 		container->createGroupBox(saParent);
 		container->getGroupBox()->setLayout(hLayout);
+		// Set tooltip with field coordinates
+		container->getGroupBox()->setToolTip(
+				QString("x: %1 y: %2")
+				.arg(container->getX())
+				.arg(container->getY()));
 		hLayout->addWidget(new QLabel
 						   (QString::number(row++).leftJustified(2)));
 
@@ -223,6 +228,11 @@ void LogicCore::segmentate()
 		{
 			field->createLineEdit(container->getGroupBox());
 			hLayout->addWidget(field->getLineEdit());
+			// Set tooltip with field coordinates
+			field->getLineEdit()->setToolTip(
+					QString("x: %1 y: %2")
+					.arg(container->getX() + field->getX())
+					.arg(container->getY() + field->getY()));
 		}
 
 		// Add container removal button
@@ -245,31 +255,63 @@ void LogicCore::segmentate()
 	parent->getScrollArea()->setWidget(saParent);
 
 	// Update preview
-	if (parent->getPreviewLabel()->pixmap())
+	if (segmentator.getBody().size() > 0)
 	{
-		QPixmap preview = parent->getPreviewLabel()->pixmap()->copy();
+		QPoint leftTopPoint(segmentator.getBody().at(0)->getX(),
+							segmentator.getBody().at(0)->getY());
+		QPoint bottomRightPoint(segmentator.getBody().last()->getX()
+								+ segmentator.getBody().last()->getWidth(),
+							segmentator.getBody().last()->getY()
+							+ segmentator.getBody().last()->getHeight());
+
+		QImage part = srcImage.copy(leftTopPoint.x(), leftTopPoint.y(),
+									bottomRightPoint.x() - leftTopPoint.x(),
+									bottomRightPoint.y() - leftTopPoint.y());
+
+		QPixmap preview = QPixmap::fromImage(part, Qt::MonoOnly)
+						 .scaled(parent->getPreviewLabel()->size(),
+						 Qt::KeepAspectRatio, Qt::FastTransformation);
+
+
 		QPainter painter(&preview);
 
 		// Calculate preview to source image size ratio
-		double preview_ratio = double(preview.width()) / srcImage.width();
+		double preview_ratio = double(preview.width()) / part.width();
 
-		// Paint anchor point
-		painter.setBrush(Qt::green);
-		painter.drawEllipse(segmentator.getRealAnchor() * preview_ratio, 3, 3);
+		painter.setBrush(Qt::NoBrush);
 
 		// Paint template containers
 		foreach (TemplateContainer * container, segmentator.getBody())
 		{
-			painter.drawRoundedRect(
-					QRectF(container->getX() * preview_ratio,
-						   container->getY() * preview_ratio,
+			painter.setPen(Qt::gray);
+
+			painter.drawRect(
+					QRectF((container->getX() - leftTopPoint.x()) * preview_ratio,
+						   (container->getY()  - leftTopPoint.y()) * preview_ratio,
 						   container->getWidth() * preview_ratio,
-						   container->getHeight() * preview_ratio), 3, 3);
+						   container->getHeight() * preview_ratio));
+
+			painter.setPen(Qt::green);
+
+			// Draw fields boxes
+			foreach (TemplateField * field, container->getFields())
+			{
+				painter.drawRect(
+						QRectF((field->getX() + container->getX()
+								- leftTopPoint.x()) * preview_ratio,
+							   (field->getY() + container->getY()
+								- leftTopPoint.y()) * preview_ratio,
+							   field->getWidth() * preview_ratio,
+							   field->getHeight() * preview_ratio));
+			}
+
+			// Update GUI to avoid freezing
+			qApp->processEvents();
 		}
 
 		parent->getPreviewLabel()->setPixmap(preview);
-	}
 
+	}
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully segmentated"), 2000);
@@ -386,22 +428,27 @@ void LogicCore::classify()
 					container->getY() + field->getY(),
 					field->getWidth(), field->getHeight())))));
 
-			/*int cor1 = container->getX() + field->getX();
+			int cor1 = container->getX() + field->getX();
 			int cor2 = container->getY() + field->getY();
 			int cor3 = field->getWidth();
 			int cor4 = field->getHeight();
 			QImage part0 = srcImage.copy(cor1, cor2, cor3, cor4);
-			part0.save(QString("../data/trash/part-").
-				   append(QString::number(progressBar->value())).append(QString("-zz")).
-				   append(QString::number(zz)).
-				   append(QString("-x")).append(QString::number(cor1)).
-				   append(QString("-y")).append(QString::number(cor2)).
-				   append(QString("-w")).append(QString::number(cor3)).
-				   append(QString("-h")).append(QString::number(cor4)).
-				   append(QString(".bmp")));*/
+//			part0.save(QString("../data/trash/cntr_").
+//				   append(QString::number(containerCounter)).
+//				   append(QString("-fld_")).append(QString::number(fieldCounter)).
+//				   append(QString("-x")).append(QString::number(cor1)).
+//				   append(QString("-y")).append(QString::number(cor2)).
+//				   append(QString("-w")).append(QString::number(cor3)).
+//				   append(QString("-h")).append(QString::number(cor4)).
+//				   append(QString(".bmp")));
 
 			num = 0;
 			int* marked = preprocessor.markCC(part, &num);
+
+//			part.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+//			   append(QString("-fld_")).append(QString::number(fieldCounter)).
+//			   append(QString("-lbls_")).append(QString::number(num)).
+//			   append(QString(".bmp")));
 
 			/*if (containerCounter == 2 && fieldCounter == 5)
 			{
@@ -436,57 +483,144 @@ void LogicCore::classify()
 			// If zero or one component is found, analysis is vain
 			if (num <= 1)
 			{
-				result.append(classifiers.at(0)
-							  ->classify(part));
+				result.append(classifiers.at(1)
+							  ->classify(preprocessor.grayscale(part)));
 			}
 			else
 			{
 				// Get fields parameters
 				QVector< QVector<int> > pfields = preprocessor.analyseComponents(part, marked, num);
 
-				// Check field and add it to the list
-				for (int n = 1; n <= num; n++)
-				{
-					QVector<int> pfield = pfields[n];
+				// Preview image constructed by labeled parts
+				QImage preview(part.width(), part.height(), QImage::Format_RGB32);
+				preview.fill(qRgb(255, 255, 255));
+				// Set of used labels
+				QSet<int> usedLabels;
 
-					h = pfield[3] - pfield[1];
-					w = pfield[2] - pfield[0];
+//				if (containerCounter == 2 && fieldCounter == 5)
+//				{
+//					foreach (QVector<int> values, pfields)
+//					{
+//						qDebug() << "c2-f5 (" << values[0]
+//								<< values[1]
+//								<< values[2]
+//								<< values[3]
+//								<< values[4]
+//								<< values[5] << ")";
+//					}
+//				}
+
+				// Temporary vector for additional fields
+				QVector< QVector<int> > temp_fields;
+
+				// Check fields and remove invalid ones
+				QMutableVectorIterator< QVector<int> > n(pfields);
+				while (n.hasNext())
+				{
+					QVector<int> pfield = n.next();
+					h = pfield[4] - pfield[2];
+					w = pfield[3] - pfield[1];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 800 || pfield[4] < 100
-						|| pfield[4] > 1500)
-						continue;
+					if (h <= 0 || w <= 0 || h * w < 700 || pfield[5] < 100
+						|| pfield[5] > 1500)
+					{
+						n.remove();
+					}
+					// Cut the field in half
+					else if (w > 60)
+					{
+						usedLabels.insert(pfield[0]);
+						// Save borders values for new field
+						int lb = pfield[1] + w/2;
+						int rb = pfield[1] + w;
 
-					// Get image
+						// Update current field
+						pfield[3] = pfield[1] + w/2 - 1;
+						n.setValue(pfield);
+
+						// Construct new field
+						pfield[1] = lb;
+						pfield[3] = rb;
+						temp_fields.append(preprocessor.analyseComponent(part, marked, pfield));
+						//qDebug() << "additional field part at"
+						//		<< containerCounter << "field" << fieldCounter;
+					}
+					else
+					{
+						usedLabels.insert(pfield[0]);
+					}
+				}
+
+				// Check additional fields and remove invalid ones
+				n = QMutableVectorIterator< QVector<int> >(temp_fields);
+				while (n.hasNext())
+				{
+					QVector<int> pfield = n.next();
+					h = pfield[4] - pfield[2];
+					w = pfield[3] - pfield[1];
+
+					// Validating field
+					if (h <= 0 || w <= 0 || h * w < 800 || pfield[5] < 100
+						|| pfield[5] > 1500)
+					{
+						n.remove();
+					}
+				}
+
+				// Merge vectors
+				pfields += temp_fields;
+
+				for (int y = 0; y < preview.height(); y++)
+				for (int x = 0; x < preview.width(); x++)
+				{
+					label = marked[preview.width() * y + x];
+					if (usedLabels.contains(label))
+						preview.setPixel(x, y, qRgb(0, 0, 0));
+				}
+
+				/*if (usedLabels.size() > 0)
+					preview.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+								 append(QString("-fld_")).append(QString::number(fieldCounter)).
+								 append(QString("-lbls_")).append(QString::number(num)).
+								 append(QString("-usedLbls_")).append(QString::number(usedLabels.size())).
+								 append(QString(".bmp")));
+	*/
+				// Analyze distinct labels
+				for (int n = 0; n < pfields.size(); n++)
+				{
+					QVector<int> pfield = pfields[n];
+					h = pfield[4] - pfield[2];
+					w = pfield[3] - pfield[1];
+
+//					if (containerCounter == 3 && fieldCounter == 5)
+//					qDebug() << "(" << pfield[0]
+//							<< pfield[1]
+//							<< pfield[2]
+//							<< pfield[3]
+//							<< pfield[4]
+//							<< pfield[5] << ")";
+
+					// Get labeled part
 					QImage temp(w + 10, h + 10, QImage::Format_RGB32);
 					temp.fill(qRgb(255, 255, 255));
-					for (int y = pfield[1]; y <= pfield[3]; y++)
-					for (int x = pfield[0]; x <= pfield[2]; x++)
+					for (int y = pfield[2]; y <= pfield[4]; y++)
+					for (int x = pfield[1]; x <= pfield[3]; x++)
 					{
 						label = marked[part.width() * y + x];
-						if (label == n)
-							temp.setPixel(x - pfield[0] + 6, y - pfield[1] + 6, qRgb(0, 0, 0));
+						if (label == pfield[0])
+							temp.setPixel(x - pfield[1] + 5, y - pfield[2] + 5, qRgb(0, 0, 0));
 					}
 
-					/*temp.save(QString("../data/trash/temp-").
-						   append(QString::number(progressBar->value())).append(QString("-zz")).
-						   append(QString::number(zz)).append(QString("-")).
-						   append(QString::number(z)).append(QString("-h")).
-						   append(QString::number(h)).append(QString("-w")).
-						   append(QString::number(w)).append(QString("-po")).
-						   append(QString::number(pfield[4])).append(QString(".bmp")));
-					QImage ppart = part.copy(pfield[0], pfield[1], w, h);
-					ppart.save(QString("../data/trash/ppart-").
-						   append(QString::number(progressBar->value())).append(QString("-zz")).
-						   append(QString::number(zz)).append(QString("-")).
-						   append(QString::number(z)).append(QString("-h")).
-						   append(QString::number(h)).append(QString("-w")).
-						   append(QString::number(w)).append(QString("-po")).
-						   append(QString::number(pfield[4])).append(QString(".bmp")));
-					*/
+					/*temp.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+								 append(QString("-fld_")).append(QString::number(fieldCounter)).
+								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
+								 append(QString("-part_")).append(QString::number(n)).
+								 append(QString(".bmp")));
+	*/
 
-					result.append(classifiers.at(0)
-								  ->classify(temp));
+					result.append(classifiers.at(1)
+								  ->classify(preprocessor.grayscale(temp)));
 				}
 
 
@@ -562,6 +696,11 @@ void LogicCore::classify()
 
 void LogicCore::saveResults()
 {
+	//QImage temp = preprocessor.grayscale(QImage(QString("../data/trash/00.bmp")));
+	//temp.save("../data/trash/00_s0.bmp");
+	//qDebug() << "result: " << classifiers.at(1)->classify(temp);
+	//return;
+
 	// Saving results to text file
 	if (segmentator.getBody().isEmpty())
 		return;

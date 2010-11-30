@@ -73,6 +73,9 @@ void Segmentator::setPreprocessor(Preprocessor * preprocessor)
 
 void Segmentator::segmentate()
 {
+	segmentateNew();
+	return;
+
 	if (!segTemplate || !image)
 		return;
 
@@ -80,9 +83,7 @@ void Segmentator::segmentate()
 	 delete body.takeFirst();
 
 	// Scanning zone height
-	int scan_height = (segTemplate->getBody().length() > 0)
-					  ? segTemplate->getBody().at(0)->getHeight() / 4
-					  : 30;
+	int scan_height = 15;
 
 	// Get real image anchor point
 	searchAnchor();
@@ -99,9 +100,20 @@ void Segmentator::segmentate()
 	{
 		// Check for emptiness and add one container if necessary
 		TemplateContainer * temp = new TemplateContainer(srcContainer);
-		// Set correct coordinates
+		// Fix coordinates using field template search
 		temp->setX(temp->getX() + anchor.x());
 		temp->setY(temp->getY() + anchor.y());
+//		qDebug() << "original position" << QPoint(temp->getX(), temp->getY());
+		QPoint containerPosition = getRealContainerAnchor(
+				temp->getX(), temp->getY());
+		if (!containerPosition.isNull())
+		{
+			temp->setX(containerPosition.x());
+			temp->setY(containerPosition.y());
+		}
+//		qDebug() << "got c.anchor at" << containerPosition<<
+//				"container at" << QPoint(temp->getX(), temp->getY());
+
 
 		bool isNotEmpty = false;
 
@@ -167,14 +179,32 @@ void Segmentator::segmentate()
 
 				// Appending template row
 				TemplateContainer * temp = new TemplateContainer(srcContainer);
-				temp->setY(i);
-				temp->setX(temp->getX() + anchor.x());
+				QPoint containerPosition = getRealContainerAnchor(
+						temp->getX() + anchor.x(), i);
+
+				if (containerPosition.isNull())
+				{
+					temp->setY(i);
+					temp->setX(temp->getX() + anchor.x());
+				}
+				else
+				{
+
+					temp->setX(containerPosition.x());
+					temp->setY(containerPosition.y());
+				}
+
 				body.append(temp);
-				//qDebug() << "container at (" << temp->getX() << "; "
-				//		<< temp->getY() << ")";
+//				qDebug() << "got c.anchor at" << containerPosition
+//						<< "container at" << QPoint(temp->getX(), temp->getY());
+
 
 				// Incrementing vertical coordinate
-				i += srcContainer->getHeight() + srcContainer->getInterval();
+				if (containerPosition.isNull())
+					i += srcContainer->getHeight() + srcContainer->getInterval();
+				else
+					i = containerPosition.y() + srcContainer->getHeight()
+						+ srcContainer->getInterval();
 
 				// Update GUI to avoid freezing
 				qApp->processEvents();
@@ -313,7 +343,7 @@ void Segmentator::searchAnchor()
 	// Searching for minimum value
 	unsigned int min = matrix[0];
 	unsigned int max = matrix[0];
-	// Deviation sums calculation
+
 	for (int i = 0; i < m_height; i++)
 	{
 		for (int j = 0; j < m_width; j++)
@@ -387,7 +417,9 @@ void Segmentator::searchAnchor()
 			for (int y = 0; y < 2 * region_size; y++)
 				for (int x = 0; x < 2 * region_size; x++)
 			{
-				sum += qAbs(qGray(rgbImage.pixel(bl+j+x, bt+i+y))
+				if (bt+i+y < rgbImage.height() && bt+i+y >= 0
+					&& bl+j+x < rgbImage.width() && bl+j+x >=0)
+					sum += qAbs(qGray(rgbImage.pixel(bl+j+x, bt+i+y))
 							- qGray(aScaled.pixel(x, y)));
 				if (sum > max_deviation)
 					sum = max_deviation;
@@ -404,7 +436,7 @@ void Segmentator::searchAnchor()
 	// Searching for minimum value
 	min = matrix[0];
 	max = matrix[0];
-	// Deviation sums calculation
+
 	for (int i = 0; i < m_height; i++)
 	{
 		for (int j = 0; j < m_width; j++)
@@ -451,4 +483,284 @@ void Segmentator::duplicateBodyElement(int element)
 	{
 		body.insert(element+1, new TemplateContainer(body.at(element)));
 	}
+}
+
+QPoint Segmentator::getRealContainerAnchor(int raw_x, int raw_y)
+{
+	QPoint result;
+	// Load field template
+	QImage fieldImage = QImage(qApp->applicationDirPath()
+								.append(QString("/../data/field.png")));
+	// Region size
+	int region_size_width = 15;
+	int region_size_height = 15;
+
+	// Region bounds
+	int bl = (raw_x - region_size_width > 0) ? (raw_x - region_size_width) : 0;
+	int br = (raw_x + region_size_width < rgbImage.width()) ?
+			 (raw_x + region_size_width) : rgbImage.width() - 1;
+	int bt = (raw_y - region_size_height > 0) ? (raw_y - region_size_height) : 0;
+	int bb = (raw_y + region_size_height < rgbImage.height()) ?
+			 (raw_y + region_size_height) : rgbImage.height() - 1;
+
+	// Deviation matrix size
+	int m_height = (bb - bt + 1) - region_size_height;
+	if (m_height <= 0)
+		m_height = 1;
+	int m_width = (br - bl + 1) - region_size_width;
+	if (m_width <= 0)
+		m_width = 1;
+
+	// Deviation matrix
+	unsigned int * matrix = new unsigned int[m_width * m_height];
+	if (!matrix)
+		return result;
+
+	// Sum of deviations
+	unsigned int sum = 0;
+
+	// Deviation sums calculation
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			// Value initialization
+			matrix[i * m_width + j] = max_deviation;
+			sum = 0;
+
+			// Calculate deviations
+			for (int y = 0; y < fieldImage.height(); y++)
+				for (int x = 0; x < fieldImage.width(); x++)
+			{
+				if (bt+i+y < rgbImage.height() && bt+i+y >= 0
+					&& bl+j+x < rgbImage.width() && bl+j+x >=0)
+					sum += qAbs(qGray(rgbImage.pixel(bl+j+x, bt+i+y))
+							- qGray(fieldImage.pixel(x, y)));
+				if (sum > max_deviation)
+					sum = max_deviation;
+			}
+
+			// Value saving
+			matrix[i * m_width + j] = sum;
+		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
+	}
+
+	// Searching for minimum value
+	unsigned int min = matrix[0];
+	unsigned int max = matrix[0];
+
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			if (matrix[i * m_width + j] < min)
+			{
+				min = matrix[i * m_width + j];
+				result.setX(j+bl+fieldImage.width());
+				result.setY(i+bt);
+			}
+			if (matrix[i * m_width + j] > max)
+				max = matrix[i * m_width + j];
+		}
+
+		// Update GUI to avoid freezing
+		qApp->processEvents();
+	}
+
+
+	delete[] matrix;
+
+	return result;
+}
+
+// New version of segmentation routine
+void Segmentator::segmentateNew()
+{
+	if (!segTemplate || !image)
+		return;
+
+	while (!body.isEmpty())
+	 delete body.takeFirst();
+
+	// Get real image anchor point
+	searchAnchor();
+	if (!anchorFound)
+	{
+		anchor = QPoint(segTemplate->getAnchorX(), segTemplate->getAnchorY());
+	}
+	//qDebug() << "anchor: " << anchor;
+
+	// Binarization threshold
+	int thresholdEmptyValue = 230;
+
+	// Now we should iterate through containers
+	foreach (TemplateContainer * srcContainer, segTemplate->getBody())
+	{
+		// Scanning start and end points; TODO: move these parametres to template
+		int scanStopHorizontal = anchor.x() + srcContainer->getX() - 75;
+		int scanStartVertical = anchor.y() + srcContainer->getY() - 15;
+		int scanBorderLeft = anchor.x() + srcContainer->getX() - 25;
+		int scanBorderRight = anchor.x() + srcContainer->getX() + 25;
+
+		// Build vertical histogram
+		QVector<int> verticalHistogram;
+
+		// Number of continuous empty rows
+		int continuousEmptyRowsNumber = 0;
+
+		// Threshold dark points value
+		int thresholdDarkPoints = 20;
+
+		for (int i = scanStartVertical; i < image->height()
+			&& continuousEmptyRowsNumber < 0.6 * srcContainer->getHeight(); i++)
+		{
+			int sum = 0;
+			// Calculate number of dark points on row segment
+			for (int j = anchor.x(); j < scanStopHorizontal; j++)
+				if ((image->scanLine(i))[j] <= thresholdEmptyValue)
+					sum++;
+			// Save mean value
+			verticalHistogram.append(sum);
+
+			// Check for empty row condition
+			if (sum >= thresholdDarkPoints)
+				continuousEmptyRowsNumber = 0;
+			else
+				continuousEmptyRowsNumber++;
+
+			// Update GUI to avoid freezing
+			qApp->processEvents();
+		}
+
+		//qDebug() << "histogram size:" << verticalHistogram.size();
+
+		// Extracting non-empty segments that are situated between empty segments
+		QVector< QPair<int, int> > segments;
+		QPair<int, int> temp = qMakePair(-1, -1);
+
+		continuousEmptyRowsNumber = 0;
+		// Minimum empty rows number threshold (is used to glue up neighbour segments)
+		int emptyRowsThreshold = 10;
+		// Last non-empty row index
+		int lastNonEmptyIndex = 0;
+
+		for (int i = 0; i < verticalHistogram.size(); i++)
+		{
+			// Check for non-empty row
+			if (verticalHistogram.at(i) >= thresholdDarkPoints)
+			{
+				lastNonEmptyIndex = i;
+				continuousEmptyRowsNumber = 0;
+
+				// Create new segment if necessary
+				if (temp.first < 0)
+				{
+					temp.first = i;
+				}
+
+			}
+			else
+			{
+				continuousEmptyRowsNumber++;
+				// Finish segment if necessary
+				if (continuousEmptyRowsNumber >= emptyRowsThreshold
+					&& temp.first >= 0)
+				{
+					temp.second = lastNonEmptyIndex;
+					segments.append(temp);
+					temp = qMakePair(-1, -1);
+				}
+			}
+
+			// Update GUI to avoid freezing
+			qApp->processEvents();
+		}
+
+		//qDebug() << "segments size:" << segments.size();
+
+		// Threshold segment height
+		int thresholdHeight = 0.3 * srcContainer->getHeight();
+
+		// Previous horizontal coordinate for error correction
+		int xPrevious = srcContainer->getX() + anchor.x();
+
+		// Create container for each segment
+		for (int i = 0; i < segments.size(); i++)
+		{
+//			qDebug() << "segment from" << segments.at(i).first + scanStartVertical
+//					<< "to" << segments.at(i).second  + scanStartVertical
+//					<< "- length" << segments.at(i).second - segments.at(i).first;
+
+			if (segments.at(i).second - segments.at(i).first
+				< thresholdHeight)
+				continue;
+
+			int y = scanStartVertical
+					+ (segments.at(i).first + segments.at(i).second) / 2
+					- srcContainer->getHeight() / 2;
+
+			// If there are previous empty segments, calculation can be more accurate
+			if (i > 0)
+			{
+				y = scanStartVertical
+					+ (segments.at(i-1).second + segments.at(i).first) / 2;
+			}
+
+			TemplateContainer * temp = new TemplateContainer(srcContainer);
+			temp->setY(y);
+			temp->setX(srcContainer->getX() + anchor.x());
+
+			// Scan for non-empty pixels to the right of segment
+			int x = -1; int y_temp = -1;
+
+			//qDebug() << "y from" << y + 0.25 * srcContainer->getHeight()
+			//		<< "to" << y + 0.75 * srcContainer->getHeight()
+			//		<< "- horiz. scan from" << scanBorderLeft << "to" << scanBorderRight;
+
+			for (int j = scanBorderLeft; j < scanBorderRight; j++)
+			{
+			   for (int k = y + 0.25 * srcContainer->getHeight();
+						k < y + 0.75 * srcContainer->getHeight(); k++)
+				{
+				   y_temp = k;
+
+				   if ((image->scanLine(k))[j] < thresholdEmptyValue)
+					{
+						x = j;
+						break;
+					}
+
+				}
+
+			   if (x > -1)
+				   break;
+
+				// Update GUI to avoid freezing
+				qApp->processEvents();
+			}
+
+			if (x > -1)
+			{
+				// Correct coordinate value
+				x = double(x) * 0.25 + double(xPrevious) * 0.75;
+				xPrevious = x;
+			}
+			else
+				x = xPrevious;
+
+			//qDebug() << "resulting x:" << x << "at y:" << y_temp;
+
+			temp->setX(x);
+
+			body.append(temp);
+
+			// Update GUI to avoid freezing
+			qApp->processEvents();
+		}
+
+	}
+
 }

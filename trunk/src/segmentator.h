@@ -40,6 +40,8 @@ public:
 	void segmentate();
 	// Get real anchor coordinates
 	QPoint getRealAnchor();
+	// Get real container anchor coordinates
+	QPoint getRealContainerAnchor(int raw_x, int raw_y);
 
 	const QList<TemplateContainer *> & getBody();
 	// Remove container from body list
@@ -82,6 +84,9 @@ private:
 	void dumpData();
 	// Search for real anchor coordinates
 	void searchAnchor();
+
+	// New version of segmentation routine
+	void segmentateNew();
 
 };
 

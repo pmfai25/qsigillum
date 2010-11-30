@@ -24,7 +24,7 @@ Preprocessor::Preprocessor()
 
 	// Dark fields removal
 	light_threshold = 240;
-	field_size = 0.25;
+	field_size = 0.20;
 
 	// Empty column checking
 	empty_threshold = 200;
@@ -34,7 +34,7 @@ Preprocessor::Preprocessor()
 
 	// Set the color table
 	grayColorTable.resize(256);
-	for (int i=0; i < 256; i++)
+	for (int i = 0; i < 256; i++)
 	{
 		grayColorTable[i] = qRgb(i, i, i);
 	}
@@ -530,14 +530,16 @@ QImage Preprocessor::erode(const QImage& image)
 QVector< QVector<int> > Preprocessor::analyseComponents(const QImage& image,
 														int *marked, int number)
 {
-	// Values order in inline vector: x_min, y_min, x_max, y_max, points number
-	QVector< QVector<int> > result(number+1, QVector<int>(5, 0));
+	// Values order in inner vector: label, x_min, y_min, x_max, y_max, points number
+	QVector< QVector<int> > result(number, QVector<int>(6, 0));
 
-	// Initialize maximum border coordinates
-	for (int i = 0; i <= number; i++)
+	for (int i = 0; i < number; i++)
 	{
-		result[i][0] = image.width() - 1;
-		result[i][1] = image.height() - 1;
+		// Initialize border coordinate
+		result[i][0] = i + 1;
+		// Initialize minimum border coordinates
+		result[i][1] = image.width() - 1;
+		result[i][2] = image.height() - 1;
 	}
 
 	int label = 0;
@@ -551,17 +553,55 @@ QVector< QVector<int> > Preprocessor::analyseComponents(const QImage& image,
 		if (label > 0 && label <= number)
 		{
 			// Increase corresponding pixel number
-			result[label][4]++;
+			result[label-1][5]++;
 
 			// Check for border
-			if (x < result[label][0])
-				result[label][0] = x;
-			if (y < result[label][1])
-				result[label][1] = y;
-			if (x > result[label][2])
-				result[label][2] = x;
-			if (y > result[label][3])
-				result[label][3] = y;
+			if (x < result[label-1][1])
+				result[label-1][1] = x;
+			if (y < result[label-1][2])
+				result[label-1][2] = y;
+			if (x > result[label-1][3])
+				result[label-1][3] = x;
+			if (y > result[label-1][4])
+				result[label-1][4] = y;
+		}
+	}
+
+	return result;
+}
+
+// Analyse specified component using given info vector
+QVector<int> Preprocessor::analyseComponent(const QImage& image, int* marked, QVector<int> field)
+{
+	// Values order label, x_min, y_min, x_max, y_max, points number
+	QVector<int> result(6, 0);
+	result[0] = field[0];
+	// Initialize minimum border coordinates
+	result[1] = field[3];
+	result[2] = field[4];
+
+	int label = 0;
+
+	// Loop on image part
+	for (int y = field[2]; y <= field[4]; y++)
+	for (int x = field[1]; x <= field[3]; x++)
+	{
+		// Get pixel number
+		label = marked[image.width() * y + x];
+		if (label == result[0])
+		{
+			// Increase corresponding pixel number
+			result[5]++;
+
+			// Check for border
+			if (x < result[1])
+				result[1] = x;
+			if (y < result[2])
+				result[2] = y;
+			if (x > result[3])
+				result[3] = x;
+			if (y > result[4])
+				result[4] = y;
 		}
 	}
 
