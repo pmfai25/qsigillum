@@ -31,8 +31,11 @@ public:
 
 	// Classify image data
 	virtual QString classify(QImage image) = 0;
+
+	// Get base plugin name
+	virtual QString getBaseName() = 0;
 };
 
-Q_DECLARE_INTERFACE(Classifier,"qSigillum.Classifier/0.1");
+Q_DECLARE_INTERFACE(Classifier,"qSigillum.Classifier/0.2");
 
 #endif // CLASSIFICATOR_H

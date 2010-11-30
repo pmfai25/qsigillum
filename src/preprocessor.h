@@ -52,6 +52,8 @@ public:
 	QImage erode(const QImage& image);
 	// Analyse connected components
 	QVector< QVector<int> > analyseComponents(const QImage& image, int* marked, int number);
+	// Analyse specified component using given info vector
+	QVector<int> analyseComponent(const QImage& image, int* marked, QVector<int> field);
 
 private:
 	// Minimum mean value of non-dark field
