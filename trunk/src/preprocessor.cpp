@@ -607,3 +607,82 @@ QVector<int> Preprocessor::analyseComponent(const QImage& image, int* marked, QV
 
 	return result;
 }
+
+// Calculate coordinates of center of mass of binary image
+QPoint Preprocessor::getMassCenter(const QImage& image)
+{
+	QPoint result = QPoint(image.width()/2, image.height()/2);
+
+	// Arrays for histogram analysis
+	double * vertical_histogram = new double[image.height()];
+	double * horizontal_histogram = new double[image.width()];
+	if (!vertical_histogram || !horizontal_histogram)
+		return result;
+
+	// Initialize histograms
+	for (int y = 0; y < image.height(); y++)
+	{
+		vertical_histogram[y] = 0.0;
+	}
+	for (int x = 0; x < image.width(); x++)
+	{
+		horizontal_histogram[x] = 0.0;
+	}
+
+	// Loop on whole image
+	for (int y = 0; y < image.height(); y++)
+	for (int x = 0; x < image.width(); x++)
+	{
+		if ((image.scanLine(y))[x] == 0)
+		{
+			// Update histograms
+			vertical_histogram[y]++;
+			horizontal_histogram[x]++;
+		}
+	}
+
+	// Histogram sums
+	double vertical_sum = 0.0;
+	double horizontal_sum = 0.0;
+
+	// Weighted histogram sums
+	double vertical_weighted_sum = 0.0;
+	double horizontal_weighted_sum = 0.0;
+
+	// Loop on vertical histogram
+	for (int y = 0; y < image.height(); y++)
+	{
+		// Update histogram sum
+		vertical_sum += vertical_histogram[y];
+
+		// Update weighted sum
+		vertical_weighted_sum += double(y) * vertical_histogram[y];
+	}
+
+	// Loop on horizontal histogram
+	for (int x = 0; x < image.width(); x++)
+	{
+		// Update histogram sum
+		horizontal_sum += horizontal_histogram[x];
+
+		// Update weighted sum
+		horizontal_weighted_sum += double(x) * horizontal_histogram[x];
+	}
+
+	delete[] vertical_histogram;
+	delete[] horizontal_histogram;
+
+	// Check resulting coordinates
+	if (horizontal_weighted_sum/horizontal_sum > 0.000001
+		&& horizontal_weighted_sum/horizontal_sum < double(image.width()+1))
+	{
+		result.setX(horizontal_weighted_sum/horizontal_sum);
+	}
+	if (vertical_weighted_sum/vertical_sum > 0.000001
+		&& vertical_weighted_sum/vertical_sum < double(image.height()+1))
+	{
+		result.setY(vertical_weighted_sum/vertical_sum);
+	}
+
+	return result;
+}
