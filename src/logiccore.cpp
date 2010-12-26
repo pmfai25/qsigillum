@@ -428,18 +428,31 @@ void LogicCore::classify()
 					container->getY() + field->getY(),
 					field->getWidth(), field->getHeight())))));
 
-			int cor1 = container->getX() + field->getX();
-			int cor2 = container->getY() + field->getY();
-			int cor3 = field->getWidth();
-			int cor4 = field->getHeight();
-			QImage part0 = srcImage.copy(cor1, cor2, cor3, cor4);
-//			part0.save(QString("../data/trash/cntr_").
+
+			// Check part center of mass
+			QPoint massCenter = preprocessor.getMassCenter(part);
+
+			// Extract part using corrected coordinates
+			double norm = 1.0;
+			int cor1 = container->getX() + field->getX()
+					   + int(norm * (massCenter.x() - field->getWidth()/2));
+			int cor2 = container->getY() + field->getY()
+					   + int(norm * (massCenter.y() - field->getHeight()/2));
+
+			part = preprocessor.erode(
+								preprocessor.dilate(preprocessor.binarize(
+								(
+								srcImage.copy(cor1, cor2,
+								field->getWidth(), field->getHeight())))));
+
+//			if (containerCounter == 9 && fieldCounter == 1)
+//			part.save(QString("../data/trash/cntr_").
 //				   append(QString::number(containerCounter)).
 //				   append(QString("-fld_")).append(QString::number(fieldCounter)).
 //				   append(QString("-x")).append(QString::number(cor1)).
 //				   append(QString("-y")).append(QString::number(cor2)).
-//				   append(QString("-w")).append(QString::number(cor3)).
-//				   append(QString("-h")).append(QString::number(cor4)).
+//				   append(QString("-w")).append(QString::number(field->getWidth())).
+//				   append(QString("-h")).append(QString::number(field->getHeight())).
 //				   append(QString(".bmp")));
 
 			num = 0;
@@ -522,7 +535,7 @@ void LogicCore::classify()
 					w = pfield[3] - pfield[1];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 700 || pfield[5] < 100
+					if (h <= 0 || w <= 0 || h * w < 600 || pfield[5] < 100
 						|| pfield[5] > 1500)
 					{
 						n.remove();
@@ -561,7 +574,7 @@ void LogicCore::classify()
 					w = pfield[3] - pfield[1];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 800 || pfield[5] < 100
+					if (h <= 0 || w <= 0 || h * w < 600 || pfield[5] < 100
 						|| pfield[5] > 1500)
 					{
 						n.remove();
@@ -579,13 +592,13 @@ void LogicCore::classify()
 						preview.setPixel(x, y, qRgb(0, 0, 0));
 				}
 
-				/*if (usedLabels.size() > 0)
+				if (usedLabels.size() > 0)
 					preview.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
 								 append(QString("-fld_")).append(QString::number(fieldCounter)).
 								 append(QString("-lbls_")).append(QString::number(num)).
 								 append(QString("-usedLbls_")).append(QString::number(usedLabels.size())).
 								 append(QString(".bmp")));
-	*/
+
 				// Analyze distinct labels
 				for (int n = 0; n < pfields.size(); n++)
 				{
@@ -612,12 +625,12 @@ void LogicCore::classify()
 							temp.setPixel(x - pfield[1] + 5, y - pfield[2] + 5, qRgb(0, 0, 0));
 					}
 
-					/*temp.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
-								 append(QString("-fld_")).append(QString::number(fieldCounter)).
-								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
-								 append(QString("-part_")).append(QString::number(n)).
-								 append(QString(".bmp")));
-	*/
+//					temp.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+//								 append(QString("-fld_")).append(QString::number(fieldCounter)).
+//								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
+//								 append(QString("-part_")).append(QString::number(n)).
+//								 append(QString(".bmp")));
+
 
 					result.append(classifiers.at(1)
 								  ->classify(preprocessor.grayscale(temp)));
@@ -674,7 +687,8 @@ void LogicCore::classify()
 			field->getLineEdit()->setText(result);
 			// Validating result
 			if (result.length() <= 0 || result.length() > 3
-				|| (result.length() == 3 && result.toInt() != 100))
+				|| (result.length() == 3 && result.toInt() != 100)
+				|| (result.length() > 1 && result.startsWith("0")))
 			{
 				QPalette p = field->getLineEdit()->palette();
 				p.setColor(QPalette::Base, Qt::red);

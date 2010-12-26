@@ -36,20 +36,27 @@ public:
 	QImage removeDarkFields(const QImage& image);
 	// Remove trash from image borders
 	QImage removeBorderTrash(const QImage& image);
+
 	// Check if image column is empty
 	bool emptyColumn(const QImage& image, int x);
 	// Check if image row is empty
 	bool emptyRow(const QImage& image, int y);
+
+	// Calculate coordinates of center of mass of binary image
+	QPoint getMassCenter(const QImage& image);
+
 	// Binarization (8-bit image with 2 colors is used)
 	QImage binarize(const QImage& image);
 	// Transform to 8-bit image with 255 colors
 	QImage grayscale(const QImage& image);
-	// Connected components analysis on binary images
-	int* markCC(const QImage& image, int* number);
+
 	// Morphological dilation
 	QImage dilate(const QImage& image);
 	// Morphological erosion
 	QImage erode(const QImage& image);
+
+	// Connected components analysis on binary images
+	int* markCC(const QImage& image, int* number);
 	// Analyse connected components
 	QVector< QVector<int> > analyseComponents(const QImage& image, int* marked, int number);
 	// Analyse specified component using given info vector
