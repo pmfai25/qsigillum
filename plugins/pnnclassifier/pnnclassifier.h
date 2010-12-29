@@ -43,6 +43,9 @@ public:
 	// Get base plugin name
 	QString getBaseName();
 
+	// Train classifier
+	void trainClassifier();
+
 private:
 	// Deviation value
 	double deviation;
@@ -143,9 +146,6 @@ private:
 	// Get relative distance from right border to a black point
 	// at height = 100%
 	double getDistanceRightBorder100p();
-
-	// Train classifier
-	void trainClassifier();
 
 	// Convert image to grayscale format
 	QImage grayscale(QImage src);

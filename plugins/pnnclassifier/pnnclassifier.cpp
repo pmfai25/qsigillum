@@ -21,8 +21,8 @@
 QString PNNClassifier::classify(QImage image)
 {
 	// Training mode
-	//trainClassifier();
-	//return QString();
+	//this->trainClassifier();
+	//return QString("");
 
 	// Checking input image
 	if (image.isNull())
@@ -92,7 +92,8 @@ QString PNNClassifier::classify(QImage image)
 				temp += pow(weights.at(i).at(j).at(k) - inputPattern.at(k), 2);
 			}
 
-			results[i] += exp(-temp/pow(deviation, 2));
+			// Accumulate results [with respect to set size]
+			results[i] += exp(-temp/pow(deviation, 2));// / weights.at(i).size();
 		}
 	}
 
@@ -121,7 +122,7 @@ void PNNClassifier::init()
 {
 	// Set parameters
 	deviation = 0.3;
-	result_threshold = 0.01;
+	result_threshold = 0.1;
 	bin_threshold = 180;
 
 	// Set labels
@@ -693,7 +694,7 @@ QImage PNNClassifier::grayscale(QImage src)
 	return result;
 }
 
-// Train classifier
+// Train classifier using MNIST testing set images
 void PNNClassifier::trainClassifier()
 {
 	// Set parameters
@@ -725,80 +726,106 @@ void PNNClassifier::trainClassifier()
 	// Temp pattern features vector
 	QVector<double> tempPattern;
 
-	QStringList filelist;
-
 	// Go to training set directory
 	QDir dir = QDir(qApp->applicationDirPath());
-	dir.cd("../../digits-set/");
+	dir.cd("/home/konst/coding/projects/mnist/");
 	qDebug() << "path: " << dir.path();
+
+	// Get file list
+	QStringList filelist = dir.entryList(QStringList("*.bmp"));
+
+	// Digit image width and height
+	int part_size = 28;
+
+	// Class image sheet containing a number of digit images
+	QImage classImage;
+
+	// Class image coordinates
+	int class_x = 0;
+	int class_y = 0;
+
+	// Finish flag
+	bool isFinished = false;
 
 	// Looping over classes
 	for (int l = 0; l < labels.size(); l++)
 	{
 		tempClass.clear();
 
-		// Go to class directory
-		dir.cd(labels.at(l));
-		qDebug() << "Processing directory " << labels.at(l);
-		filelist = dir.entryList(QStringList("*.bmp"));
+		qDebug() << "Processing file " << filelist.at(l);
 
-		// Get files list
-		for (int i = 0; i < filelist.size(); i++)
+		// Load image
+		classImage = QImage(dir.absoluteFilePath(filelist.at(l)));
+
+		isFinished = false;
+		class_x = 0;
+		class_y = 0;
+
+		do
 		{
 			tempPattern.clear();
 
-			qDebug() << "Processing file " << labels.at(l) << "/" << filelist.at(i);
+			// Get image part
+			this->image = crop(grayscale(
+					classImage.copy(class_x, class_y, part_size, part_size)));
+			// Check image
+			if (this->image.isNull())
+			{
+				isFinished = true;
+				continue;
+			}
 
-			// Load file
-			this->image = crop(grayscale(QImage(dir.absoluteFilePath(filelist.at(i)))));
-			//qDebug() << "here1";
+			qDebug() << "---- processing image " << l << "at x:" << class_x << "y:" << class_y;
+
 			// Calculate features and append to vector
 			tempPattern.append(getOccupancyVerticalT1());
-			//qDebug() << "here2";
 			tempPattern.append(getOccupancyVerticalT2());
-			//qDebug() << "here3";
 			tempPattern.append(getOccupancyVerticalT3());
-			//qDebug() << "here4";
 			tempPattern.append(getOccupancyVerticalQv1());
 			tempPattern.append(getOccupancyVerticalQv2());
 			tempPattern.append(getOccupancyVerticalQv3());
 			tempPattern.append(getOccupancyVerticalQv4());
 			tempPattern.append(getOccupancyVerticalQv5());
-			//qDebug() << "here5";
 			tempPattern.append(getOccupancyQ1());
-			//qDebug() << "here51";
 			tempPattern.append(getOccupancyQ2());
-			//qDebug() << "here52";
 			tempPattern.append(getOccupancyQ3());
-			//qDebug() << "here53";
 			tempPattern.append(getOccupancyQ4());
-			//qDebug() << "here6";
 			tempPattern.append(getDistanceLeftBorder0p());
 			tempPattern.append(getDistanceLeftBorder25p());
 			tempPattern.append(getDistanceLeftBorder50p());
 			tempPattern.append(getDistanceLeftBorder75p());
 			tempPattern.append(getDistanceLeftBorder100p());
-			//qDebug() << "here7";
 			tempPattern.append(getDistanceRightBorder0p());
 			tempPattern.append(getDistanceRightBorder25p());
 			tempPattern.append(getDistanceRightBorder50p());
 			tempPattern.append(getDistanceRightBorder75p());
 			tempPattern.append(getDistanceRightBorder100p());
-			//qDebug() << "here8";
 
 			// Append pattern to class vector
 			tempClass.append(tempPattern);
-		}
+
+			// Update class image coordinates
+			class_y += part_size;
+			if (class_y >= classImage.height())
+			{
+				class_y = 0;
+				class_x += part_size;
+			}
+			if (class_x >= classImage.width())
+			{
+				isFinished = true;
+				continue;
+			}
+
+		} while (!isFinished);
 
 		// Append class to weights vector
 		weights.append(tempClass);
 
-		dir.cd("../");
 	}
 
 	qDebug() << "Write weights file...";
-	QFile data(qApp->applicationDirPath()
-			   .append(QString("/../res/weights.dat")));
+	QFile data(QString("new_weights.dat"));
 	if (data.open(QFile::WriteOnly))
 	{
 		QTextStream stream(&data);
