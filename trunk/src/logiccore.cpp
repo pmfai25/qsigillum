@@ -129,6 +129,10 @@ void LogicCore::getImage()
 	{
 		// Update status message
 		parent->getStatusBar()->showMessage(tr("Loading image..."));
+		// Status message progress bar
+		QProgressBar * progressBar = new QProgressBar(parent->getStatusBar());
+		progressBar->setRange(0, 0);
+		parent->getStatusBar()->addPermanentWidget(progressBar);
 
 		srcImage = sender->loadImage();
 
@@ -150,9 +154,13 @@ void LogicCore::getImage()
 		else
 			// Update status message
 			parent->getStatusBar()->showMessage(tr("Image loading failed"), 2000);
+
+		parent->getStatusBar()->removeWidget(progressBar);
+		delete progressBar;
 	}
 
 	operationRunning = false;
+
 }
 
 void LogicCore::preprocess()
@@ -197,6 +205,11 @@ void LogicCore::segmentate()
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Segmentating image..."));
+
+	// Status message progress bar
+	QProgressBar * progressBar = new QProgressBar(parent->getStatusBar());
+	progressBar->setRange(0, 0);
+	parent->getStatusBar()->addPermanentWidget(progressBar);
 
 	QDir dir(qApp->applicationDirPath());
 	segmentator.loadTemplate(dir.absoluteFilePath("../data/marksheet.xml"));
@@ -315,6 +328,8 @@ void LogicCore::segmentate()
 
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image successfully segmentated"), 2000);
+	parent->getStatusBar()->removeWidget(progressBar);
+	delete progressBar;
 
 	operationRunning = false;
 }
@@ -390,10 +405,10 @@ void LogicCore::classify()
 	// Update status message
 	parent->getStatusBar()->showMessage(tr("Image classification..."));
 	// Status message progress bar
-	QProgressBar * progressBar = new QProgressBar();
+	QProgressBar * progressBar = new QProgressBar(parent->getStatusBar());
 	progressBar->setRange(0, segmentator.getBody().length());
-	progressBar->reset();
-	parent->getStatusBar()->addWidget(progressBar);
+	progressBar->setValue(0);
+	parent->getStatusBar()->addPermanentWidget(progressBar);
 
 	// Counters for debug output purposes
 	int containerCounter = 0;
@@ -592,12 +607,12 @@ void LogicCore::classify()
 						preview.setPixel(x, y, qRgb(0, 0, 0));
 				}
 
-				if (usedLabels.size() > 0)
+				/*if (usedLabels.size() > 0)
 					preview.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
 								 append(QString("-fld_")).append(QString::number(fieldCounter)).
 								 append(QString("-lbls_")).append(QString::number(num)).
 								 append(QString("-usedLbls_")).append(QString::number(usedLabels.size())).
-								 append(QString(".bmp")));
+								 append(QString(".bmp")));*/
 
 				// Analyze distinct labels
 				for (int n = 0; n < pfields.size(); n++)
@@ -634,6 +649,9 @@ void LogicCore::classify()
 
 					result.append(classifiers.at(1)
 								  ->classify(preprocessor.grayscale(temp)));
+
+					// Update GUI to avoid freezing
+					qApp->processEvents();
 				}
 
 
@@ -697,6 +715,9 @@ void LogicCore::classify()
 						this, SLOT(changeFieldColor()));
 			}
 
+			// Update GUI to avoid freezing
+			qApp->processEvents();
+
 		}
 	}
 
@@ -710,10 +731,9 @@ void LogicCore::classify()
 
 void LogicCore::saveResults()
 {
-	//QImage temp = preprocessor.grayscale(QImage(QString("../data/trash/00.bmp")));
-	//temp.save("../data/trash/00_s0.bmp");
-	//qDebug() << "result: " << classifiers.at(1)->classify(temp);
-	//return;
+	// Train PNN classifier
+	/*classifiers.at(1)->classify(QImage());
+	return;*/
 
 	// Saving results to text file
 	if (segmentator.getBody().isEmpty())
