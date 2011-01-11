@@ -137,10 +137,10 @@ QImage Preprocessor::removeBorderTrash(const QImage& image)
 	{
 		p1.setX(j);
 		temp = 0;
-		// Check column values
+		// Check row values
 		for (int i = 0; i < image.height(); i++)
 			if ((image.scanLine(i))[j] <= (uint)empty_threshold)
-			temp++;
+				temp++;
 
 		// Got black column
 		if (temp >= qRound(image.height() * field_size) && !gotBlack)
@@ -686,3 +686,118 @@ QPoint Preprocessor::getMassCenter(const QImage& image)
 
 	return result;
 }
+
+// Compensate rotation for grayscale digit image
+QImage Preprocessor::autoRotate(const QImage& image)
+{
+	if (image.height() <= 1 || image.width() <= 1)
+		return image;
+
+	// POI counter
+	int totalNumber = 0;
+
+	// Mean coordinates of upper part
+	double upperX = 0.0;
+	double upperY = 0.0;
+
+	// Analyze upper 25% of image
+	for (int i = 0; i <= int(image.height() / 4); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < (uint)empty_threshold)
+		{
+			totalNumber++;
+			upperX += (double) j;
+			upperY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	upperX /= totalNumber;
+	upperY /= totalNumber;
+
+	totalNumber = 0;
+
+	// Mean coordinates of lower part
+	double lowerX = 0.0;
+	double lowerY = 0.0;
+
+	// Analyze lower 25% of image
+	for (int i = int(3 * image.height() / 4); i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < (uint)empty_threshold)
+		{
+			totalNumber++;
+			lowerX += (double) j;
+			lowerY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	lowerX /= totalNumber;
+	lowerY /= totalNumber;
+
+	// Check horizontal difference
+	if (abs(upperX - lowerX) < 1.0)
+		return image;
+
+	// Calculate rotation angle using norm value
+	double angle = 0.2 * atan((upperY - lowerY) / (upperX - lowerX));
+
+	// Create temporary image for pixel rotation
+	QImage temp = QImage(qRound(image.width() * 1.5),
+						 qRound(image.height() * 1.5), QImage::Format_Indexed8);
+	temp.setColorTable(grayColorTable);
+	temp.fill(255);
+
+	// Rotation centre
+	int x0 = image.width() / 2;
+	int y0 = image.height() / 2;
+
+	// Resulting image pixel coordinates
+	int x = 0;
+	int y = 0;
+
+	// Rotation
+	for (int i = 0; i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < (uint)empty_threshold)
+		{
+			x = x0 + qRound(double(j - x0) * cos(angle)
+							- double(i - y0) * sin(angle));
+			y = y0 + qRound(double(j - x0) * sin(angle)
+							+ double(i - y0) * cos(angle));
+
+			if (x >= 0 && x < temp.width()
+				&& y >= 0 && y < temp.height())
+			{
+				(temp.scanLine(y))[x] = (image.scanLine(i))[j];
+			}
+		}
+	}
+
+	// Additional erosion to compensate sampling errors
+	for (int i = 1; i < temp.height() - 1; i++)
+	for (int j = 1; j < temp.width() - 1; j++)
+	{
+		if (((temp.scanLine(i))[j-1] < (uint)empty_threshold)
+			&& ((temp.scanLine(i-1))[j] < (uint)empty_threshold)
+			&& ((temp.scanLine(i+1))[j] < (uint)empty_threshold)
+			&& ((temp.scanLine(i))[j+1] < (uint)empty_threshold))
+		{
+			(temp.scanLine(i))[j] = 0;
+		}
+
+	}
+
+	return temp;
+}
+
