@@ -43,9 +43,6 @@ public:
 	// Get base plugin name
 	QString getBaseName();
 
-	// Train classifier
-	void trainClassifier();
-
 private:
 	// Deviation value
 	double deviation;
@@ -149,6 +146,12 @@ private:
 
 	// Convert image to grayscale format
 	QImage grayscale(QImage src);
+
+	// Train classifier
+	void trainClassifier();
+
+	// Check classifier for training set
+	void checkClassifier();
 
 };
 

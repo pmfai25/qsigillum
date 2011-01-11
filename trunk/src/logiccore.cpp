@@ -447,17 +447,20 @@ void LogicCore::classify()
 			// Check part center of mass
 			QPoint massCenter = preprocessor.getMassCenter(part);
 
-			// Extract part using corrected coordinates
-			double norm = 1.0;
-			int cor1 = container->getX() + field->getX()
-					   + int(norm * (massCenter.x() - field->getWidth()/2));
-			int cor2 = container->getY() + field->getY()
-					   + int(norm * (massCenter.y() - field->getHeight()/2));
+			// Correction norms
+			double normX = 0.2;
+			double normY = 1.0;
+			// Correcting coordinates of image part
+			int corX = container->getX() + field->getX()
+					   + qRound(normX * (massCenter.x() - field->getWidth()/2));
+			int corY = container->getY() + field->getY()
+					   + qRound(normY * (massCenter.y() - field->getHeight()/2));
 
+			// Extract part using corrected coordinates
 			part = preprocessor.erode(
 								preprocessor.dilate(preprocessor.binarize(
-								(
-								srcImage.copy(cor1, cor2,
+								preprocessor.removeBorderTrash(
+								srcImage.copy(corX, corY,
 								field->getWidth(), field->getHeight())))));
 
 //			if (containerCounter == 9 && fieldCounter == 1)
@@ -508,13 +511,8 @@ void LogicCore::classify()
 			// Subdividing fields onto digits and classifying them
 			QString result;
 
-			// If zero or one component is found, analysis is vain
-			if (num <= 1)
-			{
-				result.append(classifiers.at(1)
-							  ->classify(preprocessor.grayscale(part)));
-			}
-			else
+			// If zero components are found, analysis is vain
+			if (num >= 1)
 			{
 				// Get fields parameters
 				QVector< QVector<int> > pfields = preprocessor.analyseComponents(part, marked, num);
@@ -525,11 +523,11 @@ void LogicCore::classify()
 				// Set of used labels
 				QSet<int> usedLabels;
 
-//				if (containerCounter == 2 && fieldCounter == 5)
+//				if (containerCounter == 17 && fieldCounter == 1)
 //				{
 //					foreach (QVector<int> values, pfields)
 //					{
-//						qDebug() << "c2-f5 (" << values[0]
+//						qDebug() << "c17-f1 (" << values[0]
 //								<< values[1]
 //								<< values[2]
 //								<< values[3]
@@ -550,8 +548,9 @@ void LogicCore::classify()
 					w = pfield[3] - pfield[1];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 600 || pfield[5] < 100
-						|| pfield[5] > 1500)
+					if (h <= 25 || w <= 0
+						|| h * w < 100 || (double) w / h > 1.7
+						|| pfield[5] < 60	|| pfield[5] > 1500)
 					{
 						n.remove();
 					}
@@ -559,12 +558,17 @@ void LogicCore::classify()
 					else if (w > 60)
 					{
 						usedLabels.insert(pfield[0]);
+
+						// Get cut point coordinate
+						int cutCoordinate = pfield[1] + w / 2;
+						//int cutCoordinate = preprocessor.getMassCenterX(part, marked, pfield[0]);
+
 						// Save borders values for new field
-						int lb = pfield[1] + w/2;
-						int rb = pfield[1] + w;
+						int lb = cutCoordinate;
+						int rb = pfield[3];
 
 						// Update current field
-						pfield[3] = pfield[1] + w/2 - 1;
+						pfield[3] = cutCoordinate - 1;
 						n.setValue(pfield);
 
 						// Construct new field
@@ -572,7 +576,7 @@ void LogicCore::classify()
 						pfield[3] = rb;
 						temp_fields.append(preprocessor.analyseComponent(part, marked, pfield));
 						//qDebug() << "additional field part at"
-						//		<< containerCounter << "field" << fieldCounter;
+							//	<< containerCounter << "field" << fieldCounter;
 					}
 					else
 					{
@@ -589,8 +593,9 @@ void LogicCore::classify()
 					w = pfield[3] - pfield[1];
 
 					// Validating field
-					if (h <= 0 || w <= 0 || h * w < 600 || pfield[5] < 100
-						|| pfield[5] > 1500)
+					if (h <= 20 || w <= 0
+					   || h * w < 100 || (double) w / h > 1.7
+					   || pfield[5] < 60	|| pfield[5] > 1500)
 					{
 						n.remove();
 					}
@@ -630,25 +635,36 @@ void LogicCore::classify()
 //							<< pfield[5] << ")";
 
 					// Get labeled part
-					QImage temp(w + 10, h + 10, QImage::Format_RGB32);
+					QImage temp(w+1, h+1, QImage::Format_RGB32);
 					temp.fill(qRgb(255, 255, 255));
+
 					for (int y = pfield[2]; y <= pfield[4]; y++)
 					for (int x = pfield[1]; x <= pfield[3]; x++)
 					{
 						label = marked[part.width() * y + x];
 						if (label == pfield[0])
-							temp.setPixel(x - pfield[1] + 5, y - pfield[2] + 5, qRgb(0, 0, 0));
+							temp.setPixel(x - pfield[1], y - pfield[2], qRgb(0, 0, 0));
 					}
 
-//					temp.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
-//								 append(QString("-fld_")).append(QString::number(fieldCounter)).
-//								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
-//								 append(QString("-part_")).append(QString::number(n)).
-//								 append(QString(".bmp")));
+					QImage finalPartImage =  preprocessor.autoRotate(
+							preprocessor.grayscale(temp));
 
+					finalPartImage.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+								 append(QString("-fld_")).append(QString::number(fieldCounter)).
+								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
+								 append(QString("-part_")).append(QString::number(n)).
+								 append(QString(".bmp")));
 
-					result.append(classifiers.at(1)
-								  ->classify(preprocessor.grayscale(temp)));
+					QString output = classifiers.at(1)->classify(finalPartImage);
+
+//					qDebug() << QString("cntr_").append(QString::number(containerCounter)).
+//							append(QString("-fld_")).append(QString::number(fieldCounter)).
+//							append(QString("-partlabel_")).append(QString::number(pfield[0])).
+//							append(QString("-part_")).append(QString::number(n))
+//							<< "w/h:" << (double(w) / h)
+//							<< "output:" << output;
+
+					result.append(output);
 
 					// Update GUI to avoid freezing
 					qApp->processEvents();
@@ -731,9 +747,9 @@ void LogicCore::classify()
 
 void LogicCore::saveResults()
 {
-	// Train PNN classifier
-	/*classifiers.at(1)->classify(QImage());
-	return;*/
+	// Train or check PNN classifier
+	classifiers.at(1)->classify(QImage());
+	return;
 
 	// Saving results to text file
 	if (segmentator.getBody().isEmpty())

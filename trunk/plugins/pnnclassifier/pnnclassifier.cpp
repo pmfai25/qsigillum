@@ -24,6 +24,11 @@ QString PNNClassifier::classify(QImage image)
 	//this->trainClassifier();
 	//return QString("");
 
+	// Testing mode
+	//init();
+	//this->checkClassifier();
+	//return QString("");
+
 	// Checking input image
 	if (image.isNull())
 	{
@@ -34,7 +39,7 @@ QString PNNClassifier::classify(QImage image)
 	// Initialization and processing
 	init();
 	this->image = crop(image);
-	if (this->image.isNull())
+	if (image.isNull())
 		return QString("");
 
 	// Features vector for input pattern
@@ -92,14 +97,15 @@ QString PNNClassifier::classify(QImage image)
 				temp += pow(weights.at(i).at(j).at(k) - inputPattern.at(k), 2);
 			}
 
-			// Accumulate results [with respect to set size]
-			results[i] += exp(-temp/pow(deviation, 2));// / weights.at(i).size();
+			// Accumulate results
+			results[i] += exp(-temp/pow(deviation, 2));
 		}
 	}
 
 	// Searching for maximum value and its index
 	int index = 0;
 	double max = 0.0;
+
 	for (int i = 0; i < results.size(); i++)
 	{
 		if (results.at(i) > max)
@@ -146,7 +152,7 @@ void PNNClassifier::init()
 	{
 		// Try to load weights file
 		QFile data(qApp->applicationDirPath()
-				   .append(QString("/../res/weights.dat")));
+				   .append(QString("/../res/new_weights.dat")));
 		if (data.open(QFile::ReadOnly))
 		{
 			// Temp pattern class vector
@@ -728,7 +734,7 @@ void PNNClassifier::trainClassifier()
 
 	// Go to training set directory
 	QDir dir = QDir(qApp->applicationDirPath());
-	dir.cd("/home/konst/coding/projects/mnist/");
+	dir.cd("/home/konst/coding/projects/mnist/training/");
 	qDebug() << "path: " << dir.path();
 
 	// Get file list
@@ -743,6 +749,9 @@ void PNNClassifier::trainClassifier()
 	// Class image coordinates
 	int class_x = 0;
 	int class_y = 0;
+
+	// Total number of patterns in class
+	int total_number = 0;
 
 	// Finish flag
 	bool isFinished = false;
@@ -760,6 +769,7 @@ void PNNClassifier::trainClassifier()
 		isFinished = false;
 		class_x = 0;
 		class_y = 0;
+		total_number = 0;
 
 		do
 		{
@@ -775,7 +785,10 @@ void PNNClassifier::trainClassifier()
 				continue;
 			}
 
-			qDebug() << "---- processing image " << l << "at x:" << class_x << "y:" << class_y;
+			//qDebug() << "---- processing image " << l << "at x:" << class_x << "y:" << class_y;
+
+			// Update counter
+			total_number++;
 
 			// Calculate features and append to vector
 			tempPattern.append(getOccupancyVerticalT1());
@@ -817,7 +830,8 @@ void PNNClassifier::trainClassifier()
 				continue;
 			}
 
-		} while (!isFinished);
+		// Class size threshold
+		} while (!isFinished && total_number < 2000);
 
 		// Append class to weights vector
 		weights.append(tempClass);
@@ -825,7 +839,7 @@ void PNNClassifier::trainClassifier()
 	}
 
 	qDebug() << "Write weights file...";
-	QFile data(QString("new_weights.dat"));
+	QFile data(QString("../res/new_weights.dat"));
 	if (data.open(QFile::WriteOnly))
 	{
 		QTextStream stream(&data);
@@ -853,8 +867,167 @@ void PNNClassifier::trainClassifier()
 
 		stream.flush();
 		data.close();
+	}
+	qDebug() << "Training finished";
+
 }
 
+// Check classifier for training set
+void PNNClassifier::checkClassifier()
+{
+	// Temp pattern features vector
+	QVector<double> tempPattern;
+	// Calculation results vector
+	QVector<double> results;
+
+	// Go to training set directory
+	QDir dir = QDir(qApp->applicationDirPath());
+	dir.cd("/home/konst/coding/projects/mnist/testing/");
+	qDebug() << "path: " << dir.path();
+
+	// Get file list
+	QStringList filelist = dir.entryList(QStringList("*.bmp"));
+
+	// Digit image width and height
+	int part_size = 28;
+
+	// Class image sheet containing a number of digit images
+	QImage classImage;
+
+	// Class image coordinates
+	int class_x = 0;
+	int class_y = 0;
+
+	// Finish flag
+	bool isFinished = false;
+
+	// Total number of patterns in class
+	int total_number = 0;
+	// Number of correctly recognized patterns
+	int correct_number = 0;
+
+	// Looping over classes
+	for (int l = 0; l < labels.size(); l++)
+	{
+		// Load image
+		classImage = QImage(dir.absoluteFilePath(filelist.at(l)));
+
+		isFinished = false;
+		class_x = 0;
+		class_y = 0;
+
+		total_number = 0;
+		correct_number = 0;
+
+		do
+		{
+			tempPattern.clear();
+
+			// Get image part
+			this->image = crop(grayscale(
+					classImage.copy(class_x, class_y, part_size, part_size)));
+			// Check image
+			if (this->image.isNull())
+			{
+				isFinished = true;
+				continue;
+			}
+
+			// Update class image counter
+			total_number++;
+
+			// Calculate features and append to vector
+			tempPattern.append(getOccupancyVerticalT1());
+			tempPattern.append(getOccupancyVerticalT2());
+			tempPattern.append(getOccupancyVerticalT3());
+			tempPattern.append(getOccupancyVerticalQv1());
+			tempPattern.append(getOccupancyVerticalQv2());
+			tempPattern.append(getOccupancyVerticalQv3());
+			tempPattern.append(getOccupancyVerticalQv4());
+			tempPattern.append(getOccupancyVerticalQv5());
+			tempPattern.append(getOccupancyQ1());
+			tempPattern.append(getOccupancyQ2());
+			tempPattern.append(getOccupancyQ3());
+			tempPattern.append(getOccupancyQ4());
+			tempPattern.append(getDistanceLeftBorder0p());
+			tempPattern.append(getDistanceLeftBorder25p());
+			tempPattern.append(getDistanceLeftBorder50p());
+			tempPattern.append(getDistanceLeftBorder75p());
+			tempPattern.append(getDistanceLeftBorder100p());
+			tempPattern.append(getDistanceRightBorder0p());
+			tempPattern.append(getDistanceRightBorder25p());
+			tempPattern.append(getDistanceRightBorder50p());
+			tempPattern.append(getDistanceRightBorder75p());
+			tempPattern.append(getDistanceRightBorder100p());
+
+			results.clear();
+			results.fill(0.0, weights.size());
+			// Temp value
+			double temp = 0.0;
+			// Current features number
+			int features_number = 0;
+
+			// Activation function calculation
+			for (int i = 0; i < weights.size(); i++)
+			{
+				// Adding values for each pattern
+				for (int j = 0; j < weights.at(i).size(); j++)
+				{
+					temp = 0.0;
+					// Get real features number
+					features_number = (tempPattern.size() < weights.at(i).at(j).size())
+									  ? tempPattern.size() : weights.at(i).at(j).size();
+
+					// Looping over features vector
+					for (int k = 0; k < features_number; k++)
+					{
+						temp += pow(weights.at(i).at(j).at(k) - tempPattern.at(k), 2);
+					}
+
+					// Accumulate results
+					results[i] += exp(-temp/pow(deviation, 2));
+				}
+			}
+
+
+			// Normalization is used to correct the difference in class sets' sizes
+			int index = 0;
+			double max = 0.0;
+
+			for (int i = 0; i < results.size(); i++)
+			{
+				if (results.at(i) > max)
+				{
+					max = results.at(i);
+					index = i;
+				}
+			}
+
+			// Comparing value to threshold and checking label
+			if (max >= result_threshold && index == l)
+				correct_number++;
+
+			// Update class image coordinates
+			class_y += part_size;
+			if (class_y >= classImage.height())
+			{
+				class_y = 0;
+				class_x += part_size;
+			}
+			if (class_x >= classImage.width())
+			{
+				isFinished = true;
+				continue;
+			}
+
+		} while (!isFinished && total_number < 100);
+
+		// Output total statistics
+		qDebug() << "class" << l << ":" << correct_number
+				<< "/" << total_number << "("
+				<< double(correct_number) / total_number << ")";
+
+	}
 }
 
 Q_EXPORT_PLUGIN2(pnnclassifier, PNNClassifier)

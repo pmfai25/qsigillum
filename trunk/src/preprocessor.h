@@ -19,6 +19,8 @@
 #ifndef PREPROCESSOR_H
 #define PREPROCESSOR_H
 
+#include <cmath>
+
 #include <QObject>
 #include <QApplication>
 #include <QImage>
@@ -61,6 +63,9 @@ public:
 	QVector< QVector<int> > analyseComponents(const QImage& image, int* marked, int number);
 	// Analyse specified component using given info vector
 	QVector<int> analyseComponent(const QImage& image, int* marked, QVector<int> field);
+
+	// Compensate rotation for digit image
+	QImage autoRotate(const QImage& image);
 
 private:
 	// Minimum mean value of non-dark field
