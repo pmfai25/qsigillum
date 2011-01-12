@@ -1,2 +1,0 @@
-#summary List of various development TODOs
-#labels todo
