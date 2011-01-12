@@ -1,5 +1,2 @@
 #summary List of various development TODOs
 #labels todo
-
-  * Get rid of hardcoded Russian translation loading
-  * Rewrite ImageLoader plugins signals using QSignalMapper
