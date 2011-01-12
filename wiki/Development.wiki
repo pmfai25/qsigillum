@@ -1,4 +1,4 @@
-#summary Description of QSigillum development process.
+#summary Description of QSigillum development process (obsolete information!)
 #labels development,coding-style
 
 = Introduction =
