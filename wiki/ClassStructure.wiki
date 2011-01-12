@@ -1,4 +1,4 @@
-#summary Information on class structure.
+#summary Information on class structure (obsolete information!)
 #labels diagram,classes
 
 = Introduction =
