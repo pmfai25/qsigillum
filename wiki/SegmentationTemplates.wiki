@@ -1,4 +1,4 @@
-#summary Concepts of segmentation templates
+#summary Concepts of segmentation templates (obsolete information!)
 #labels Phase-Design
 
 = Preconditions =
