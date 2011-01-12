@@ -448,8 +448,8 @@ void LogicCore::classify()
 			QPoint massCenter = preprocessor.getMassCenter(part);
 
 			// Correction norms
-			double normX = 0.2;
-			double normY = 1.0;
+			double normX = 0.25;
+			double normY = 0.7;
 			// Correcting coordinates of image part
 			int corX = container->getX() + field->getX()
 					   + qRound(normX * (massCenter.x() - field->getWidth()/2));
@@ -550,7 +550,7 @@ void LogicCore::classify()
 					// Validating field
 					if (h <= 25 || w <= 0
 						|| h * w < 100 || (double) w / h > 1.7
-						|| pfield[5] < 60	|| pfield[5] > 1500)
+						|| pfield[5] < 60	|| pfield[5] > 1700)
 					{
 						n.remove();
 					}
@@ -595,7 +595,7 @@ void LogicCore::classify()
 					// Validating field
 					if (h <= 20 || w <= 0
 					   || h * w < 100 || (double) w / h > 1.7
-					   || pfield[5] < 60	|| pfield[5] > 1500)
+					   || pfield[5] < 60	|| pfield[5] > 1700)
 					{
 						n.remove();
 					}
@@ -649,13 +649,13 @@ void LogicCore::classify()
 					QImage finalPartImage =  preprocessor.autoRotate(
 							preprocessor.grayscale(temp));
 
-					finalPartImage.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
-								 append(QString("-fld_")).append(QString::number(fieldCounter)).
-								 append(QString("-partlabel_")).append(QString::number(pfield[0])).
-								 append(QString("-part_")).append(QString::number(n)).
-								 append(QString(".bmp")));
-
 					QString output = classifiers.at(1)->classify(finalPartImage);
+
+//					finalPartImage.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+//										append(QString("-fld_")).append(QString::number(fieldCounter)).
+//										append(QString("-")).append(QString::number(pfield[0])).
+//										append(QString::number(n)).append(QString("-")).
+//										append(output).append(QString(".bmp")));
 
 //					qDebug() << QString("cntr_").append(QString::number(containerCounter)).
 //							append(QString("-fld_")).append(QString::number(fieldCounter)).

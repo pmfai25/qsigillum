@@ -67,6 +67,9 @@ QString PNNClassifier::classify(QImage image)
 	inputPattern.append(getDistanceRightBorder50p());
 	inputPattern.append(getDistanceRightBorder75p());
 	inputPattern.append(getDistanceRightBorder100p());
+	inputPattern.append(getOccupancyNC());
+	inputPattern.append(getOccupancyCC());
+	inputPattern.append(getOccupancySC());
 
 	//qDebug() << "image size:" << this->image.size();
 	//for (int i = 0; i < inputPattern.size(); i++)
@@ -131,6 +134,9 @@ void PNNClassifier::init()
 	result_threshold = 0.1;
 	bin_threshold = 180;
 
+	// Init color table
+	initColorTable();
+
 	// Set labels
 	if (labels.size() <= 0)
 	{
@@ -152,7 +158,7 @@ void PNNClassifier::init()
 	{
 		// Try to load weights file
 		QFile data(qApp->applicationDirPath()
-				   .append(QString("/../res/new_weights.dat")));
+				   .append(QString("/../res/weights.dat")));
 		if (data.open(QFile::ReadOnly))
 		{
 			// Temp pattern class vector
@@ -194,6 +200,17 @@ void PNNClassifier::init()
 
 		}
 		data.close();
+	}
+}
+
+// Initialize color table
+void PNNClassifier::initColorTable()
+{
+	// Set the color table
+	grayColorTable.resize(256);
+	for (int i = 0; i < 256; i++)
+	{
+		grayColorTable[i] = qRgb(i, i, i);
 	}
 }
 
@@ -667,6 +684,694 @@ double PNNClassifier::getDistanceRightBorder100p()
 		return 1.0;
 }
 
+// Get relative distance from left border to a black point
+// at top fifth
+double PNNClassifier::getDistanceLeftBorderQv1()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = 0; i < int(image.height() / 5); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += j;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from left border to a black point
+// at second fifth
+double PNNClassifier::getDistanceLeftBorderQv2()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(image.height() / 5); i < int(2 * image.height() / 5); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += j;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from left border to a black point
+// at third fifth
+double PNNClassifier::getDistanceLeftBorderQv3()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(2 * image.height() / 5); i < int(3 * image.height() / 5); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += j;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from left border to a black point
+// at fourth fifth
+double PNNClassifier::getDistanceLeftBorderQv4()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(3 * image.height() / 5); i < int(4 * image.height() / 5); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += j;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from left border to a black point
+// at bottom fifth
+double PNNClassifier::getDistanceLeftBorderQv5()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(4 * image.height() / 5); i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += j;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from right border to a black point
+// at top fifth
+double PNNClassifier::getDistanceRightBorderQv1()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = 0; i < int(image.height() / 5); i++)
+	for (int j = image.width() - 1; j >= 0; j--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.width() - 1 - j);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from right border to a black point
+// at second fifth
+double PNNClassifier::getDistanceRightBorderQv2()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(image.height() / 5); i < int(2 * image.height() / 5); i++)
+	for (int j = image.width() - 1; j >= 0; j--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.width() - 1 - j);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from right border to a black point
+// at third fifth
+double PNNClassifier::getDistanceRightBorderQv3()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(2 * image.height() / 5); i < int(3 * image.height() / 5); i++)
+	for (int j = image.width() - 1; j >= 0; j--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.width() - 1 - j);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from right border to a black point
+// at fourth fifth
+double PNNClassifier::getDistanceRightBorderQv4()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(3 * image.height() / 5); i < int(4 * image.height() / 5); i++)
+	for (int j = image.width() - 1; j >= 0; j--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.width() - 1 - j);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from right border to a black point
+// at bottom fifth
+double PNNClassifier::getDistanceRightBorderQv5()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int i = int(4 * image.height() / 5); i < image.height(); i++)
+	for (int j = image.width() - 1; j >= 0; j--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.width() - 1 - j);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.width();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from top border to a black point
+// at leftmost fifth
+double PNNClassifier::getDistanceTopBorderQv1()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = 0; j < int(image.width() / 5); j++)
+	for (int i = 0; i < image.height(); i++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += i;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from top border to a black point
+// at second fifth
+double PNNClassifier::getDistanceTopBorderQv2()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(image.width() / 5); j < int(2 * image.width() / 5); j++)
+	for (int i = 0; i < image.height(); i++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += i;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from top border to a black point
+// at third fifth
+double PNNClassifier::getDistanceTopBorderQv3()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(2 * image.width() / 5); j < int(3 * image.width() / 5); j++)
+	for (int i = 0; i < image.height(); i++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += i;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from top border to a black point
+// at fourth fifth
+double PNNClassifier::getDistanceTopBorderQv4()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(3 * image.width() / 5); j < int(4 * image.width() / 5); j++)
+	for (int i = 0; i < image.height(); i++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += i;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from top border to a black point
+// at rightmost fifth
+double PNNClassifier::getDistanceTopBorderQv5()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(4 * image.width() / 5); j < image.width(); j++)
+	for (int i = 0; i < image.height(); i++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += i;
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from bottom border to a black point
+// at leftmost fifth
+double PNNClassifier::getDistanceBottomBorderQv1()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = 0; j < int(image.width() / 5); j++)
+	for (int i = image.height() - 1; i <= 0; i--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.height() - 1 - i);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from bottom border to a black point
+// at second fifth
+double PNNClassifier::getDistanceBottomBorderQv2()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(image.width() / 5); j < int(2 * image.width() / 5); j++)
+	for (int i = image.height() - 1; i <= 0; i--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.height() - 1 - i);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from bottom border to a black point
+// at third fifth
+double PNNClassifier::getDistanceBottomBorderQv3()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(2 * image.width() / 5); j < int(3 * image.width() / 5); j++)
+	for (int i = image.height() - 1; i <= 0; i--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.height() - 1 - i);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from bottom border to a black point
+// at fourth fifth
+double PNNClassifier::getDistanceBottomBorderQv4()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(3 * image.width() / 5); j < int(4 * image.width() / 5); j++)
+	for (int i = image.height() - 1; i <= 0; i--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.height() - 1 - i);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get relative distance from bottom border to a black point
+// at rightmost fifth
+double PNNClassifier::getDistanceBottomBorderQv5()
+{
+	// Distance sum
+	double sum = 0.0;
+
+	for (int j = int(4 * image.width() / 5); j < image.width(); j++)
+	for (int i = image.height() - 1; i <= 0; i--)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			sum += (image.height() - 1 - i);
+			break;
+		}
+
+		// If no black points are found at current line
+		sum += image.height();
+	}
+
+	if (sum >= 0.0)
+		return sum / (double(image.width() * image.height()));
+	else
+		return 1.0;
+}
+
+// Get occupancy in north-west image ninth part
+double PNNClassifier::getOccupancyNW()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = 0; i < qRound(double(image.height()) / 3); i++)
+	for (int j = 0; j < qRound(double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in north-centre image ninth part
+double PNNClassifier::getOccupancyNC()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = 0; i < qRound(double(image.height()) / 3); i++)
+	for (int j = qRound(double(image.width()) / 3);
+	j < qRound(2 * double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in north-east image ninth part
+double PNNClassifier::getOccupancyNE()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = 0; i < qRound(double(image.height()) / 3); i++)
+	for (int j = qRound(2 * double(image.width()) / 3); j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in centre-west image ninth part
+double PNNClassifier::getOccupancyCW()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(double(image.height()) / 3);
+	i < qRound(2 * double(image.height()) / 3); i++)
+	for (int j = 0; j < qRound(double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in centre-centre image ninth part
+double PNNClassifier::getOccupancyCC()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(double(image.height()) / 3);
+	i < qRound(2 * double(image.height()) / 3); i++)
+	for (int j = qRound(double(image.width()) / 3);
+	j < qRound(2 * double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in centre-east image ninth part
+double PNNClassifier::getOccupancyCE()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(double(image.height()) / 3);
+	i < qRound(2 * double(image.height()) / 3); i++)
+	for (int j = qRound(2 * double(image.width()) / 3); j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in south-west image ninth part
+double PNNClassifier::getOccupancySW()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(2 * double(image.height()) / 3); i < image.height(); i++)
+	for (int j = 0; j < qRound(double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in south-centre image ninth part
+double PNNClassifier::getOccupancySC()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(2 * double(image.height()) / 3); i < image.height(); i++)
+	for (int j = qRound(double(image.width()) / 3);
+	j < qRound(2 * double(image.width()) / 3); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
+// Get occupancy in south-east image ninth part
+double PNNClassifier::getOccupancySE()
+{
+	// Points counter
+	int temp = 0;
+
+	for (int i = qRound(2 * double(image.height()) / 3); i < image.height(); i++)
+	for (int j = qRound(2 * double(image.width()) / 3); j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			temp++;
+		}
+	}
+
+	return (double(temp) / (image.height() * image.width() / 9));
+}
+
 // Get base plugin name
 QString PNNClassifier::getBaseName()
 {
@@ -676,7 +1381,7 @@ QString PNNClassifier::getBaseName()
 // Convert image to grayscale format
 QImage PNNClassifier::grayscale(QImage src)
 {
-	// This function is dublicating Preprocessor's one. It's a pity.
+	// This function is duplicating Preprocessor's one. It's a pity.
 	QVector<QRgb> grayColorTable;
 
 	// Set the color table
@@ -707,6 +1412,9 @@ void PNNClassifier::trainClassifier()
 	deviation = 0.3;
 	result_threshold = 0.01;
 	bin_threshold = 180;
+
+	// Init color table
+	initColorTable();
 
 	// Set labels
 	if (labels.size() <= 0)
@@ -776,8 +1484,8 @@ void PNNClassifier::trainClassifier()
 			tempPattern.clear();
 
 			// Get image part
-			this->image = crop(grayscale(
-					classImage.copy(class_x, class_y, part_size, part_size)));
+			this->image = crop(autoRotate(grayscale(
+					classImage.copy(class_x, class_y, part_size, part_size))));
 			// Check image
 			if (this->image.isNull())
 			{
@@ -813,6 +1521,37 @@ void PNNClassifier::trainClassifier()
 			tempPattern.append(getDistanceRightBorder50p());
 			tempPattern.append(getDistanceRightBorder75p());
 			tempPattern.append(getDistanceRightBorder100p());
+
+//			tempPattern.append(getDistanceLeftBorderQv1());
+//			tempPattern.append(getDistanceLeftBorderQv2());
+//			tempPattern.append(getDistanceLeftBorderQv3());
+//			tempPattern.append(getDistanceLeftBorderQv4());
+//			tempPattern.append(getDistanceLeftBorderQv5());
+//			tempPattern.append(getDistanceRightBorderQv1());
+//			tempPattern.append(getDistanceRightBorderQv2());
+//			tempPattern.append(getDistanceRightBorderQv3());
+//			tempPattern.append(getDistanceRightBorderQv4());
+//			tempPattern.append(getDistanceRightBorderQv5());
+//			tempPattern.append(getDistanceTopBorderQv1());
+//			tempPattern.append(getDistanceTopBorderQv2());
+//			tempPattern.append(getDistanceTopBorderQv3());
+//			tempPattern.append(getDistanceTopBorderQv4());
+//			tempPattern.append(getDistanceTopBorderQv5());
+//			tempPattern.append(getDistanceBottomBorderQv1());
+//			tempPattern.append(getDistanceBottomBorderQv2());
+//			tempPattern.append(getDistanceBottomBorderQv3());
+//			tempPattern.append(getDistanceBottomBorderQv4());
+//			tempPattern.append(getDistanceBottomBorderQv5());
+
+//			tempPattern.append(getOccupancyNW());
+			tempPattern.append(getOccupancyNC());
+//			tempPattern.append(getOccupancyNE());
+//			tempPattern.append(getOccupancyCW());
+			tempPattern.append(getOccupancyCC());
+//			tempPattern.append(getOccupancyCE());
+//			tempPattern.append(getOccupancySW());
+			tempPattern.append(getOccupancySC());
+//			tempPattern.append(getOccupancySE());
 
 			// Append pattern to class vector
 			tempClass.append(tempPattern);
@@ -924,8 +1663,8 @@ void PNNClassifier::checkClassifier()
 			tempPattern.clear();
 
 			// Get image part
-			this->image = crop(grayscale(
-					classImage.copy(class_x, class_y, part_size, part_size)));
+			this->image = crop(autoRotate(grayscale(
+					classImage.copy(class_x, class_y, part_size, part_size))));
 			// Check image
 			if (this->image.isNull())
 			{
@@ -959,6 +1698,37 @@ void PNNClassifier::checkClassifier()
 			tempPattern.append(getDistanceRightBorder50p());
 			tempPattern.append(getDistanceRightBorder75p());
 			tempPattern.append(getDistanceRightBorder100p());
+
+//			tempPattern.append(getDistanceLeftBorderQv1());
+//			tempPattern.append(getDistanceLeftBorderQv2());
+//			tempPattern.append(getDistanceLeftBorderQv3());
+//			tempPattern.append(getDistanceLeftBorderQv4());
+//			tempPattern.append(getDistanceLeftBorderQv5());
+//			tempPattern.append(getDistanceRightBorderQv1());
+//			tempPattern.append(getDistanceRightBorderQv2());
+//			tempPattern.append(getDistanceRightBorderQv3());
+//			tempPattern.append(getDistanceRightBorderQv4());
+//			tempPattern.append(getDistanceRightBorderQv5());
+//			tempPattern.append(getDistanceTopBorderQv1());
+//			tempPattern.append(getDistanceTopBorderQv2());
+//			tempPattern.append(getDistanceTopBorderQv3());
+//			tempPattern.append(getDistanceTopBorderQv4());
+//			tempPattern.append(getDistanceTopBorderQv5());
+//			tempPattern.append(getDistanceBottomBorderQv1());
+//			tempPattern.append(getDistanceBottomBorderQv2());
+//			tempPattern.append(getDistanceBottomBorderQv3());
+//			tempPattern.append(getDistanceBottomBorderQv4());
+//			tempPattern.append(getDistanceBottomBorderQv5());
+
+//			tempPattern.append(getOccupancyNW());
+			tempPattern.append(getOccupancyNC());
+//			tempPattern.append(getOccupancyNE());
+//			tempPattern.append(getOccupancyCW());
+			tempPattern.append(getOccupancyCC());
+//			tempPattern.append(getOccupancyCE());
+//			tempPattern.append(getOccupancySW());
+			tempPattern.append(getOccupancySC());
+//			tempPattern.append(getOccupancySE());
 
 			results.clear();
 			results.fill(0.0, weights.size());
@@ -1003,6 +1773,9 @@ void PNNClassifier::checkClassifier()
 				}
 			}
 
+			//if (l == 4 || l == 5 || l == 7 || l == 8)
+			//qDebug() << "digit:" << l << "max:" << max << "index:" << index;
+
 			// Comparing value to threshold and checking label
 			if (max >= result_threshold && index == l)
 				correct_number++;
@@ -1028,6 +1801,120 @@ void PNNClassifier::checkClassifier()
 				<< double(correct_number) / total_number << ")";
 
 	}
+}
+
+// Compensate rotation for grayscale digit image
+QImage PNNClassifier::autoRotate(const QImage& image)
+{
+	if (image.height() <= 1 || image.width() <= 1)
+		return image;
+
+	// POI counter
+	int totalNumber = 0;
+
+	// Mean coordinates of upper part
+	double upperX = 0.0;
+	double upperY = 0.0;
+
+	// Analyze upper 25% of image
+	for (int i = 0; i <= int(image.height() / 4); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			totalNumber++;
+			upperX += (double) j;
+			upperY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	upperX /= totalNumber;
+	upperY /= totalNumber;
+
+	totalNumber = 0;
+
+	// Mean coordinates of lower part
+	double lowerX = 0.0;
+	double lowerY = 0.0;
+
+	// Analyze lower 25% of image
+	for (int i = int(3 * image.height() / 4); i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			totalNumber++;
+			lowerX += (double) j;
+			lowerY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	lowerX /= totalNumber;
+	lowerY /= totalNumber;
+
+	// Check horizontal difference
+	if (abs(upperX - lowerX) < 1.0)
+		return image;
+
+	// Calculate rotation angle using norm value
+	double angle = 0.2 * atan((upperY - lowerY) / (upperX - lowerX));
+
+	// Create temporary image for pixel rotation
+	QImage temp = QImage(qRound(image.width() * 1.5),
+						 qRound(image.height() * 1.5), QImage::Format_Indexed8);
+	temp.setColorTable(grayColorTable);
+	temp.fill(255);
+
+	// Rotation centre
+	int x0 = image.width() / 2;
+	int y0 = image.height() / 2;
+
+	// Resulting image pixel coordinates
+	int x = 0;
+	int y = 0;
+
+	// Rotation
+	for (int i = 0; i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < bin_threshold)
+		{
+			x = x0 + qRound(double(j - x0) * cos(angle)
+							- double(i - y0) * sin(angle));
+			y = y0 + qRound(double(j - x0) * sin(angle)
+							+ double(i - y0) * cos(angle));
+
+			if (x >= 0 && x < temp.width()
+				&& y >= 0 && y < temp.height())
+			{
+				(temp.scanLine(y))[x] = (image.scanLine(i))[j];
+			}
+		}
+	}
+
+	// Additional erosion to compensate sampling errors
+	for (int i = 1; i < temp.height() - 1; i++)
+	for (int j = 1; j < temp.width() - 1; j++)
+	{
+		if (((temp.scanLine(i))[j-1] < bin_threshold)
+			&& ((temp.scanLine(i-1))[j] < bin_threshold)
+			&& ((temp.scanLine(i+1))[j] < bin_threshold)
+			&& ((temp.scanLine(i))[j+1] < bin_threshold))
+		{
+			(temp.scanLine(i))[j] = 0;
+		}
+
+	}
+
+	return temp;
 }
 
 Q_EXPORT_PLUGIN2(pnnclassifier, PNNClassifier)

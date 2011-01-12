@@ -73,7 +73,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
     <value type="QString">CLASSPATH=/usr/share/java/</value>
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-E94q92x35E,guid=75d68bc776f1b87c8922b8d00000009c</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-x5IGQ1B5pW,guid=31cfe83af3c2d3fc045b8f050000007b</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -95,16 +95,16 @@
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/konst/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
     <value type="QString">SAL_GTK_USE_PIXMAPPAINT=1</value>
-    <value type="QString">SESSION_MANAGER=local/konst-desktop:@/tmp/.ICE-unix/2163,unix/konst-desktop:/tmp/.ICE-unix/2163</value>
+    <value type="QString">SESSION_MANAGER=local/konst-desktop:@/tmp/.ICE-unix/2138,unix/konst-desktop:/tmp/.ICE-unix/2138</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2057</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-HmXOFc2017/agent.2017</value>
+    <value type="QString">SSH_AGENT_PID=2028</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-HLNoEX1988/agent.1988</value>
     <value type="QString">USER=konst</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=oxy-black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=55e3ea6a8d1881b0e486f373490d7982-1294562029.201139-2084839079</value>
+    <value type="QString">XDG_SESSION_COOKIE=55e3ea6a8d1881b0e486f373490d7982-1294821334.312646-1280964796</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -125,7 +125,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
     <value type="QString">CLASSPATH=/usr/share/java/</value>
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-E94q92x35E,guid=75d68bc776f1b87c8922b8d00000009c</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-x5IGQ1B5pW,guid=31cfe83af3c2d3fc045b8f050000007b</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -147,16 +147,16 @@
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/konst/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
     <value type="QString">SAL_GTK_USE_PIXMAPPAINT=1</value>
-    <value type="QString">SESSION_MANAGER=local/konst-desktop:@/tmp/.ICE-unix/2163,unix/konst-desktop:/tmp/.ICE-unix/2163</value>
+    <value type="QString">SESSION_MANAGER=local/konst-desktop:@/tmp/.ICE-unix/2138,unix/konst-desktop:/tmp/.ICE-unix/2138</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2057</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-HmXOFc2017/agent.2017</value>
+    <value type="QString">SSH_AGENT_PID=2028</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-HLNoEX1988/agent.1988</value>
     <value type="QString">USER=konst</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=oxy-black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=55e3ea6a8d1881b0e486f373490d7982-1294562029.201139-2084839079</value>
+    <value type="QString">XDG_SESSION_COOKIE=55e3ea6a8d1881b0e486f373490d7982-1294821334.312646-1280964796</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
