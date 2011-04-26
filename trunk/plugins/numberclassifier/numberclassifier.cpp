@@ -20,6 +20,10 @@
 
 QString NumberClassifier::classify(QImage image)
 {
+	// Testing mode
+	//this->checkClassifier();
+	//return QString("");
+
 	// Checking input image
 	if (image.isNull())
 	{
@@ -1088,6 +1092,260 @@ void NumberClassifier::check7()
 //
 //	}
 
+}
+
+// Check classifier for training set
+void NumberClassifier::checkClassifier()
+{
+	// Go to training set directory
+	QDir dir = QDir(qApp->applicationDirPath());
+	dir.cd("/home/konst/coding/projects/mnist/testing/");
+	qDebug() << "NumberClassifier path: " << dir.path();
+
+	// Get file list
+	QStringList filelist = dir.entryList(QStringList("*.bmp"));
+
+	// Digit image width and height
+	int part_size = 28;
+
+	// Class image sheet containing a number of digit images
+	QImage classImage;
+
+	// Class image coordinates
+	int class_x = 0;
+	int class_y = 0;
+
+	// Finish flag
+	bool isFinished = false;
+
+	// Total number of patterns in class
+	int total_number = 0;
+	// Number of correctly recognized patterns
+	int correct_number = 0;
+
+	// Looping over classes
+	for (int l = 0; l < 10; l++)
+	{
+		// Load image
+		classImage = QImage(dir.absoluteFilePath(filelist.at(l)));
+
+		isFinished = false;
+		class_x = 0;
+		class_y = 0;
+
+		total_number = 0;
+		correct_number = 0;
+
+		do
+		{
+			// Get image part
+			this->image = autoRotate(classImage.copy(class_x, class_y, part_size, part_size));
+			// Check image
+			if (this->image.isNull())
+			{
+				isFinished = true;
+				continue;
+			}
+
+			// Update class image counter
+			total_number++;
+
+			// Classify image
+			init();
+			getBoundingBox();
+			processUpperPart();
+			check1();
+			check6();
+			check4();
+			check0();
+			check3();
+			check8();
+			check2();
+			fullCheck6();
+			check9();
+			check5();
+			check7();
+
+
+			// Results processing
+			int result = -1;
+			if (this->result[0] == 1)
+				result = 0;
+			else if (this->result[6] == 2)
+				result = 6;
+			else if (this->result[2] == 1)
+				result = 2;
+			else if (this->result[4] == 1)
+				result = 4;
+			else if (this->result[8] == 1)
+				result = 8;
+			else if (this->result[5] == 1)
+				result = 5;
+			else if (this->result[9] == 1)
+				result = 9;
+			else if (this->result[1] == 1)
+				result = 1;
+			else if (this->result[3] == 1)
+				result = 3;
+			else if (this->result[6] == 1)
+				result = 6;
+			else if (this->result[7] == 1)
+				result = 7;
+
+			// Checking label
+			if (result == l)
+				correct_number++;
+
+			// Update class image coordinates
+			class_y += part_size;
+			if (class_y >= classImage.height())
+			{
+				class_y = 0;
+				class_x += part_size;
+			}
+			if (class_x >= classImage.width())
+			{
+				isFinished = true;
+				continue;
+			}
+
+		} while (!isFinished && total_number < 100);
+
+		// Output total statistics
+		qDebug() << "class" << l << ":" << correct_number
+				<< "/" << total_number << "("
+				<< double(correct_number) / total_number << ")";
+
+	}
+}
+
+// Initialize color table
+void NumberClassifier::initColorTable()
+{
+	// Set the color table
+	grayColorTable.resize(256);
+	for (int i = 0; i < 256; i++)
+	{
+		grayColorTable[i] = qRgb(i, i, i);
+	}
+}
+
+// Compensate rotation for digit image
+// Method is duplicated from Preprocessor and is used for training / testing
+QImage NumberClassifier::autoRotate(const QImage& image)
+{
+	if (grayColorTable.size() < 256)
+		initColorTable();
+
+	if (image.height() <= 1 || image.width() <= 1)
+		return image;
+
+	// POI counter
+	int totalNumber = 0;
+
+	// Mean coordinates of upper part
+	double upperX = 0.0;
+	double upperY = 0.0;
+
+	// Analyze upper 25% of image
+	for (int i = 0; i <= int(image.height() / 4); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < color)
+		{
+			totalNumber++;
+			upperX += (double) j;
+			upperY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	upperX /= totalNumber;
+	upperY /= totalNumber;
+
+	totalNumber = 0;
+
+	// Mean coordinates of lower part
+	double lowerX = 0.0;
+	double lowerY = 0.0;
+
+	// Analyze lower 25% of image
+	for (int i = int(3 * image.height() / 4); i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < color)
+		{
+			totalNumber++;
+			lowerX += (double) j;
+			lowerY += (double) i;
+		}
+	}
+
+	// Calculate mean coordinates
+	if (totalNumber <= 0)
+		return image;
+
+	lowerX /= totalNumber;
+	lowerY /= totalNumber;
+
+	// Check horizontal difference
+	if (abs(upperX - lowerX) < 1.0)
+		return image;
+
+	// Calculate rotation angle using norm value
+	double angle = 0.2 * atan((upperY - lowerY) / (upperX - lowerX));
+
+	// Create temporary image for pixel rotation
+	QImage temp = QImage(qRound(image.width() * 1.5),
+						 qRound(image.height() * 1.5), QImage::Format_Indexed8);
+	temp.setColorTable(grayColorTable);
+	temp.fill(255);
+
+	// Rotation centre
+	int x0 = image.width() / 2;
+	int y0 = image.height() / 2;
+
+	// Resulting image pixel coordinates
+	int x = 0;
+	int y = 0;
+
+	// Rotation
+	for (int i = 0; i < image.height(); i++)
+	for (int j = 0; j < image.width(); j++)
+	{
+		if ((image.scanLine(i))[j] < color)
+		{
+			x = x0 + qRound(double(j - x0) * cos(angle)
+							- double(i - y0) * sin(angle));
+			y = y0 + qRound(double(j - x0) * sin(angle)
+							+ double(i - y0) * cos(angle));
+
+			if (x >= 0 && x < temp.width()
+				&& y >= 0 && y < temp.height())
+			{
+				(temp.scanLine(y))[x] = (image.scanLine(i))[j];
+			}
+		}
+	}
+
+	// Additional dilation to compensate sampling errors
+	for (int i = 1; i < temp.height() - 1; i++)
+	for (int j = 1; j < temp.width() - 1; j++)
+	{
+		if (((temp.scanLine(i))[j-1] < color)
+			&& ((temp.scanLine(i-1))[j] < color)
+			&& ((temp.scanLine(i+1))[j] < color)
+			&& ((temp.scanLine(i))[j+1] < color))
+		{
+			(temp.scanLine(i))[j] = 0;
+		}
+
+	}
+
+	return temp;
 }
 
 // Get base plugin name

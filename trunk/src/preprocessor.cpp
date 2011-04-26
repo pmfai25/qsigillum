@@ -18,6 +18,77 @@
 
 #include "preprocessor.h"
 
+// Thinning structuring element
+const int Preprocessor::thinningElement[8][3][3] = {
+						   {{ 0,  0,  0},
+							{-1,  1, -1},
+							{ 1,  1,  1}},
+
+							{{-1,  0,  0},
+							{ 1,  1,  0},
+							{-1,  1, -1}},
+
+						   {{ 0, -1,  1},
+							{ 0,  1,  1},
+							{ 0, -1,  1}},
+
+							{{ 0,  0, -1},
+							 { 0,  1,  1},
+							 {-1,  1, -1}},
+
+						   {{ 1,  1,  1},
+							{-1,  1, -1},
+							{ 0,  0,  0}},
+
+							{{-1,  1, -1},
+							 { 0,  1,  1},
+							 { 0,  0, -1}},
+
+						   {{ 1, -1,  0},
+							{ 1,  1,  0},
+							{ 1, -1,  0}},
+
+							{{-1,  1, -1},
+							 { 1,  1,  0},
+							 {-1,  0,  0}}
+};
+
+
+// Pruning structuring element
+const int Preprocessor::pruningElement[8][3][3] = {
+							{{ 0,  0,  0},
+							 { 0,  1,  0},
+							 { 0, -1, -1}},
+
+							{{ 0,  0,  0},
+							 { 0,  1,  0},
+							 {-1, -1,  0}},
+
+							{{ 0,  0, -1},
+							 { 0,  1, -1},
+							 { 0,  0,  0}},
+
+							{{ 0,  0,  0},
+							 { 0,  1, -1},
+							 { 0,  0, -1}},
+
+							{{-1, -1,  0},
+							 { 0,  1,  0},
+							 { 0,  0,  0}},
+
+							{{ 0, -1, -1},
+							 { 0,  1,  0},
+							 { 0,  0,  0}},
+
+							{{ 0,  0,  0},
+							 {-1,  1,  0},
+							 {-1,  0,  0}},
+
+							{{-1,  0,  0},
+							 {-1,  1,  0},
+							 { 0,  0,  0}}
+};
+
 Preprocessor::Preprocessor()
 {
 	// Some useful variables
@@ -784,7 +855,7 @@ QImage Preprocessor::autoRotate(const QImage& image)
 		}
 	}
 
-	// Additional erosion to compensate sampling errors
+	// Additional dilation to compensate sampling errors
 	for (int i = 1; i < temp.height() - 1; i++)
 	for (int j = 1; j < temp.width() - 1; j++)
 	{
@@ -801,3 +872,183 @@ QImage Preprocessor::autoRotate(const QImage& image)
 	return temp;
 }
 
+// Hit-and-miss transform using given 3x3 structuring element
+QImage Preprocessor::hitAndMiss(const QImage& image, const int element[3][3])
+{
+	int size = 3;
+	// Element index offset
+	int offset = size / 2;
+	bool temp = true;
+
+	QImage result;
+	if (image.isNull())
+	{
+		qDebug() << "Null image sent to Preprocessor::hitAndMiss";
+		return result;
+	}
+
+	// Create 8-bit QImage and set appropriate color table
+	result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColorTable(grayColorTable);
+
+	// Loop on whole image
+	for (int i = 0; i < result.height(); i++)
+	for (int j = 0; j < result.width(); j++)
+	{
+		(result.scanLine(i))[j] = 255;
+
+		// Check input image
+		temp = true;
+		for (int y = -offset;
+			 y <= offset && y + i >= 0 && y + i < result.height(); y++)
+		for (int x = -offset;
+			 x <= offset && x + j >= 0 && x + j < result.width(); x++)
+		{
+			if (!temp)
+				break;
+
+			// -1 elements are ignored
+			if (element[y+offset][x+offset] == -1)
+				continue;
+
+			// Check for white pixel / foreground pixel discrepancy
+			if (element[y+offset][x+offset] == 0 && (image.scanLine(i+y))[j+x] <= empty_threshold)
+			{
+				temp = false;
+				break;
+			}
+
+			// Check for black pixel / background pixel discrepancy
+			if (element[y+offset][x+offset] == 1 && (image.scanLine(i+y))[j+x] > empty_threshold)
+			{
+				temp = false;
+				break;
+			}
+		}
+
+		// Modify output pixel if needed
+		if (temp)
+		{
+			(result.scanLine(i))[j] = 0;
+		}
+
+	}
+
+	return result;
+}
+
+// Thinning operation for a greyscale image
+// Result is factically binarized
+QImage Preprocessor::thin(const QImage& image)
+{
+	// Images equality flag
+	bool areEqual = false;
+
+	QImage result;
+	QImage temp;
+	if (image.isNull())
+	{
+		qDebug() << "Null image sent to Preprocessor::thin";
+		return result;
+	}
+
+	// Create 8-bit QImages and set appropriate color table
+	result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColorTable(grayColorTable);
+
+	temp = QImage(image.size(), QImage::Format_Indexed8);
+	temp.setColorTable(grayColorTable);
+
+	// Fill images with appropriate colors
+	for (int i = 0; i < result.height(); i++)
+	for (int j = 0; j < result.width(); j++)
+	{
+		(result.scanLine(i))[j] = ((image.scanLine(i))[j]
+								   <= empty_threshold) ? 0 : 255;
+
+		(temp.scanLine(i))[j] = 255;
+	}
+
+	// Loop until convergence
+	while (!areEqual)
+	{
+		// Copy image contents
+		for (int i = 0; i < result.height(); i++)
+		for (int j = 0; j < result.width(); j++)
+		{
+			(temp.scanLine(i))[j] = (result.scanLine(i))[j];
+		}
+
+		// Thin using all of the structuring elements
+		for (int k = 0; k < 8; k++)
+		{
+			QImage hit = hitAndMiss(result, thinningElement[k]);
+
+			for (int i = 0; i < result.height(); i++)
+			for (int j = 0; j < result.width(); j++)
+			{
+				if ((hit.scanLine(i))[j] == 0)
+				{
+					(result.scanLine(i))[j] = 255;
+				}
+			}
+		}
+
+		// Check equality
+		areEqual = true;
+		for (int i = 0; i < result.height(); i++)
+		for (int j = 0; j < result.width(); j++)
+		{
+			if ((result.scanLine(i))[j] != (temp.scanLine(i))[j])
+			{
+				areEqual = false;
+				break;
+			}
+		}
+	}
+
+
+	return result;
+
+}
+
+// Pruning operation for a greyscale image
+QImage Preprocessor::prune(const QImage& image)
+{
+	QImage result;
+	if (image.isNull())
+	{
+		qDebug() << "Null image sent to Preprocessor::prune";
+		return result;
+	}
+
+	// Create 8-bit QImages and set appropriate color table
+	result = QImage(image.size(), QImage::Format_Indexed8);
+	result.setColorTable(grayColorTable);
+
+	// Fill images with appropriate colors
+	for (int i = 0; i < result.height(); i++)
+	for (int j = 0; j < result.width(); j++)
+	{
+		(result.scanLine(i))[j] = ((image.scanLine(i))[j]
+								   <= empty_threshold) ? 0 : 255;
+	}
+
+	// Thin using all of the structuring elements
+	for (int k = 0; k < 8; k++)
+	{
+		QImage hit = hitAndMiss(result, pruningElement[k]);
+
+		for (int i = 0; i < result.height(); i++)
+		for (int j = 0; j < result.width(); j++)
+		{
+			if ((hit.scanLine(i))[j] == 0)
+			{
+				(result.scanLine(i))[j] = 255;
+			}
+		}
+	}
+
+	return result;
+
+}

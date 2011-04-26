@@ -651,11 +651,11 @@ void LogicCore::classify()
 
 					QString output = classifiers.at(1)->classify(finalPartImage);
 
-//					finalPartImage.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
-//										append(QString("-fld_")).append(QString::number(fieldCounter)).
-//										append(QString("-")).append(QString::number(pfield[0])).
-//										append(QString::number(n)).append(QString("-")).
-//										append(output).append(QString(".bmp")));
+					finalPartImage.save(QString("../data/trash/cntr_").append(QString::number(containerCounter)).
+										append(QString("-fld_")).append(QString::number(fieldCounter)).
+										append(QString("-")).append(QString::number(pfield[0])).
+										append(QString::number(n)).append(QString("-")).
+										append(output).append(QString(".bmp")));
 
 //					qDebug() << QString("cntr_").append(QString::number(containerCounter)).
 //							append(QString("-fld_")).append(QString::number(fieldCounter)).
@@ -747,9 +747,25 @@ void LogicCore::classify()
 
 void LogicCore::saveResults()
 {
-	// Train or check PNN classifier
-	classifiers.at(1)->classify(QImage());
+
+	qDebug() << qApp->applicationDirPath();
+
+	QString prefix = QString("/home/konst/coding/projects/qsigillum/data/trash/");
+
+	// Check thinning / pruning
+	QImage check1 = QImage(prefix + QString("d1.jpg"));
+	check1 = preprocessor.prune(preprocessor.thin(preprocessor.grayscale(check1)));
+	check1.save(prefix + QString("d1_out.bmp"));
+
+	QImage check2 = QImage(prefix + QString("d2.jpg"));
+	check2 = preprocessor.prune(preprocessor.thin(preprocessor.grayscale(check2)));
+	check2.save(prefix + QString("d2_out.bmp"));
+
 	return;
+
+	// Train or check PNN classifier
+	//classifiers.at(1)->classify(QImage());
+	//return;
 
 	// Saving results to text file
 	if (segmentator.getBody().isEmpty())
