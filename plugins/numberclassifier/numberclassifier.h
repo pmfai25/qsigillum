@@ -102,6 +102,16 @@ private:
 	// Check for digit "7"
 	void check7();
 
+	// Check classifier for training set
+	void checkClassifier();
+
+	// Compensate rotation for digit image
+	// Method is duplicated from Preprocessor and is used for training / testing
+	QImage autoRotate(const QImage& image);
+
+	// Initialize color table
+	void initColorTable();
+
 	// Image
 	QImage image;
 
@@ -138,6 +148,9 @@ private:
 
 	// Last light fields sizes
 	QVector<int> lasts;
+
+	// Grayscale image color table
+	QVector<QRgb> grayColorTable;
 
 };
 

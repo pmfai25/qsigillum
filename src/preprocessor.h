@@ -67,6 +67,21 @@ public:
 	// Compensate rotation for digit image
 	QImage autoRotate(const QImage& image);
 
+	// Hit-and-miss transform using given 3x3 structuring element
+	QImage hitAndMiss(const QImage& image, const int element[3][3]);
+
+	// Thinning operation for a greyscale image
+	QImage thin(const QImage& image);
+
+	// Pruning operation for a greyscale image
+	QImage prune(const QImage& image);
+
+	// Thinning structuring element: two elements with 4 rotation variants
+	static const int thinningElement[8][3][3];
+
+	// Pruning structuring element: two elements with 4 rotation variants
+	static const int pruningElement[8][3][3];
+
 private:
 	// Minimum mean value of non-dark field
 	int light_threshold;
@@ -79,6 +94,7 @@ private:
 
 	// Grayscale image color table
 	QVector<QRgb> grayColorTable;
+
 };
 
 #endif // PREPROCESSOR_H

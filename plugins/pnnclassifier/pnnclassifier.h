@@ -53,6 +53,82 @@ private:
 	// Binarization threshold value
 	int bin_threshold;
 
+	// Thinning structuring element #1
+	int thinning1[4][3][3] = {
+							   {{ 0,  0,  0},
+								{-1,  1, -1},
+								{ 1,  1,  1}},
+
+							   {{ 0, -1,  1},
+								{ 0,  1,  1},
+								{ 0, -1,  1}},
+
+							   {{ 1,  1,  1},
+								{-1,  1, -1},
+								{ 0,  0,  0}},
+
+							   {{ 1, -1,  0},
+								{ 1,  1,  0},
+								{ 1, -1,  0}}
+							 };
+
+	// Thinning structuring element #2
+	int thinning2[4][3][3] = {
+								{{-1,  0,  0},
+								{ 1,  1,  0},
+								{-1,  1, -1}},
+
+								{{ 0,  0, -1},
+								{ 0,  1,  1},
+								{-1,  1, -1}},
+
+								{{-1,  1, -1},
+								 { 0,  1,  1},
+								 { 0,  0, -1}},
+
+								{{-1,  1, -1},
+								 { 1,  1,  0},
+								 {-1,  0,  0}}
+							};
+
+	// Pruning structuring element #1
+	int pruning1[4][3][3] = {
+								{{ 0,  0,  0},
+								 { 0,  1,  0},
+								 { 0, -1, -1}},
+
+								{{ 0,  0, -1},
+								 { 0,  1, -1},
+								 { 0,  0,  0}},
+
+								{{-1, -1,  0},
+								 { 0,  1,  0},
+								 { 0,  0,  0}},
+
+								{{ 0,  0,  0},
+								 {-1,  1,  0},
+								 {-1,  0,  0}}
+							};
+
+	// Pruning structuring element #2
+	int pruning2[4][3][3] = {
+								{{ 0,  0,  0},
+								 { 0,  1,  0},
+								 {-1, -1,  0}},
+
+								{{ 0,  0,  0},
+								 { 0,  1, -1},
+								 { 0,  0, -1}},
+
+								{{ 0, -1, -1},
+								 { 0,  1,  0},
+								 { 0,  0,  0}},
+
+								{{-1,  0,  0},
+								 {-1,  1,  0},
+								 { 0,  0,  0}}
+							};
+
 	// Grayscale color table
 	QVector<QRgb> grayColorTable;
 
@@ -73,6 +149,8 @@ private:
 
 	// Crop image
 	QImage crop(QImage image);
+
+	// Hit-and-miss transform using given structuring element
 
 	// Get points occupancy in north-east image quarter
 	double getOccupancyQ1();
@@ -285,6 +363,9 @@ private:
 
 	// Check classifier for training set
 	void checkClassifier();
+
+	// Get and export features for analysis
+	void extractFeatures();
 
 	// Compensate rotation for digit image
 	// Method is duplicated from Preprocessor and is used for training / testing
